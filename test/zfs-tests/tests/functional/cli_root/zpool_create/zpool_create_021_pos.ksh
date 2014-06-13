@@ -67,11 +67,12 @@ set -A RW_FS_PROP "quota=512M" \
 		  "setuid=off" \
 		  "readonly=on" \
 		  "snapdir=visible" \
-		  "aclmode=discard" \
 		  "aclinherit=discard" \
 		  "canmount=off" \
 		  "sharenfs=on" \
 		  "zoned=on"
+
+[[ -z "$LINUX" ]] && RW_FS_PROP+=("aclmode=discard")
 
 typeset -i i=0
 while (( $i < ${#RW_FS_PROP[*]} )); do

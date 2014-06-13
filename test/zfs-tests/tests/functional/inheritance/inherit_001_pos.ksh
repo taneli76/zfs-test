@@ -381,9 +381,10 @@ set -A prop "checksum" "" \
 	"recordsize" "recsize" \
 	"mountpoint" "" \
 	"snapdir" "" \
-	"aclmode" "" \
 	"aclinherit" "" \
 	"readonly" "rdonly"
+
+[[ -z "$LINUX" ]] && prop+=("aclmode" "")
 
 #
 # Note except for the mountpoint default value (which is handled in

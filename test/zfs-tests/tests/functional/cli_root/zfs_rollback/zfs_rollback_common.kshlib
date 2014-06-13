@@ -122,7 +122,11 @@ function setup_snap_env
 				# before taking a snapshot.
 				#
 				if [[ $dtst == $VOL ]]; then
-					log_must $LOCKFS -f $TESTDIR1
+					if [[ -n "$LINUX" ]]; then
+						log_mustnot $LOCKFS -t $TESTDIR1 2> /dev/null
+					else
+						log_must $LOCKFS -f $TESTDIR1
+					fi
 				fi
 				log_must $ZFS snapshot $snap
 			fi

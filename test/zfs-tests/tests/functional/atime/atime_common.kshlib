@@ -40,9 +40,10 @@ function check_atime_updated
 {
 	typeset filename=$1
 
-	typeset before=$($LS -Eu $filename | $AWK '{print $7}')
+	typeset before=$(stat -c %X $filename)
+	sleep 2
 	log_must $CAT $filename
-	typeset after=$($LS -Eu $filename | $AWK '{print $7}')
+	typeset after=$(stat -c %X $filename)
 
 	if [[ $before != $after ]]; then
 		return 0

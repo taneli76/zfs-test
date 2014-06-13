@@ -44,7 +44,7 @@
 #
 #
 
-TESTDIR=/altdir.$$
+TESTDIR=$TESTDIR/altdir.$$
 
 function cleanup
 {

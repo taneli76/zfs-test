@@ -113,9 +113,9 @@ for num in 0 1 2; do
 	saved_slice=$slice
 done
 
-log_note "Make a ufs filesystem on source $rawdisk1"
+log_note "Make a $NEWFS_DEFAULT_FS filesystem on source $rawdisk1"
 $ECHO "y" | $NEWFS -v $rawdisk1 > /dev/null 2>&1
-(($? != 0)) && log_untested "Unable to create ufs filesystem on $rawdisk1"
+(($? != 0)) && log_untested "Unable to create $NEWFS_DEFAULT_FS filesystem on $rawdisk1"
 
 log_must $MKDIR -p $UFSMP
 

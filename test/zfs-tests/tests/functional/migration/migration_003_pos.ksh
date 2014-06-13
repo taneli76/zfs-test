@@ -56,11 +56,11 @@ log_assert "Migrating test file from UFS fs to ZFS fs using tar"
 
 log_onexit cleanup
 
-prepare $DNAME "$TAR cf $NONZFS_TESTDIR/tar$$.tar $BNAME"
+prepare $DNAME "$TAR $pack_opts $NONZFS_TESTDIR/tar$$.tar $BNAME"
 (( $? != 0 )) && log_fail "Unable to create src archive"
 
-migrate $TESTDIR $SUMA $SUMB "$TAR xvf $NONZFS_TESTDIR/tar$$.tar"
+migrate $TESTDIR $SUMA $SUMB "$TAR $verbose $unpack_opts $NONZFS_TESTDIR/tar$$.tar"
 (( $? != 0 )) && log_fail "Uable to successfully migrate test file from" \
-    "UFS fs to ZFS fs"
+    `$ECHO $NEWFS_DEFAULT_FS | tr "[:lower:]" "[:upper:]"`" fs to ZFS fs"
 
-log_pass "Successully migrated test file from UFS fs to ZFS fs".
+log_pass "Successully migrated test file from "`$ECHO $NEWFS_DEFAULT_FS | tr "[:lower:]" "[:upper:]"`" fs to ZFS fs".

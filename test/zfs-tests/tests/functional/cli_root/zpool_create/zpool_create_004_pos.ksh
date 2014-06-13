@@ -173,7 +173,7 @@ left_space=$(get_prop "available" $TESTPOOL/$TESTFS)
 # Count the broken file size. make sure it should be greater than $left_space
 # so, here, we plus a number -- $file_size, this number can be any other number.
 (( file_size = left_space / (1024 * 1024) + file_size ))
-log_mustnot $MKFILE ${file_size}m ${TESTDIR}/broken_file
+log_mustnot $MKFILE -s ${file_size}m ${TESTDIR}/broken_file
 vdevs_list="$vdevs_list ${TESTDIR}/broken_file"
 
 log_mustnot $ZPOOL create -f $TESTPOOL2 $vdevs_list

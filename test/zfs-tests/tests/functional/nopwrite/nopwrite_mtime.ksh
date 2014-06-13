@@ -47,14 +47,14 @@ $DD if=/dev/urandom of=$TESTDIR/file bs=1024k count=$MEGS conv=notrunc \
 $ZFS snapshot $origin@a || log_fail "zfs snap failed"
 log_must $ZFS clone $origin@a $origin/clone
 
-o_atime=$($LS -E% all $TESTDIR/clone/file | $AWK '/atime/ {print $4}')
-o_ctime=$($LS -E% all $TESTDIR/clone/file | $AWK '/ctime/ {print $4}')
-o_mtime=$($LS -E% all $TESTDIR/clone/file | $AWK '/mtime/ {print $4}')
+o_atime=$(stat -c %X $TESTDIR/clone/file)
+o_ctime=$(stat -c %Z $TESTDIR/clone/file)
+o_mtime=$(stat -c %Y $TESTDIR/clone/file)
 $DD if=/$TESTDIR/file of=/$TESTDIR/clone/file bs=1024k count=$MEGS \
     conv=notrunc >/dev/null 2>&1 || log_fail "dd failed."
-atime=$($LS -E% all $TESTDIR/clone/file | $AWK '/atime/ {print $4}')
-ctime=$($LS -E% all $TESTDIR/clone/file | $AWK '/ctime/ {print $4}')
-mtime=$($LS -E% all $TESTDIR/clone/file | $AWK '/mtime/ {print $4}')
+atime=$(stat -c %X $TESTDIR/clone/file)
+ctime=$(stat -c %Z $TESTDIR/clone/file)
+mtime=$(stat -c %Y $TESTDIR/clone/file)
 
 [[ $o_atime = $atime ]] || log_fail "atime changed: $o_atime $atime"
 [[ $o_ctime = $ctime ]] && log_fail "ctime unchanged: $o_ctime $ctime"

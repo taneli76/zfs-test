@@ -77,19 +77,26 @@ function cleanup
 	$KILL -0 $PIDUFSRESTORE > /dev/null 2>&1 && \
 	    log_must $KILL -9 $PIDUFSRESTORE  > /dev/null 2>&1
 
-	ismounted $UFSMP ufs && log_must $UMOUNT $UFSMP
+	ismounted $UFSMP $NEWFS_DEFAULT_FS && log_must $UMOUNT $UFSMP
 
 	$RM -rf $UFSMP
 	$RM -rf $TESTDIR
-
 	#
 	# Tidy up the disks we used.
 	#
 	log_must cleanup_devices $vdisks $sdisks
+
+	if [[ -n "$LINUX" ]]; then
+		for i in 0 2; do
+			dsk=$(eval echo \${kpartx_dsk$i})
+			# Remove the partition mappings created in setup.
+			[[ -n "$dsk" ]] && $KPARTX -d $dsk
+		done
+	fi
 }
 
 log_assert "Ensure ZFS does not interfere with devices that are in use by " \
-    "ufsdump or ufsrestore"
+    "$UFSDUMP or $UFSRESTORE"
 
 log_onexit cleanup
 
@@ -101,8 +108,8 @@ typeset cwd=""
 
 for num in 0 1 2; do
 	eval typeset slice=\${FS_SIDE$num}
-	disk=${slice%s*}
-	slice=${slice##*s}
+	disk=${slice%[sp][0-9]}
+	slice=${slice##*[sp]}
 	if [[ $WRAPPER == *"smi"* && $disk == ${saved_disk} ]]; then
 		cyl=$(get_endslice $disk ${saved_slice})
 		log_must set_partition $slice "$cyl" $FS_SIZE $disk
@@ -112,6 +119,28 @@ for num in 0 1 2; do
 	saved_disk=$disk
 	saved_slice=$slice
 done
+
+if [[ -n "$LINUX" ]]; then
+	# We only need to run kpartx on the two files used, not all three partitions...
+	for i in 0 2; do
+		dsk=$(eval echo \${rawdisk$i%[sp][0-9]})
+		dsk=${dsk##/dev/}
+		eval typeset kpartx_dsk$i=$dsk
+
+		if [[ -n "$dsk" ]]; then
+			set -- $($KPARTX -asfv $dsk | head -n1)
+			loop=${8##*/}
+			[[ $i == 0 ]] && loop_save=$loop
+
+			# Override variables
+			eval typeset rawdisk$i="/dev/mapper/$loop"p1
+			eval typeset disk$i="/dev/mapper/$loop"p1
+		fi
+	done
+
+	eval typeset rawdisk1="/dev/mapper/$loop_save"p2
+	eval typeset disk1="/dev/mapper/$loop_save"p2
+fi
 
 log_note "Make a $NEWFS_DEFAULT_FS filesystem on source $rawdisk1"
 $ECHO "y" | $NEWFS -v $rawdisk1 > /dev/null 2>&1

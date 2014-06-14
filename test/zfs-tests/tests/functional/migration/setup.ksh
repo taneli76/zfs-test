@@ -46,8 +46,22 @@ case $DISK_COUNT in
 	;;
 esac
 
-set_partition ${ZFSSIDE_DISK##*s} "" $FS_SIZE $ZFS_DISK
-set_partition ${NONZFSSIDE_DISK##*s} "" $FS_SIZE $NONZFS_DISK
+set_partition ${ZFSSIDE_DISK##*[sp]} "" $FS_SIZE $ZFS_DISK
+set_partition ${NONZFSSIDE_DISK##*[sp]} "" $FS_SIZE $NONZFS_DISK
+
+if [[ -n "$LINUX" ]]; then
+	typeset -i i=0
+	for dsk in $ZFS_DISK  $NONZFS_DISK; do
+		# Setup partition mappings with kpartx
+		set -- $($KPARTX -asfv $dsk | head -n1)
+		eval typeset loop$i="${8##*/}"
+		((i += 1))
+	done
+
+	# Override variables
+	ZFSSIDE_DISK="/dev/mapper/$loop0"p1
+	NONZFSSIDE_DISK="/dev/mapper/$loop1"p1
+fi
 
 create_pool $TESTPOOL "$ZFSSIDE_DISK"
 
@@ -60,10 +74,18 @@ log_must $ZFS set mountpoint=$TESTDIR $TESTPOOL/$TESTFS
 $RM -rf $NONZFS_TESTDIR  || log_unresolved Could not remove $NONZFS_TESTDIR
 $MKDIR -p $NONZFS_TESTDIR || log_unresolved Could not create $NONZFS_TESTDIR
 
-$ECHO "y" | $NEWFS -v /dev/rdsk/$NONZFSSIDE_DISK
+if [[ -n "$LINUX" ]]; then
+	$NEWFS $NONZFSSIDE_DISK >/dev/null 2>&1
+else
+	$ECHO "y" | $NEWFS -v /dev/rdsk/$NONZFSSIDE_DISK
+fi
 (( $? != 0 )) &&
-	log_untested "Unable to setup a UFS file system"
+	log_untested "Unable to setup a $NEWFS_DEFAULT_FS file system"
 
-log_must $MOUNT /dev/dsk/$NONZFSSIDE_DISK $NONZFS_TESTDIR
+if [[ -n "$LINUX" ]]; then
+	log_must $MOUNT $NONZFSSIDE_DISK $NONZFS_TESTDIR
+else
+	log_must $MOUNT /dev/dsk/$NONZFSSIDE_DISK $NONZFS_TESTDIR
+fi
 
 log_pass

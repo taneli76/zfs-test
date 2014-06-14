@@ -55,6 +55,13 @@ function cleanup
 	# Tidy up the disks we used.
 	#
 	cleanup_devices $vdisks $sdisks
+
+	if [[ -n "$LINUX" ]]; then
+		for i in {0..2}; do
+			dsk=$(eval echo \${kpartx_dsk$i})
+			[[ -n "$dsk" ]] && $KPARTX -d $dsk
+		done
+	fi
 }
 
 function verify_assertion #slices
@@ -62,7 +69,7 @@ function verify_assertion #slices
 	typeset targets=$1
 
 	for t in $targets; do
-		$ECHO "y" | $NEWFS -v $t > /dev/null 2>&1
+		$ECHO "y" | $NEWFS -v $t #> /dev/null 2>&1
 		(( $? !=0 )) && \
 			log_fail "newfs over exported pool " \
 				"failes unexpected."
@@ -81,8 +88,8 @@ typeset -i i=0
 
 for num in 0 1 2 3 ; do
 	eval typeset slice=\${FS_SIDE$num}
-	disk=${slice%s*}
-	slice=${slice##*s}
+	disk=${slice%[sp][0-9]}
+	slice=${slice##*[sp]}
 	if [[ $WRAPPER == *"smi"* && \
 		$disk == ${saved_disk} ]]; then
 		cyl=$(get_endslice $disk ${saved_slice})
@@ -100,10 +107,41 @@ while (( i < ${#vdevs[*]} )); do
 		continue
 	fi
 
+	if [[ -n "$LINUX" ]]; then
+		# Startup loop devices for the three disks we're using
+		vslices="" ; rawtargets="" # We're overwriting these below
+		for num in {0..2}; do
+			dsk=$(eval echo \${FS_DISK$num})
+			eval typeset kpartx_dsk$num=$dsk
+	
+			if [[ -n "$dsk" ]]; then
+				set -- $($KPARTX -asfv $dsk | head -n1)
+				loop=${8##*/}
+				[[ $num == 0 ]] && loop0=$loop
+				[[ $num == 1 ]] && loop1=$loop
+
+				# Override variable
+				vslices="$vslices /dev/mapper/$loop"p1
+				eval typeset disk$i="/dev/mapper/$loop"p1
+				rawtargets=$(eval echo "$rawtargets \$disk$i")
+			fi
+		done
+
+		# Override variable
+		sslices="/dev/mapper/$loop0"p2
+	fi
+
 	create_pool $TESTPOOL1 ${vdevs[i]} $vslices spare $sslices
 	log_must $ZPOOL export $TESTPOOL1
 	verify_assertion "$rawtargets"
 	cleanup_devices $vslices $sslices
+
+	if [[ -n "$LINUX" ]]; then
+		for num in {0..2}; do
+			dsk=$(eval echo \${FS_DISK$num})
+			[[ -n "$dsk" ]] && $KPARTX -d $dsk
+		done
+	fi
 
 	(( i = i + 1 ))
 done

@@ -42,30 +42,47 @@ case $DISK_COUNT in
 	log_note "Partitioning a single disk ($SINGLE_DISK)"
 	;;
 2)
-	log_note "Partitioning a disks ($SINGLE_DISK) and ($ZFS_DISK2)"
+	log_note "Partitioning a disks ($SINGLE_DISK) and ($META_DISK2)"
 	;;
 3)
-	log_note "Partitioning disks ($META_DISK0 $META_DISK1 $ZFS_DISK2)"
+	log_note "Partitioning disks ($META_DISK0 $META_DISK1 $META_DISK2)"
 	;;
 esac
 
-log_must set_partition ${META_SIDE0##*s} "" $FS_SIZE $META_DISK0
+log_must set_partition ${META_SIDE0##*[sp]} "" $FS_SIZE $META_DISK0
 if [[ $WRAPPER == *"smi"* && $META_DISK1 == $META_DISK0 ]]; then
-	typeset i=${META_SIDE0##*s}
+	typeset i=${META_SIDE0##*[sp]}
 	typeset cyl=$(get_endslice $META_DISK0 $i)
-	log_must set_partition ${META_SIDE1##*s} "$cyl" $FS_SIZE $META_DISK1
+	log_must set_partition ${META_SIDE1##*[sp]} "$cyl" $FS_SIZE $META_DISK1
 else
-	log_must set_partition ${META_SIDE1##*s} "" $FS_SIZE $META_DISK1
+	log_must set_partition ${META_SIDE1##*[sp]} "" $FS_SIZE $META_DISK1
 fi
-if [[ $WRAPPER == *"smi"* && $ZFS_DISK2 == $META_DISK1 ]]; then
+if [[ $WRAPPER == *"smi"* && $META_DISK2 == $META_DISK1 ]]; then
 	typeset i=${META_SIDE1##*s}
 	typeset cyl=$(get_endslice $META_DISK1 $i)
-	log_must set_partition ${ZFS_SIDE2##*s} "$cyl" $FS_SIZE $ZFS_DISK2
+	log_must set_partition ${META_SIDE2##*[sp]} "$cyl" $FS_SIZE $META_DISK2
 else
-	log_must set_partition ${ZFS_SIDE2##*s} "" $FS_SIZE $ZFS_DISK2
+	log_must set_partition ${META_SIDE2##*[sp]} "" $FS_SIZE $META_DISK2
 fi
 
-create_pool $TESTPOOL $ZFS_SIDE2
+if [[ -n "$LINUX" ]]; then
+	for i in {0..2}; do
+		nr=$(( $i + 1 ))
+		dsk=$(eval echo \$META_DISK$i)
+	
+		if [[ -n "$dsk" ]]; then
+			set -- $($KPARTX -asfv $dsk | head -n1)
+			loop=${8##*/}
+	
+			# Override variables
+			eval 'export META_DISK$i="/dev/mapper/$loop"'
+			eval 'export META_SIDE$i="/dev/mapper/$loop"p1'
+		fi
+	done
+	eval 'export SINGLE_DISK=$META_DISK0'
+fi
+
+create_pool $TESTPOOL $META_SIDE2
 
 $RM -rf $TESTDIR  || log_unresolved Could not remove $TESTDIR
 $MKDIR -p $TESTDIR || log_unresolved Could not create $TESTDIR

@@ -38,6 +38,18 @@ ismounted $TESTPOOL/$TESTFS
 (( $? == 0 )) && log_must $ZFS umount -f $TESTDIR
 destroy_pool $TESTPOOL
 
+if [[ -n "$LINUX" ]]; then
+	for i in {0..2}; do
+		nr=$(( $i + 1 ))
+		dsk=$(eval echo \$META_DISK$i)
+	
+		if [[ -n "$dsk" ]]; then
+			# Remove the partition mappings created in setup.
+			$KPARTX -d $dsk
+		fi
+	done
+fi
+
 $METASTAT $META_DEVICE_ID > /dev/null 2>&1
 if (( $? == 0 )); then
 	log_note "Clearing meta device ($META_DEVICE_ID)"
@@ -60,13 +72,13 @@ case $DISK_COUNT in
 	log_note "No disk devices to restore"
 	;;
 1)
-	log_must cleanup_devices $ZFS_DISK2
+	log_must cleanup_devices $META_DISK2
 	;;
 2)
-	log_must cleanup_devices $META_DISK0 $ZFS_DISK2
+	log_must cleanup_devices $META_DISK0 $META_DISK2
 	;;
 *)
-	log_must cleanup_devices $META_DISK0 $META_DISK1 $ZFS_DISK2
+	log_must cleanup_devices $META_DISK0 $META_DISK1 $META_DISK2
 	;;
 esac
 

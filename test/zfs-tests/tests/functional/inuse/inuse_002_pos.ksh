@@ -73,8 +73,8 @@ log_onexit cleanup
 
 for num in 0 1 2; do
 	eval typeset slice=\${FS_SIDE$num}
-	disk=${slice%s*}
-	slice=${slice##*s}
+	disk=${slice%[sp][0-9]}
+	slice=${slice##*[sp]}
 	if [[ $WRAPPER == *"smi"* && \
 		$disk == ${saved_disk} ]]; then
 		cyl=$(get_endslice $disk ${saved_slice})

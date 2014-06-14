@@ -34,7 +34,7 @@
 
 verify_runnable "global"
 
-ismounted $NONZFS_TESTDIR ufs
+ismounted $NONZFS_TESTDIR $NEWFS_DEFAULT_FS
 (( $? == 0 )) && log_must $UMOUNT -f $NONZFS_TESTDIR
 
 ismounted $TESTPOOL/$TESTFS
@@ -54,5 +54,11 @@ case $DISK_COUNT in
 	log_must cleanup_devices $ZFS_DISK $NONZFS_DISK
 	;;
 esac
+
+if [[ -n "$LINUX" ]]; then
+	for dsk in $ZFS_DISK  $NONZFS_DISK; do
+		$KPARTX -d $dsk
+	done
+fi
 
 log_pass

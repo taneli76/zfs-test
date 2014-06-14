@@ -67,10 +67,26 @@ PREVDUMPDEV=`$DUMPADM | $GREP "Dump device" | $AWK '{print $3}'`
 log_note "Zero $FS_DISK0 and place free space in to slice 0"
 log_must cleanup_devices $FS_DISK0
 
+typeset slice_part=s
+[[ -n "$LINUX" ]] && slice_part=p
+
 if [[ $WRAPPER == *"smi"* ]]; then
-	diskslice="/dev/dsk/${FS_DISK0}s2"
+	diskslice="$DEV_DSKDIR/${FS_DISK0}${slice_part}2"
 else
-	diskslice="/dev/dsk/${FS_DISK0}s0"
+	diskslice="$DEV_DSKDIR/${FS_DISK0}${slice_part}0"
+fi
+
+if [[ -n "$LINUX" ]]; then
+	# Startup loop device for the disk we're using
+	dsk=${diskslice%[sp][0-9]}
+	dsk=${dsk##/dev/}
+	slice=${diskslice##*[sp]}
+	if [[ -n "$dsk" ]]; then
+		log_must set_partition $slice "" 1g $dsk
+
+		set -- $($KPARTX -asfv $dsk | head -n1)
+		diskslice="/dev/mapper/${8##*/}"p1
+	fi
 fi
 
 log_note "Configuring $diskslice as dump device"

@@ -48,15 +48,17 @@ function cleanup {
 	log_must $ZFS set compression=$orig_compress $rootfs
 }
 
+typeset assert_msg="the zfs rootfs's compression property can not set to \
+		   gzip and gzip[1-9]"
+
 log_onexit cleanup
 log_assert $assert_msg
 
 typeset rootpool=$(get_rootpool)
+[[ -z "$rootpool" ]] && log_fail "Can not get rootpool"
 typeset rootfs=$(get_pool_prop bootfs $rootpool)
+[[ -z "$rootfs" ]] && log_fail "Can not get rootfs"
 typeset orig_compress=$(get_prop compression $rootfs)
-
-typeset assert_msg="the zfs rootfs's compression property can not set to \
-		   gzip and gzip[1-9]"
 
 set -A gtype "gzip" "gzip-1" "gzip-2" "gzip-3" "gzip-4" "gzip-5" \
 	     "gzip-6" "gzip-7" "gzip-8" "gzip-9"

@@ -53,7 +53,7 @@ do
 			log $LDEV
 
 		# Corrupt a pool device to make the pool DEGRADED
-		$DD if=/dev/urandom of=/$TESTPOOL/filler bs=1024k count=50
+		$DD if=/dev/urandom of=/$TESTPOOL/filler bs=1024k count=20
 		# The oseek value below is to skip past the vdev label.
 		log_must $DD if=/dev/urandom of=$VDIR/a bs=1024k oseek=4 \
 		    conv=notrunc count=50

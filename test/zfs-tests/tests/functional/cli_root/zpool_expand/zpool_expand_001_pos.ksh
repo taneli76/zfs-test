@@ -81,8 +81,7 @@ for type in " " mirror raidz raidz2; do
 	fi
 
 	typeset prev_size=$(get_pool_prop size $TESTPOOL1)
-	typeset zfs_prev_size=$($ZFS get -p avail $TESTPOOL1 | $TAIL -1 | \
-	    $AWK '{print $3}')
+	typeset zfs_prev_size=$(get_prop avail $TESTPOOL1)
 
 	for i in 1 2 3; do
 		log_must $ZFS set volsize=$exp_size $VFS/vol$i
@@ -93,8 +92,7 @@ for type in " " mirror raidz raidz2; do
 	$SYNC
 
 	typeset expand_size=$(get_pool_prop size $TESTPOOL1)
-	typeset zfs_expand_size=$($ZFS get -p avail $TESTPOOL1 | $TAIL -1 | \
-	    $AWK '{print $3}')
+	typeset zfs_expand_size=$(get_prop avail $TESTPOOL1)
 
 	log_note "$TESTPOOL1 $type has previous size: $prev_size and " \
 	    "expanded size: $expand_size"

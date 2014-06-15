@@ -44,9 +44,11 @@
 #
 
 verify_runnable "global"
-log_assert "zpool/zfs destory <rootpool> should return error"
+log_assert "zpool/zfs destory <rootpool> should return error when trying " \
+    "to destroy a rootpool"
 
 typeset rootpool=$(get_rootpool)
+[[ -z "$rootpool" ]] && log_fail "Can not get rootpool"
 typeset tmpfile="/tmp/mounted-datasets.$$"
 
 # Collect the currently mounted ZFS filesystems, so that we can repair any

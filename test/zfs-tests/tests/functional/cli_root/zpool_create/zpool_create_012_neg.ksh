@@ -46,7 +46,6 @@ function cleanup
 	if poolexists $TESTPOOL; then
 		destroy_pool $TESTPOOL
 	fi
-
 }
 typeset swap_disks=`$SWAP -l | $GREP "c[0-9].*d[0-9].*s[0-9]" | \
             $AWK '{print $1}'`

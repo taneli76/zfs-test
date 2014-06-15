@@ -52,6 +52,9 @@ log_onexit cleanup
 
 fs=$TESTPOOL/$TESTFS
 if ! ismounted $fs; then
+	mntpt=$(get_prop mountpoint $fs)
+	rm -Rf $mntpt
+
 	log_must $ZFS mount $fs
 fi
 

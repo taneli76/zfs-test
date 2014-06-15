@@ -50,7 +50,10 @@ verify_runnable "global"
 log_assert "system related filesytems can not be renamed or destroyed"
 
 typeset rootpool=$(get_rootpool)
+[[ -z "$rootpool" ]] && log_fail "Can not get rootpool"
 typeset rootfs=$(get_rootfs)
+[[ -z "$rootfs" ]] && log_fail "Can not get rootfs"
+
 
 log_mustnot $ZFS rename $rootfs $rootpool/newfs
 log_mustnot $ZFS rename -f $rootfs $rootpool/newfs

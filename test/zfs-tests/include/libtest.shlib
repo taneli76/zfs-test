@@ -823,7 +823,7 @@ function get_pool_prop # property pool
 			return 1
 		fi
 	else
-		log_note "Pool $pool not exists."
+		log_note "Pool $pool does not exists."
 		return 1
 	fi
 
@@ -1116,7 +1116,7 @@ function destroy_pool #pool
 			[[ -d $mtpt ]] && \
 				log_must $RM -rf $mtpt
 		else
-			log_note "Pool not exist. ($pool)"
+			log_note "Pool does not exist. ($pool)"
 			return 1
 		fi
 	fi
@@ -2425,9 +2425,8 @@ function get_rootfs
 	typeset rootfs=""
 	rootfs=$($AWK '{if ($2 == "/" && $3 == "zfs") print $1}' \
 		/etc/mnttab)
-	if [[ -z "$rootfs" ]]; then
-		log_fail "Can not get rootfs"
-	fi
+	[[ -z "$rootfs" ]] && return
+
 	$ZFS list $rootfs > /dev/null 2>&1
 	if (($? == 0)); then
 		$ECHO $rootfs
@@ -2439,7 +2438,7 @@ function get_rootfs
 #
 # get the rootfs's pool name
 # return:
-#       rootpool name
+#       rootpool name (or -1 if not found)
 #
 function get_rootpool
 {
@@ -2447,12 +2446,11 @@ function get_rootpool
 	typeset rootpool=""
 	rootfs=$($AWK '{if ($2 == "/" && $3 =="zfs") print $1}' \
 		 /etc/mnttab)
-	if [[ -z "$rootfs" ]]; then
-		log_fail "Can not get rootpool"
-	fi
+	[[ -z "$rootfs" ]] && return
+
 	$ZFS list $rootfs > /dev/null 2>&1
 	if (($? == 0)); then
-		rootpool=`$ECHO $rootfs | awk -F\/ '{print $1}'`
+		rootpool=`$ECHO $rootfs | $AWK -F\/ '{print $1}'`
 		$ECHO $rootpool
 	else
 		log_fail "This is not a zfsroot system."

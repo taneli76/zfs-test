@@ -118,11 +118,21 @@ function setup_vdevs #<disk>
 	create_pool "$TESTPOOL1" "${TESTDIR}/file.$count"
 	log_must poolexists "$TESTPOOL1"
 
+	typeset PIDLIST=""
 	while (( count < vdevs_num )); do # minus 1 to avoid space non-enough
 		(( count = count + 1 ))
-		log_must $MKFILE ${file_size}m ${TESTDIR}/file.$count
+		$MKFILE ${file_size}m ${TESTDIR}/file.$count &
+		PIDLIST="$PIDLIST $!"
 		vdevs_list="$vdevs_list ${TESTDIR}/file.$count"
 	done
+
+	# wait all mkfiles to finish
+	wait $PIDLIST
+	if (( $? != 0 )); then
+		log_fail "create vdevs failed."
+	fi
+
+	return 0
 }
 
 log_assert " 'zpool add [-f]' can add large numbers of vdevs to the specified" \

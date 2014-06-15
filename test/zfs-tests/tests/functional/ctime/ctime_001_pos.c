@@ -164,11 +164,11 @@ do_link(const char *pfile)
 		    pfile, link_file, errno);
 		free((void *)dirname);
 		return (1);
+	} else {
+		(void) unlink(link_file);
+		free((void *)dirname);
+		return (ret);
 	}
-
-	(void) unlink(link_file);
-	free((void *)dirname);
-	return (ret);
 }
 
 static int

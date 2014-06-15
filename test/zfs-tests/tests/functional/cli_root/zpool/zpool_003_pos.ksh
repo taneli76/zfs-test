@@ -44,7 +44,19 @@
 
 verify_runnable "both"
 
+function cleanup
+{
+	unset ZFS_ABORT
+
+	if [[ -n "$LINUX" && -n "$def_cor_pat" ]]; then
+		echo "$def_cor_pat" > /proc/sys/kernel/core_pattern
+		echo "$def_cor_suid" > /proc/sys/fs/suid_dumpable
+		ulimit -c $ulimit
+	fi
+}
+
 log_assert "Debugging features of zpool should succeed."
+log_onexit cleanup
 
 log_must $ZPOOL -? > /dev/null 2>&1
 
@@ -58,13 +70,30 @@ fi
 log_mustnot $ZPOOL freeze fakepool
 
 # Remove corefile possibly left by previous failing run of this test.
-[[ -f core ]] && log_must rm -f core
+corepath=$TEST_BASE_DIR/cores
+if [[ -d $corepath ]]; then
+	$RM -rf $corepath
+fi
+$MKDIR -p $corepath
+
+if [[ -n "$LINUX" && -f "/proc/sys/kernel/core_pattern" ]]; then
+	# NOTE: This file is only provided if the kernel was built
+	#       with the CONFIG_ELF_CORE configuration option
+	typeset def_cor_pat=$(cat /proc/sys/kernel/core_pattern)
+	typeset def_cor_suid=$(cat /proc/sys/fs/suid_dumpable)
+	typeset ulimit=$(ulimit -c)
+	echo "${corepath}/core.%e" > /proc/sys/kernel/core_pattern
+	ulimit -c unlimited
+else
+	log_must $COREADM -p ${corepath}/core.%f
+fi
 
 ZFS_ABORT=1; export ZFS_ABORT
 $ZPOOL > /dev/null 2>&1
-unset ZFS_ABORT
 
-[[ -f core ]] || log_fail "$ZPOOL did not dump core by request."
-[[ -f core ]] && log_must rm -f core
-
-log_pass "Debugging features of zpool succeed."
+if [[ -f ${corepath}/core.zpool ]]; then
+	log_must rm -f ${corepath}/core.zpool
+	log_pass "Debugging features of zpool succeed."
+else
+	log_fail "$ZPOOL did not dump core by request."
+fi

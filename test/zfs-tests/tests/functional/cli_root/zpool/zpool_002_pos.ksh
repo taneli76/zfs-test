@@ -48,24 +48,29 @@ function cleanup
 	if poolexists $pool; then
 		log_must $ZPOOL destroy -f $pool
 	fi
+	if [[ -n "$LINUX" && -n "$def_cor_pat" ]]; then
+		echo "$def_cor_pat" > /proc/sys/kernel/core_pattern
+		echo "$def_cor_suid" > /proc/sys/fs/suid_dumpable
+		ulimit -c $ulimit
+	fi
 }
 
 log_assert "With ZFS_ABORT set, all zpool commands can abort and generate a core file."
 log_onexit cleanup
 
 #preparation work for testing
-corepath=$TESTDIR/core
+corepath=$TEST_BASE_DIR/core
 if [[ -d $corepath ]]; then
 	$RM -rf $corepath
 fi
-$MKDIR $corepath
+$MKDIR -p $corepath
 
 pool=pool.$$
 vdev1=$TESTDIR/file1
 vdev2=$TESTDIR/file2
 vdev3=$TESTDIR/file3
 for vdev in $vdev1 $vdev2 $vdev3; do
-	$MKFILE -s 64m $vdev
+	log_must $MKFILE -s 64m $vdev
 done
 
 set -A cmds "create $pool mirror $vdev1 $vdev2" "list $pool" "iostat $pool" \
@@ -79,7 +84,17 @@ set -A badparams "" "create" "destroy" "add" "remove" "list *" "iostat" "status"
 		"online" "offline" "clear" "attach" "detach" "replace" "scrub" \
 		"import" "export" "upgrade" "history -?" "get" "set"
 
-$COREADM -p ${corepath}/core.%f
+if [[ -n "$LINUX" && -f "/proc/sys/kernel/core_pattern" ]]; then
+	# NOTE: This file is only provided if the kernel was built
+	#       with the CONFIG_ELF_CORE configuration option
+	typeset def_cor_pat=$(cat /proc/sys/kernel/core_pattern)
+	typeset def_cor_suid=$(cat /proc/sys/fs/suid_dumpable)
+	typeset ulimit=$(ulimit -c)
+	echo "${corepath}/core.%e" > /proc/sys/kernel/core_pattern
+	ulimit -c unlimited
+else
+	log_must $COREADM -p ${corepath}/core.%f
+fi
 export ZFS_ABORT=yes
 
 for subcmd in "${cmds[@]}" "${badparams[@]}"; do

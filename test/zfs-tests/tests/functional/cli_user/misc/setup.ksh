@@ -131,17 +131,16 @@ then
 
 	# and create a pool we can perform attach remove replace,
 	# etc. operations with
-	log_must $ZPOOL create $TESTPOOL.virt mirror /$TESTDIR/disk1.dat \
-	/$TESTDIR/disk2.dat /$TESTDIR/disk3.dat /$TESTDIR/disk-offline.dat \
-	spare /$TESTDIR/disk-spare1.dat
-
+	log_must $ZPOOL create $TESTPOOL.virt mirror $TESTDIR/disk1.dat \
+	    $TESTDIR/disk2.dat $TESTDIR/disk3.dat $TESTDIR/disk-offline.dat \
+	    spare $TESTDIR/disk-spare1.dat
 
 	# Offline one of the disks to test online
-	log_must $ZPOOL offline $TESTPOOL.virt /$TESTDIR/disk-offline.dat
+	log_must $ZPOOL offline $TESTPOOL.virt $TESTDIR/disk-offline.dat
 
 
 	# create an exported pool to test import
-	log_must $ZPOOL create $TESTPOOL.exported /$TESTDIR/disk-export.dat
+	log_must $ZPOOL create $TESTPOOL.exported $TESTDIR/disk-export.dat
 	log_must $ZPOOL export $TESTPOOL.exported
 
 	set -A props $POOL_PROPS

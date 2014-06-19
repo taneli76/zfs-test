@@ -37,7 +37,9 @@
 #define	TYPE_D 'D'
 #define	TYPE_F 'F'
 
+#ifndef _LINUX
 extern int errno;
+#endif
 
 static char fdname[MAXPATHLEN] = {0};
 static char *pbasedir = NULL;
@@ -147,7 +149,9 @@ static void
 crtfile(char *pname)
 {
 	int fd = -1;
+#ifndef _LINUX
 	int afd = -1;
+#endif
 	int i, size;
 	char *context = "0123456789ABCDF";
 	char *pbuf;
@@ -174,6 +178,7 @@ crtfile(char *pname)
 		exit(errno);
 	}
 
+#ifndef _LINUX
 	if ((afd = openat(fd, "xattr", O_CREAT | O_RDWR | O_XATTR, 0777)) < 0) {
 		(void) fprintf(stderr, "openat failed.\n[%d]: %s.\n",
 		    errno, strerror(errno));
@@ -186,6 +191,7 @@ crtfile(char *pname)
 	}
 
 	(void) close(afd);
+#endif
 	(void) close(fd);
 	free(pbuf);
 }

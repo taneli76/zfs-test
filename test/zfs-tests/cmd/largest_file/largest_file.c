@@ -33,6 +33,15 @@
 #include <signal.h>
 #include <stdio.h>
 
+#ifdef _LINUX
+#include <string.h>
+#include <sys/types.h>
+#include <unistd.h>
+
+typedef long long	offset_t;
+#define MAXOFFSET_T	LLONG_MAX
+#endif
+
 /*
  * --------------------------------------------------------------
  *
@@ -77,7 +86,11 @@ main(int argc, char **argv)
 		goto out;
 	}
 
+#ifdef _LINUX
+	llseek_ret = lseek64(fd, offset, SEEK_SET);
+#else
 	llseek_ret = llseek(fd, offset, SEEK_SET);
+#endif
 	if (llseek_ret < 0) {
 		perror("Failed to seek to end of testfile");
 		err = errno;
@@ -92,7 +105,11 @@ main(int argc, char **argv)
 	}
 
 	offset = 0;
+#ifdef _LINUX
+	llseek_ret = lseek64(fd, offset, SEEK_CUR);
+#else
 	llseek_ret = llseek(fd, offset, SEEK_CUR);
+#endif
 	if (llseek_ret < 0) {
 		perror("Failed to seek to end of file");
 		err = errno;

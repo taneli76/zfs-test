@@ -29,6 +29,12 @@
 #include <unistd.h>
 #include <errno.h>
 
+#ifdef _LINUX
+#include <string.h>
+
+typedef enum boolean { B_FALSE, B_TRUE } boolean_t;
+#endif
+
 static void
 usage(char *progname)
 {
@@ -51,7 +57,7 @@ daemonize(void)
 	if ((pid = fork()) < 0) {
 		fail("fork", 1);
 	} else if (pid != 0) {
-		(void) fprintf(stdout, "%ld\n", pid);
+		(void) fprintf(stdout, "%ld\n", (long)pid);
 		exit(0);
 	}
 

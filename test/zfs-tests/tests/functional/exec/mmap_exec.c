@@ -35,7 +35,9 @@
 #include <sys/mman.h>
 #include <errno.h>
 
+#ifndef _LINUX
 extern int errno;
+#endif
 
 int
 main(int argc, char *argv[])

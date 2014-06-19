@@ -39,6 +39,9 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <libgen.h>
+#ifdef _LINUX
+#include <string.h>
+#endif
 
 #define	ST_ATIME 0
 #define	ST_CTIME 1
@@ -54,7 +57,9 @@ typedef struct timetest {
 
 static char tfile[BUFSIZ] = { 0 };
 
+#ifndef _LINUX
 extern int errno;
+#endif
 
 /*
  * DESCRIPTION:
@@ -109,7 +114,7 @@ do_read(const char *pfile)
 		return (-1);
 	}
 	if (read(fd, buf, sizeof (buf)) == -1) {
-		(void) fprintf(stderr, "read(%d, buf, %d) failed with errno "
+		(void) fprintf(stderr, "read(%d, buf, %ld) failed with errno "
 		    "%d\n", fd, sizeof (buf), errno);
 		return (1);
 	}
@@ -133,7 +138,11 @@ do_write(const char *pfile)
 	}
 	if (write(fd, buf, strlen(buf)) == -1) {
 		(void) fprintf(stderr, "write(%d, buf, %d) failed with errno "
+#ifdef _LINUX
+		    "%d\n", fd, (int)strlen(buf), errno);
+#else
 		    "%d\n", fd, strlen(buf), errno);
+#endif
 		return (1);
 	}
 	(void) close(fd);
@@ -162,13 +171,17 @@ do_link(const char *pfile)
 	if (link(pfile, link_file) == -1) {
 		(void) fprintf(stderr, "link(%s, %s) failed with errno %d\n",
 		    pfile, link_file, errno);
+#ifndef _LINUX
 		free((void *)dirname);
+#endif
 		return (1);
-	} else {
-		(void) unlink(link_file);
-		free((void *)dirname);
-		return (ret);
 	}
+
+	(void) unlink(link_file);
+#ifndef _LINUX
+	free((void *)dirname);
+#endif
+	return (ret);
 }
 
 static int

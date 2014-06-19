@@ -68,6 +68,9 @@ main(int argc, char **argv)
 {
 	int fd;
 	char buf[BUFSIZ];
+#ifdef _LINUX
+	pthread_t tid;
+#endif
 
 	if (argc != 2) {
 		(void) printf("usage: %s <file name>\n", argv[0]);
@@ -79,7 +82,12 @@ main(int argc, char **argv)
 		exit(1);
 	}
 
+#ifdef _LINUX
+	(void) pthread_setconcurrency(2);
+	if (pthread_create(&tid, NULL, mapper, &fd) != 0) {
+#else
 	if (pthread_create(NULL, NULL, mapper, &fd) != 0) {
+#endif
 		perror("pthread_create");
 		exit(1);
 	}

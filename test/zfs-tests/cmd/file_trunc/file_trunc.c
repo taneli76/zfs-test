@@ -45,6 +45,11 @@
 #include <sys/param.h>
 #include <string.h>
 
+#ifdef _LINUX
+#include <time.h>
+#include <inttypes.h>
+#endif
+
 #define	FSIZE	256*1024*1024
 #define	BSIZE	512
 
@@ -212,14 +217,24 @@ do_write(int fd)
 	}
 	if (vflag) {
 		(void) fprintf(stderr,
+#ifdef _LINUX
+		    "Wrote to offset %" PRId64 "\n", (offset + roffset));
+#else
 		    "Wrote to offset %lld\n", (offset + roffset));
+#endif
 		if (rflag) {
 			(void) fprintf(stderr,
+#ifdef _LINUX
+			    "Read back from offset %" PRId64 "\n", (offset + roffset));
+#else
 			    "Read back from offset %lld\n", (offset + roffset));
+#endif
 		}
 	}
 
+#ifndef _LINUX
 	(void) free(buf);
+#endif
 	(void) free(rbuf);
 }
 
@@ -236,7 +251,11 @@ do_trunc(int fd)
 
 	if (vflag) {
 		(void) fprintf(stderr,
+#ifdef _LINUX
+		    "Truncated at offset %" PRId64 "\n",
+#else
 		    "Truncated at offset %lld\n",
+#endif
 		    (offset + roffset));
 	}
 }

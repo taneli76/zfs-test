@@ -27,6 +27,19 @@
 #include "../file_common.h"
 #include <libgen.h>
 
+#ifdef _LINUX
+#include <string.h>
+#include <inttypes.h>
+#include <sys/types.h>
+#include <unistd.h>
+
+extern const char *getexecname(void);
+
+typedef unsigned char   uchar_t;
+typedef long long       longlong_t;
+typedef longlong_t      offset_t;
+#endif
+
 static unsigned char bigbuffer[BIGBUFFERSIZE];
 
 /*
@@ -170,7 +183,11 @@ main(int argc, char **argv)
 		    strerror(errno), errno);
 		exit(errno);
 	}
+#ifdef _LINUX
+	noffset = lseek64(bigfd, offset, SEEK_SET);
+#else
 	noffset = llseek(bigfd, offset, SEEK_SET);
+#endif
 	if (noffset != offset) {
 		(void) printf("llseek %s (%lld/%lld) failed [%s]%d.Aborting!\n",
 		    filename, offset, noffset, strerror(errno), errno);
@@ -189,8 +206,14 @@ main(int argc, char **argv)
 		ssize_t n;
 
 		if ((n = write(bigfd, &bigbuffer, block_size)) == -1) {
+#ifdef _LINUX
+			(void) printf("write failed (%ld), good_writes = %" PRId64 ", "
+			    "error: %s[%d]\n",
+#else
 			(void) printf("write failed (%ld), good_writes = %lld, "
-			    "error: %s[%d]\n", (long)n, good_writes,
+			    "error: %s[%d]\n",
+#endif
+			    (long)n, good_writes,
 			    strerror(errno),
 			    errno);
 			exit(errno);
@@ -199,7 +222,11 @@ main(int argc, char **argv)
 	}
 
 	if (verbose) {
+#ifdef _LINUX
+		(void) printf("Success: good_writes = %" PRId64 "(%" PRId64 ")\n",
+#else
 		(void) printf("Success: good_writes = %lld (%lld)\n",
+#endif
 		    good_writes, (good_writes * block_size));
 	}
 

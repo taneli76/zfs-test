@@ -39,7 +39,12 @@
 #include <stdio.h>
 #include <fcntl.h>
 #include <pthread.h>
+#ifdef _LINUX
+#include <string.h>
+#include <libspl/thread.h>
+#else
 #include <thread.h>
+#endif
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -47,11 +52,17 @@
 #include <unistd.h>
 #include <strings.h>
 
+#ifdef _LINUX
+#ifndef HAVE_THR_SETCONCURRENCY
+#define thr_setconcurrency(A) pthread_setconcurrency(A)
+#endif
+#endif
+
 static const int TRUE = 1;
 static char *filebase;
 
 static int
-pickidx()
+pickidx(void)
 {
 	return (random() % 1000);
 }

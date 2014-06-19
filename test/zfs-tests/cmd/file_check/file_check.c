@@ -26,6 +26,10 @@
 
 #include "../file_common.h"
 
+#ifdef _LINUX
+typedef unsigned char   uchar_t;
+#endif
+
 static unsigned char bigbuffer[BIGBUFFERSIZE];
 
 /*

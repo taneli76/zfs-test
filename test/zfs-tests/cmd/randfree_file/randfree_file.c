@@ -30,6 +30,11 @@
 
 #include "../file_common.h"
 
+#ifdef _LINUX
+/* Defined in <spl_repo>/spl/include/sys/{vnode,fcntl}.h */
+#define F_FREESP        11	/* Free file space */
+#endif
+
 /*
  * Create a file with assigned size and then free the specified
  * section of the file

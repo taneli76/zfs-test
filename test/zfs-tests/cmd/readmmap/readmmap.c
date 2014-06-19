@@ -45,6 +45,10 @@
 #include <errno.h>
 #include <sys/mman.h>
 
+#ifdef _LINUX
+#include <time.h>
+#endif
+
 int
 main(int argc, char **argv)
 {
@@ -80,7 +84,11 @@ main(int argc, char **argv)
 
 	bytes = write(fd, buf, size);
 	if (bytes != size) {
+#ifdef _LINUX
+		(void) printf("short write: %d != %lu\n", bytes, size);
+#else
 		(void) printf("short write: %d != %ud\n", bytes, size);
+#endif
 		retval = 1;
 		goto end;
 	}
@@ -111,20 +119,32 @@ main(int argc, char **argv)
 
 	bytes = pread(fd, buf, size, 0);
 	if (bytes != size) {
+#ifdef _LINUX
+		(void) printf("short read: %d != %lu\n", bytes, size);
+#else
 		(void) printf("short read: %d != %ud\n", bytes, size);
+#endif
 		retval = 1;
 		goto end;
 	}
 
 	if (buf[idx] != 1) {
 		(void) printf(
+#ifdef _LINUX
+		    "bad data from read!  got buf[%lu]=%d, expected 1\n",
+#else
 		    "bad data from read!  got buf[%ud]=%d, expected 1\n",
+#endif
 		    idx, buf[idx]);
 		retval = 1;
 		goto end;
 	}
 
+#ifdef _LINUX
+	(void) printf("good data from read: buf[%lu]=1\n", idx);
+#else
 	(void) printf("good data from read: buf[%ud]=1\n", idx);
+#endif
 end:
 	if (fd != -1) {
 		(void) close(fd);

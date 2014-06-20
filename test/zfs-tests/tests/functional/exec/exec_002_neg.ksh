@@ -80,6 +80,9 @@ log_must $CP $LS $TESTDIR/myls
 log_must $ZFS set exec=off $TESTPOOL/$TESTFS
 
 log_must exec_n_check 126 $TESTDIR/myls
-log_must exec_n_check 13 $MMAP_EXEC $TESTDIR/myls
+
+typedef -i expected_ret=13
+[[ -n "$LINUX" ]] && expected_ret=22
+log_must exec_n_check $expected_ret $MMAP_EXEC $TESTDIR/myls
 
 log_pass "Setting exec=off on filesystem testing passed."

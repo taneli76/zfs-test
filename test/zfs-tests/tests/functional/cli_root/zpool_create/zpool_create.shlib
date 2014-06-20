@@ -77,7 +77,7 @@ function create_blockfile
 	if [[ $disk == "/"* ]]; then
 		$ECHO "y" | $NEWFS $disk >/dev/null 2>&1
 	else
-		$ECHO "y" | $NEWFS /dev/rdsk/$disk >/dev/null 2>&1
+		$ECHO "y" | $NEWFS $DEV_RDSKDIR/$disk >/dev/null 2>&1
 	fi
 	(( $? != 0 )) &&
 		log_fail "Create $NEWFS_DEFAULT_FS file system fail."
@@ -85,7 +85,7 @@ function create_blockfile
 	if [[ $disk == "/"* ]]; then
 	        log_must $MOUNT $disk $dir
 	else
-	        log_must $MOUNT /dev/rdsk/$disk $dir
+	        log_must $MOUNT $DEV_RDSKDIR/$disk $dir
 	fi
         log_must $MKFILE -s $size $file
 }

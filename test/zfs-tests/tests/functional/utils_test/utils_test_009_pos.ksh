@@ -55,6 +55,6 @@ log_assert "Ensure that the tunefs(1M) utility fails on a ZFS file system."
 
 populate_dir $NUM_FILES
 
-log_mustnot $TUNEFS -m 80 /dev/dsk/${DISK}s0
+log_mustnot $TUNEFS -m 80 $DEV_DSKDIR/${DISK}s0
 
 log_pass "tunefs(1M) returned an error as expected."

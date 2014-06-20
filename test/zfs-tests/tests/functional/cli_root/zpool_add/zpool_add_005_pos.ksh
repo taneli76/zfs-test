@@ -77,8 +77,8 @@ log_mustnot $ZPOOL add -f "$TESTPOOL" $mnttab_dev
 
 log_mustnot $ZPOOL add -f "$TESTPOOL" $vfstab_dev
 
-log_must $ECHO "y" | $NEWFS /dev/dsk/$dump_dev > /dev/null 2>&1
-log_must $DUMPADM -u -d /dev/dsk/$dump_dev > /dev/null
+log_must $ECHO "y" | $NEWFS $DEV_DSKDIR/$dump_dev > /dev/null 2>&1
+log_must $DUMPADM -u -d $DEV_DSKDIR/$dump_dev > /dev/null
 log_mustnot $ZPOOL add -f "$TESTPOOL" $dump_dev
 
 log_pass "'zpool add' should fail with inapplicable scenarios."

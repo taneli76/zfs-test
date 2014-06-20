@@ -77,7 +77,7 @@ $MKDIR -p $NONZFS_TESTDIR || log_unresolved Could not create $NONZFS_TESTDIR
 if [[ -n "$LINUX" ]]; then
 	$NEWFS $NONZFSSIDE_DISK >/dev/null 2>&1
 else
-	$ECHO "y" | $NEWFS -v /dev/rdsk/$NONZFSSIDE_DISK
+	$ECHO "y" | $NEWFS -v $DEV_RDSKDIR/$NONZFSSIDE_DISK
 fi
 (( $? != 0 )) &&
 	log_untested "Unable to setup a $NEWFS_DEFAULT_FS file system"
@@ -85,7 +85,7 @@ fi
 if [[ -n "$LINUX" ]]; then
 	log_must $MOUNT $NONZFSSIDE_DISK $NONZFS_TESTDIR
 else
-	log_must $MOUNT /dev/dsk/$NONZFSSIDE_DISK $NONZFS_TESTDIR
+	log_must $MOUNT $DEV_DSKDIR/$NONZFSSIDE_DISK $NONZFS_TESTDIR
 fi
 
 log_pass

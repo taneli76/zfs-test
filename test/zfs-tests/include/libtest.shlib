@@ -716,8 +716,8 @@ function get_endslice #<disk> <slice>
 		log_fail "The disk name or slice number is unspecified."
 	fi
 
-	disk=${disk#/dev/dsk/}
-	disk=${disk#/dev/rdsk/}
+	disk=${disk#$DEV_DSKDIR/}
+	disk=${disk#$DEV_RDSKDIR/}
 	disk=${disk%s*}
 
 	if [[ -n "$LINUX" ]]; then
@@ -728,7 +728,7 @@ function get_endslice #<disk> <slice>
 			$SED 's,MB,,')
 	else
 		typeset -i ratio=0
-		ratio=$($PRTVTOC /dev/rdsk/${disk}s2 | \
+		ratio=$($PRTVTOC $DEV_RDSKDIR/${disk}s2 | \
 			$GREP "sectors\/cylinder" | \
 			$AWK '{print $2}')
 
@@ -736,7 +736,7 @@ function get_endslice #<disk> <slice>
 			return
 		fi
 
-		typeset -i endcyl=$($PRTVTOC -h /dev/rdsk/${disk}s2 |
+		typeset -i endcyl=$($PRTVTOC -h $DEV_RDSKDIR/${disk}s2 |
 			$NAWK -v token="$slice" '{if ($1==token) print $6}')
 
 		((endcyl = (endcyl + 1) / ratio))
@@ -1354,7 +1354,7 @@ function reexport_pool
 function check_state # pool disk state{online,offline}
 {
 	typeset pool=$1
-	typeset disk=${2#/dev/dsk/}
+	typeset disk=${2#$DEV_DSKDIR/}
 	typeset state=$3
 
 	$ZPOOL status -v $pool | grep "$disk"  \
@@ -1493,7 +1493,7 @@ function stress_timeout
 function check_hotspare_state # pool disk state{inuse,avail}
 {
 	typeset pool=$1
-	typeset disk=${2#/dev/dsk/}
+	typeset disk=${2#$DEV_DSKDIR/}
 	typeset state=$3
 
 	cur_state=$(get_device_state $pool $disk "spares")
@@ -1512,7 +1512,7 @@ function check_hotspare_state # pool disk state{inuse,avail}
 function check_slog_state # pool disk state{online,offline,unavail}
 {
 	typeset pool=$1
-	typeset disk=${2#/dev/dsk/}
+	typeset disk=${2#$DEV_DSKDIR/}
 	typeset state=$3
 
 	cur_state=$(get_device_state $pool $disk "logs")
@@ -1531,7 +1531,7 @@ function check_slog_state # pool disk state{online,offline,unavail}
 function check_vdev_state # pool disk state{online,offline,unavail}
 {
 	typeset pool=$1
-	typeset disk=${2#/dev/dsk/}
+	typeset disk=${2#$DEV_DSKDIR/}
 	typeset state=$3
 
 	cur_state=$(get_device_state $pool $disk)
@@ -1850,7 +1850,7 @@ EOF
 # each case. limit the number to max_finddisksnum
 	count=0
 	for disk in $unused_candidates; do
-		if [ -b /dev/dsk/${disk}s0 ]; then
+		if [ -b $DEV_DSKDIR/${disk}s0 ]; then
 		if [ $count -lt $max_finddisksnum ]; then
 			unused="$unused $disk"
 			# do not impose limit if $@ is provided
@@ -2434,7 +2434,7 @@ function checksum
 function get_device_state #pool disk field("", "spares","logs")
 {
 	typeset pool=$1
-	typeset disk=${2#/dev/dsk/}
+	typeset disk=${2#$DEV_DSKDIR/}
 	typeset field=${3:-$pool}
 
 	state=$($ZPOOL status -v "$pool" 2>/dev/null | \
@@ -2594,8 +2594,8 @@ function is_physical_device #device
 
 	    $ECHO $device | $EGREP "^[sh]d+[a-z]+[0-9]+$" > /dev/null 2>&1
 	else
-	    typeset device=${1#/dev/dsk/}
-	    device=${device#/dev/rdsk/}
+	    typeset device=${1#$DEV_DSKDIR/}
+	    device=${device#$DEV_RDSKDIR/}
 
 	    $ECHO $device | $EGREP "^c[0-F]+([td][0-F]+)+$" > /dev/null 2>&1
 	fi

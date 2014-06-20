@@ -58,6 +58,6 @@ inode_num=`$LS -li $TESTDIR/$TESTFILE.0 | $AWK '{print $1}'`
 [[ -z $inode_num ]] && \
     log_fail "Failed to determine inode of file: $TESTDIR/$TESTFILE.0"
 
-log_mustnot $ECHO ":inode $inode_num" | $FSDB /dev/rdsk/${DISK}s0
+log_mustnot $ECHO ":inode $inode_num" | $FSDB $DEV_RDSKDIR/${DISK}s0
 
 log_pass "fsdb(1M) returned an error as expected."

@@ -57,20 +57,20 @@ set -A keywords "" "mirror" "raidz" "raidz1" "spare"
 case $DISK_ARRAY_NUM in
 0|1)
         pooldevs="${disk}s${SLICE0} \
-                  /dev/dsk/${disk}s${SLICE0} \
+                  $DEV_DSKDIR/${disk}s${SLICE0} \
                   \"${disk}s${SLICE0} ${disk}s${SLICE1}\""
-        mirrordevs="\"/dev/dsk/${disk}s${SLICE0} ${disk}s${SLICE1}\""
-        raidzdevs="\"/dev/dsk/${disk}s${SLICE0} ${disk}s${SLICE1}\""
+        mirrordevs="\"$DEV_DSKDIR/${disk}s${SLICE0} ${disk}s${SLICE1}\""
+        raidzdevs="\"$DEV_DSKDIR/${disk}s${SLICE0} ${disk}s${SLICE1}\""
 
         ;;
 2|*)
         pooldevs="${DISK0}s${SLICE0}\
-                 \"/dev/dsk/${DISK0}s${SLICE0} ${DISK1}s${SLICE0}\" \
+                 \"$DEV_DSKDIR/${DISK0}s${SLICE0} ${DISK1}s${SLICE0}\" \
                  \"${DISK0}s${SLICE0} ${DISK0}s${SLICE1} ${DISK1}s${SLICE1}\"\
                  \"${DISK0}s${SLICE0} ${DISK1}s${SLICE0} ${DISK0}s${SLICE1}\
                    ${DISK1}s${SLICE1}\""
-        mirrordevs="\"/dev/dsk/${DISK0}s${SLICE0} ${DISK1}s${SLICE0}\""
-        raidzdevs="\"/dev/dsk/${DISK0}s${SLICE0} ${DISK1}s${SLICE0}\""
+        mirrordevs="\"$DEV_DSKDIR/${DISK0}s${SLICE0} ${DISK1}s${SLICE0}\""
+        raidzdevs="\"$DEV_DSKDIR/${DISK0}s${SLICE0} ${DISK1}s${SLICE0}\""
 
         ;;
 esac

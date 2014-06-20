@@ -61,7 +61,7 @@ function create_dev_file
 						$AWK '{print $1}')
 					[[ -z $devstr ]] && \
 						log_fail "Can not get block device file."
-					devstr=/dev/dsk/${devstr}
+					devstr=$DEV_DSKDIR/${devstr}
 					;;
 				ufs)
 			#
@@ -88,7 +88,7 @@ function create_dev_file
 
 			#
 			# Get the device file information. i.e:
-			# /dev/dsk/c0t0d0s0:      block special (28/768)
+			# $DEV_DSKDIR/c0t0d0s0:      block special (28/768)
 			#
 			devstr=$($FILE $devstr)
 

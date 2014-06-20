@@ -64,9 +64,9 @@ log_must $ZFS unmount $TESTDIR
 if ! $(is_physical_device $DISK); then
 	log_must $FSTYP $DISK
 elif [[ $WRAPPER == "smi" ]]; then
-	log_must $FSTYP /dev/rdsk/${DISK}s2
+	log_must $FSTYP $DEV_RDSKDIR/${DISK}s2
 else
-	log_must $FSTYP /dev/rdsk/${DISK}s0
+	log_must $FSTYP $DEV_RDSKDIR/${DISK}s0
 fi
 
 log_pass "fstyp(1M) returned successfully."

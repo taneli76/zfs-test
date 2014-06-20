@@ -56,7 +56,7 @@ log_assert "Ensure that the clri(1M) utility fails on a ZFS file system."
 populate_dir $NUM_FILES
 
 inode=`$LS -i $TESTDIR/$TESTFILE.0 | $AWK '{print $1}'`
-log_mustnot $CLRI /dev/rdsk/$DISK $inode
-log_mustnot $CLRI -F zfs /dev/rdsk/$DISK $inode
+log_mustnot $CLRI $DEV_RDSKDIR/$DISK $inode
+log_mustnot $CLRI -F zfs $DEV_RDSKDIR/$DISK $inode
 
 log_pass "clri(1M) returned an error as expected."

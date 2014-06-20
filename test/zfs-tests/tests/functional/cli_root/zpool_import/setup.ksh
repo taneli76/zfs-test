@@ -61,8 +61,8 @@ if [[ -n "$LINUX" ]]; then
 	ZFSSIDE_DISK1="/dev/mapper/$loop"p1
 	ZFSSIDE_DISK2="/dev/mapper/$loop"p2
 else
-	typeset rdsk=/dev/rdsk/
-	typeset dsk=/dev/dsk/
+	typeset rdsk=$DEV_RDSKDIR/
+	typeset dsk=$DEV_DSKDIR/
 fi
 
 create_pool "$TESTPOOL" "$ZFSSIDE_DISK1"

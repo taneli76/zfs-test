@@ -49,7 +49,7 @@ function overwrite_verify_mirror
 	done
 
 	# dd the affected side of the mirror
-	log_must $DD if=$OVERWRITING_DEVICE of=/dev/dsk/$AFFECTED_DEVICE \
+	log_must $DD if=$OVERWRITING_DEVICE of=$DEV_DSKDIR/$AFFECTED_DEVICE \
 		seek=8 bs=$DD_BLOCK count=$(( DD_COUNT - 8 )) conv=notrunc
 
 	log_must $ZPOOL scrub $POOL

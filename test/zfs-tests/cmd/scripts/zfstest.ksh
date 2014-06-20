@@ -95,7 +95,7 @@ function verify_disks
 
 	typeset disk
 	for disk in $DISKS; do
-		sudo $PRTVTOC /dev/rdsk/${disk}s0 >/dev/null 2>&1
+		sudo $PRTVTOC $DEV_RDSKDIR/${disk}s0 >/dev/null 2>&1
 		[[ $? -eq 0 ]] || return 1
 	done
 	return 0

@@ -80,10 +80,10 @@ case $DISK_ARRAY_NUM in
         create_blockfile $FILESIZE $TESTDIR1/$FILEDISK1 ${disk}s${SLICE6}
 
 	pooldevs="${disk}s${SLICE0} \
-                  /dev/dsk/${disk}s${SLICE0} \
+                  $DEV_DSKDIR/${disk}s${SLICE0} \
                   \"${disk}s${SLICE0} ${disk}s${SLICE1}\" \
                   $TESTDIR0/$FILEDISK0"
-	raidzdevs="\"/dev/dsk/${disk}s${SLICE0} ${disk}s${SLICE1}\" \
+	raidzdevs="\"$DEV_DSKDIR/${disk}s${SLICE0} ${disk}s${SLICE1}\" \
                    \"${disk}s${SLICE0} ${disk}s${SLICE1} ${disk}s${SLICE3}\" \
                    \"${disk}s${SLICE0} ${disk}s${SLICE1} ${disk}s${SLICE3} \
                      ${disk}s${SLICE4}\"\
@@ -95,12 +95,12 @@ case $DISK_ARRAY_NUM in
         create_blockfile $FILESIZE $TESTDIR1/$FILEDISK1 ${DISK1}s${SLICE5}
 
 	pooldevs="${DISK0}s${SLICE0}\
-                 \"/dev/dsk/${DISK0}s${SLICE0} ${DISK1}s${SLICE0}\" \
+                 \"$DEV_DSKDIR/${DISK0}s${SLICE0} ${DISK1}s${SLICE0}\" \
                  \"${DISK0}s${SLICE0} ${DISK0}s${SLICE1} ${DISK1}s${SLICE1}\"\
                  \"${DISK0}s${SLICE0} ${DISK1}s${SLICE0} ${DISK0}s${SLICE1}\
                    ${DISK1}s${SLICE1}\" \
                  \"$TESTDIR0/$FILEDISK0 $TESTDIR1/$FILEDISK1\""
-	raidzdevs="\"/dev/dsk/${DISK0}s${SLICE0} ${DISK1}s${SLICE0}\" \
+	raidzdevs="\"$DEV_DSKDIR/${DISK0}s${SLICE0} ${DISK1}s${SLICE0}\" \
                  \"${DISK0}s${SLICE0} ${DISK0}s${SLICE1} ${DISK1}s${SLICE1}\"\
                  \"${DISK0}s${SLICE0} ${DISK1}s${SLICE0} ${DISK0}s${SLICE1}\
                    ${DISK1}s${SLICE1}\" \

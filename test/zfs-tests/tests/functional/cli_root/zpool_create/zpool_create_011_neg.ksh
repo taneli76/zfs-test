@@ -119,7 +119,7 @@ log_must $ZPOOL destroy -f $TESTPOOL
 log_must $ZPOOL create -f $TESTPOOL3 $disk
 log_must $ZPOOL destroy -f $TESTPOOL3
 
-log_must $DUMPADM -d /dev/dsk/$specified_dump_dev
+log_must $DUMPADM -d $DEV_DSKDIR/$specified_dump_dev
 log_mustnot $ZPOOL create -f $TESTPOOL1 "$specified_dump_dev"
 
 # Also check to see that in-use checking prevents us from creating

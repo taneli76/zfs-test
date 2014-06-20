@@ -61,6 +61,6 @@ populate_dir $NUM_FILES
 
 log_must $ZFS unmount $TESTDIR
 
-log_mustnot $FSIRAND /dev/rdsk/${DISK}s0
+log_mustnot $FSIRAND $DEV_RDSKDIR/${DISK}s0
 
 log_pass "fsirand(1M) returned an error as expected."

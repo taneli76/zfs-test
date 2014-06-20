@@ -76,7 +76,7 @@ else
 	disk=$DISK0
 fi
 create_pool "$TESTPOOL" "${disk}s${SLICE0}"
-log_must $ECHO "y" | $NEWFS /dev/rdsk/${disk}s${SLICE1} >/dev/null 2>&1
+log_must $ECHO "y" | $NEWFS $DEV_RDSKDIR/${disk}s${SLICE1} >/dev/null 2>&1
 create_blockfile $FILESIZE $TESTDIR0/$FILEDISK0 ${disk}s${SLICE4}
 create_blockfile $FILESIZE1 $TESTDIR1/$FILEDISK1 ${disk}s${SLICE5}
 log_must $MKFILE -s $SIZE /var/tmp/$FILEDISK0

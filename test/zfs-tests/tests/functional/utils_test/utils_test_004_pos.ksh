@@ -55,6 +55,6 @@ log_assert "Ensure that the quotaon(1M) utility fails on a ZFS file system."
 
 log_must $ZFS set quota=1099511627776 $TESTPOOL/$TESTFS
 log_must $TOUCH $TESTDIR/quotas
-log_mustnot $QUOTAON /dev/dsk/${DISK}s0
+log_mustnot $QUOTAON $DEV_DSKDIR/${DISK}s0
 
 log_pass "quotaon(1M) returned an error as expected."

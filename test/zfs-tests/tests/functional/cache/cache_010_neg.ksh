@@ -60,7 +60,7 @@ dsk1=${DISKS%% *}
 log_must $ZPOOL create $TESTPOOL ${DISKS#$dsk1}
 
 # Add nomal /dev/rdsk device
-log_mustnot $ZPOOL add $TESTPOOL cache /dev/rdsk/${dsk1}s0
+log_mustnot $ZPOOL add $TESTPOOL cache $DEV_RDSKDIR/${dsk1}s0
 #log_must verify_cache_device $TESTPOOL $dsk1 'ONLINE'
 
 # Add nomal file

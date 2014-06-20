@@ -55,6 +55,6 @@ log_assert "Ensure that the ff(1M) utility fails on a ZFS file system."
 
 populate_dir $NUM_FILES
 
-log_mustnot $FF -F zfs /dev/rdsk/${DISK}s0
+log_mustnot $FF -F zfs $DEV_RDSKDIR/${DISK}s0
 
 log_pass "ff(1M) returned an error as expected."

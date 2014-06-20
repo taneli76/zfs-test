@@ -59,7 +59,7 @@ function cleanup
 
 	$METADB | $GREP $mddb_dev > /dev/null 2>&1
 	if [[ $? -eq 0 ]]; then
-		$METADB -df /dev/dsk/$mddb_dev
+		$METADB -df $DEV_DSKDIR/$mddb_dev
 	fi
 
 	if poolexists $TESTPOOL; then

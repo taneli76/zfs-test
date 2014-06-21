@@ -1,4 +1,5 @@
-#!/usr/bin/bash -p
+#!/usr/bin/env bash
+set -p
 #
 # CDDL HEADER START
 #

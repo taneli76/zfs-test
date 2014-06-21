@@ -44,10 +44,13 @@
 
 verify_runnable "both"
 
+typeset devopt
+[[ -n "$LINUX" ]] && devopt="-d $TEST_BASE_DIR"
+
 function cleanup
 {
 	poolexists $TESTPOOL && log_must $ZPOOL export $TESTPOOL
-	log_must $ZPOOL import $TESTPOOL
+	log_must $ZPOOL import $devopt $TESTPOOL
 
 	datasetexists $TESTPOOL@snap && \
 	    log_must $ZFS destroy -r $TESTPOOL@snap
@@ -59,7 +62,7 @@ log_onexit cleanup
 log_must $ZFS snapshot -r $TESTPOOL@snap
 
 log_must $ZPOOL export $TESTPOOL
-log_must $ZPOOL import -o readonly=on $TESTPOOL
+log_must $ZPOOL import $devopt -o readonly=on $TESTPOOL
 
 log_must eval "$ZFS send -R $TESTPOOL@snap >/dev/null"
 

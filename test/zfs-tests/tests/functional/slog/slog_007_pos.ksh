@@ -75,6 +75,8 @@ do
 			log_must verify_slog_device \
 				$TESTPOOL $ldev 'ONLINE' $logtype
 
+			[[ -n "$LINUX" ]] && sleep 1
+
 			#
 			# Destroy the pool and import again
 			#
@@ -85,6 +87,7 @@ do
 			log_must verify_slog_device \
 				$TESTPOOL $ldev 'ONLINE' $logtype
 
+			[[ -n "$LINUX" ]] && sleep 1
 			log_must $ZPOOL destroy -f $TESTPOOL
 		done
 	done

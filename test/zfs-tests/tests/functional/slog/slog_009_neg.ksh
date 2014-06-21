@@ -61,6 +61,7 @@ do
 			log_mustnot verify_slog_device \
 				$TESTPOOL $ldev 'ONLINE' $logtype
 
+			[[ -n "$LINUX" ]] && sleep 1
 			log_must $ZPOOL destroy $TESTPOOL
 		done
 	done

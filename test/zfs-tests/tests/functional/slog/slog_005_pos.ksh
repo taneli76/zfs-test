@@ -58,6 +58,7 @@ do
 		log_must display_status $TESTPOOL
 		log_mustnot verify_slog_device $TESTPOOL $ldev 'ONLINE' 'mirror'
 
+		[[ -n "$LINUX" ]] && sleep 1
 		log_must $ZPOOL destroy -f $TESTPOOL
 	done
 done

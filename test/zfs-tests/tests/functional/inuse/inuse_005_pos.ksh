@@ -118,11 +118,15 @@ while (( i < ${#vdevs[*]} )); do
 
 				# Override variable
 				vslices="$vslices /dev/mapper/${8##*/}"p1
+
+				sleep 1
 			fi
 		done
 
 		# Override variable
 		sslices="/dev/mapper/$loop0"p2
+
+		sleep 1
 	fi
 
 	create_pool $TESTPOOL1 ${vdevs[i]} $vslices spare $sslices

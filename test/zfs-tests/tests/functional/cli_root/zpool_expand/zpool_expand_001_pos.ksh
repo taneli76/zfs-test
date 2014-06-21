@@ -69,8 +69,9 @@ for i in 1 2 3; do
 	log_must $ZFS create -V $org_size $VFS/vol$i
 done
 
-for type in " " mirror raidz raidz2; do
+[[ -n "$LINUX" ]] && sleep 1
 
+for type in " " mirror raidz raidz2; do
 	log_must $ZPOOL create -o autoexpand=on $TESTPOOL1 $type \
 	    $ZVOL_DEVDIR/$VFS/vol1  $ZVOL_DEVDIR/$VFS/vol2 \
 	    $ZVOL_DEVDIR/$VFS/vol3

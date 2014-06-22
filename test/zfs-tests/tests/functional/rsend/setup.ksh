@@ -46,7 +46,7 @@ if is_global_zone ; then
 	log_must $ZPOOL create $POOL $DISK1
 	log_must $ZPOOL create $POOL2 $DISK2
 fi
-log_must $MKDIR $BACKDIR $TESTDIR
+log_must $MKDIR -p $BACKDIR $TESTDIR
 
 log_must setup_test_model $POOL
 

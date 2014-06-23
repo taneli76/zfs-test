@@ -55,7 +55,8 @@ do
 		# Corrupt a pool device to make the pool DEGRADED
 		$DD if=/dev/urandom of=/$TESTPOOL/filler bs=1024k count=20
 		# The oseek value below is to skip past the vdev label.
-		log_must $DD if=/dev/urandom of=$VDIR/a bs=1024k oseek=4 \
+		typeset seek="oseek" ; [[ -n "$LINUX" ]] && seek="seek"
+		log_must eval $DD if=/dev/urandom of=$VDIR/a bs=1024k $seek=4 \
 		    conv=notrunc count=50
 		log_must $ZPOOL scrub $TESTPOOL
 		log_must display_status $TESTPOOL

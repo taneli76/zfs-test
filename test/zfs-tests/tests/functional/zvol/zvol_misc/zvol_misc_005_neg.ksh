@@ -46,9 +46,17 @@ verify_runnable "global"
 
 function cleanup
 {
-	$SWAP -l | $GREP $voldev > /dev/null 2>&1
+	if [[ -n "$LINUX" ]]; then
+		$SWAP -s | $GREP $voldev > /dev/null 2>&1
+	else
+		$SWAP -l | $GREP $voldev > /dev/null 2>&1
+	fi
 	if (( $? == 0 )) ; then
-		log_must $SWAP -d $voldev
+		if [[ -n "$LINUX" ]]; then
+			log_must swapoff $voldev
+		else
+			log_must $SWAP -d $voldev
+		fi
 	fi
 
 	typeset dumpdev=$(get_dumpdevice)
@@ -64,12 +72,26 @@ voldev=$ZVOL_DEVDIR/$TESTPOOL/$TESTVOL
 savedumpdev=$(get_dumpdevice)
 
 # If device in swap list, it cannot be dump device
-log_must $SWAP -a $voldev
+if [[ -n "$LINUX" ]]; then
+	log_must mkswap $voldev
+	log_must $SWAP $voldev
+else
+	log_must $SWAP -a $voldev
+fi
 log_mustnot $DUMPADM -d $voldev
-log_must $SWAP -d $voldev
+if [[ -n "$LINUX" ]]; then
+	log_must swapoff $voldev
+else
+	log_must $SWAP -d $voldev
+fi
 
 # If device has dedicated as dump device, it cannot add into swap list
 safe_dumpadm $voldev
-log_mustnot $SWAP -a $voldev
+if [[ -n "$LINUX" ]]; then
+	log_mustnot mkswap $voldev
+	log_mustnot $SWAP $voldev
+else
+	log_mustnot $SWAP -a $voldev
+fi
 
 log_pass "A device cannot be dump and swap at the same time."

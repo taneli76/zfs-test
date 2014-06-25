@@ -57,7 +57,11 @@ function cleanup
 	log_must $SWAPADD $VFSTAB_FILE
 
         if is_swap_inuse $voldev ; then
-		log_must $SWAP -d $voldev
+		if [[ -n "$LINUX" ]]; then
+			log_must swapoff $voldev
+		else
+			log_must $SWAP -d $voldev
+		fi
 	fi
 
 }

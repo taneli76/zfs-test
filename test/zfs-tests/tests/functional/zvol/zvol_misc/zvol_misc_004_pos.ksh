@@ -51,9 +51,17 @@ function cleanup
 		safe_dumpadm $savedumpdev
 	fi
 
-	$SWAP -l | $GREP -w $voldev > /dev/null 2>&1
+	if [[ -n "$LINUX" ]]; then
+		$SWAP -s | $GREP -w $voldev > /dev/null 2>&1
+	else
+		$SWAP -l | $GREP -w $voldev > /dev/null 2>&1
+	fi
         if (( $? == 0 ));  then
-		log_must $SWAP -d $voldev
+		if [[ -n "$LINUX" ]]; then
+			log_must swapoff $voldev
+		else
+			log_must $SWAP -d $voldev
+		fi
 	fi
 
 	typeset snap
@@ -98,12 +106,21 @@ log_mustnot is_zvol_dumpified $TESTPOOL/$TESTVOL
 
 # create snapshot over swap zvol
 
-log_must $SWAP -a $voldev
+if [[ -n "$LINUX" ]]; then
+	log_must mkswap $voldev
+	log_must $SWAP $voldev
+else
+	log_must $SWAP -a $voldev
+fi
 log_mustnot is_zvol_dumpified $TESTPOOL/$TESTVOL
 
 verify_snapshot $TESTPOOL/$TESTVOL
 
-log_must $SWAP -d $voldev
+if [[ -n "$LINUX" ]]; then
+	log_must swapoff $voldev
+else
+	log_must $SWAP -d $voldev
+fi
 log_mustnot is_zvol_dumpified $TESTPOOL/$TESTVOL
 
 log_pass "Creating snapshots from dump/swap zvols succeeds."

@@ -52,7 +52,11 @@ function cleanup
 	if [[ $? -eq 0 ]]; then
 		$SWAP -l | $GREP /dev/md/dsk/$md_name > /dev/null 2>&1
 		if [[ $? -eq 0 ]]; then
-			$SWAP -d /dev/md/dsk/$md_name
+			if [[ -n "$LINUX" ]]; then
+				swapoff /dev/md$md_name
+			else
+				$SWAP -d /dev/md/dsk/$md_name
+			fi
 		fi
 		$METACLEAR $md_name
 	fi
@@ -96,7 +100,12 @@ if [[ $? -eq 0 ]]; then
 fi
 
 log_must $METAINIT $md_name 1 1 $md_dev
-log_must $SWAP -a $MD_DSK
+if [[ -n "$LINUX" ]]; then
+	log_must mkswap $MD_DSK
+	log_must $SWAP $MD_DSK
+else
+	log_must $SWAP -a $MD_DSK
+fi
 for opt in "-n" "" "-f"; do
 	log_mustnot $ZPOOL create $opt $TESTPOOL $MD_DSK
 done

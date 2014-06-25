@@ -35,17 +35,26 @@
 
 verify_runnable "global"
 
-log_must $SWAPADD
+[[ -z "$LINUX" ]] && log_must $SWAPADD
 for swapdev in $SAVESWAPDEVS
 do
 	if ! is_swap_inuse $swapdev ; then
-		log_must $SWAP -a $swapdev >/dev/null 2>&1
+		if [[ -n "$LINUX" ]]; then
+			log_must mkswap $swapdev >/dev/null 2>&1
+			log_must $SWAP $swapdev >/dev/null 2>&1
+		else
+			log_must $SWAP -a $swapdev >/dev/null 2>&1
+		fi
 	fi
 done
 
 voldev=$ZVOL_DEVDIR/$TESTPOOL/$TESTVOL
 if is_swap_inuse $voldev ; then
-	log_must $SWAP -d $voldev
+	if [[ -n "$LINUX" ]]; then
+		log_must swapoff $voldev
+	else
+		log_must $SWAP -d $voldev
+	fi
 fi
 
 default_zvol_cleanup

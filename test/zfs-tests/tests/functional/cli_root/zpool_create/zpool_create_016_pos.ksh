@@ -75,7 +75,11 @@ else
 	disk=$DISK0
 fi
 typeset pool_dev=${disk}s${SLICE0}
-typeset swap_disks=$($SWAP -l | $GREP -v "swapfile" | $AWK '{print $1}')
+if [[ -n "$LINUX" ]]; then
+	typeset swap_disks=$($SWAP -s | $GREP -v "swapfile" | $AWK '{print $1}')
+else
+	typeset swap_disks=$($SWAP -l | $GREP -v "swapfile" | $AWK '{print $1}')
+fi
 typeset dump_device=$($DUMPADM | $GREP "Dump device" | $AWK '{print $3}')
 
 log_assert "'zpool create' should success with no device in swap."
@@ -83,7 +87,11 @@ log_onexit cleanup
 
 for sdisk in $swap_disks; do
 	log_note "Executing: swap -d $sdisk"
-	$SWAP -d $sdisk >/dev/null 2>&1;
+	if [[ -n "$LINUX" ]]; then
+		swapoff $sdisk >/dev/null 2>&1;
+	else
+		$SWAP -d $sdisk >/dev/null 2>&1;
+	fi
 	if [[ $? != 0 ]]; then
 		log_untested "Unable to delete swap device $sdisk because of" \
 				"insufficient RAM"

@@ -47,8 +47,14 @@ function cleanup
 		destroy_pool $TESTPOOL
 	fi
 }
-typeset swap_disks=`$SWAP -l | $GREP "c[0-9].*d[0-9].*s[0-9]" | \
-            $AWK '{print $1}'`
+
+if [[ -n "$LINUX" ]]; then
+	typeset swap_disks=`$SWAP -s | $GREP "c[0-9].*d[0-9].*s[0-9]" | \
+	            $AWK '{print $1}'`
+else
+	typeset swap_disks=`$SWAP -l | $GREP "c[0-9].*d[0-9].*s[0-9]" | \
+	            $AWK '{print $1}'`
+fi
 
 log_assert "'zpool create' should fail with disk slice in swap."
 log_onexit cleanup

@@ -51,7 +51,11 @@ function cleanup
 	$RM -rf /tmp/$TESTFILE
 
 	if is_swap_inuse $voldev ; then
-		log_must $SWAP -d $voldev
+		if [[ -n "$LINUX" ]]; then
+			log_must swapoff $voldev
+		else
+			log_must $SWAP -d $voldev
+		fi
 	fi
 }
 
@@ -61,7 +65,12 @@ log_onexit cleanup
 
 voldev=$ZVOL_DEVDIR/$TESTPOOL/$TESTVOL
 log_note "Add zvol volume as swap space"
-log_must $SWAP -a $voldev
+if [[ -n "$LINUX" ]]; then
+	log_must mkswap $voldev
+	log_must $SWAP $voldev
+else
+	log_must $SWAP -a $voldev
+fi
 
 log_note "Create a file under /tmp"
 log_must $FILE_WRITE -o create -f /tmp/$TESTFILE \

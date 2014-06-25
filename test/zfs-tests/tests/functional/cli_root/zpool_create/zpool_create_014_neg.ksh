@@ -48,9 +48,17 @@ verify_runnable "global"
 function cleanup
 {
 	if datasetexists $vol_name; then
-		$SWAP -l | $GREP $TMP_FILE > /dev/null 2>&1
+		if [[ -n "$LINUX" ]]; then
+			$SWAP -s | $GREP $TMP_FILE > /dev/null 2>&1
+		else
+			$SWAP -l | $GREP $TMP_FILE > /dev/null 2>&1
+		fi
 		if [[ $? -eq 0 ]]; then
-			log_must $SWAP -d $TMP_FILE
+			if [[ -n "$LINUX" ]]; then
+				log_must swapoff $TMP_FILE
+			else
+				log_must $SWAP -d $TMP_FILE
+			fi
 		fi
 		$RM -f $TMP_FILE
 		log_must $UMOUNT $mntp
@@ -82,7 +90,12 @@ log_must $ECHO "y" | $NEWFS $ZVOL_DEVDIR/$vol_name > /dev/null 2>&1
 log_must $MOUNT $ZVOL_DEVDIR/$vol_name $mntp
 
 log_must $MKFILE -s 50m $TMP_FILE
-log_must $SWAP -a $TMP_FILE
+if [[ -n "$LINUX" ]]; then
+	log_must mkswap $TMP_FILE
+	log_must $SWAP $TMP_FILE
+else
+	log_must $SWAP -a $TMP_FILE
+fi
 
 for opt in "-n" "" "-f"; do
 	log_mustnot $ZPOOL create $opt $TESTPOOL $TMP_FILE

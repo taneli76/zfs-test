@@ -49,12 +49,16 @@ function cleanup
 {
 	typeset -i i=0
 
-	while ((count > 0)); do
-		log_must $SWAP -d $swapname ${swap_opt[$i]}
+	if [[ -n "$LINUX" ]]; then
+		swapoff $swapname
+	else
+		while ((count > 0)); do
+			log_must $SWAP -d $swapname ${swap_opt[$i]}
 
-		((i += 2))
-		((count -= 1))
-	done
+			((i += 2))
+			((count -= 1))
+		done
+	fi
 }
 
 log_assert "Verify volume can be add as several segments, but overlapping " \
@@ -87,22 +91,36 @@ swapname=$ZVOL_DEVDIR/$vol
 typeset -i i=0 count=0
 
 if is_swap_inuse $swapname ; then
-	log_must $SWAP -d $swapname
+	if [[ -n "$LINUX" ]]; then
+		log_must swapoff $swapname
+	else
+		log_must $SWAP -d $swapname
+	fi
 fi
 
-while ((i < ${#swap_opt[@]})); do
-	log_must $SWAP -a $swapname ${swap_opt[$i]} ${swap_opt[((i+1))]}
+if [[ -n "$LINUX" ]]; then
+	log_must mkswap $swapname
+	log_must $SWAP $swapname
+else
+	while ((i < ${#swap_opt[@]})); do
+		log_must $SWAP -a $swapname ${swap_opt[$i]} ${swap_opt[((i+1))]}
 
-	((i += 2))
-	((count += 1))
-done
+		((i += 2))
+		((count += 1))
+	done
+fi
 
 log_note "Verify overlapping swap volume are not allowed"
-i=0
-while ((i < ${#swap_opt[@]})); do
-	log_mustnot $SWAP -a $swapname ${swap_opt[$i]}
-
-	((i += 2))
-done
+if [[ -n "$LINUX" ]]; then
+	mkswap $swapname
+	$SWAP $swapname
+else
+	i=0
+	while ((i < ${#swap_opt[@]})); do
+		log_mustnot $SWAP -a $swapname ${swap_opt[$i]}
+	
+		((i += 2))
+	done
+fi
 
 log_pass "Verify volume can be added as several segments passed."

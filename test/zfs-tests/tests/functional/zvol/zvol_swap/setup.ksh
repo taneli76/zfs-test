@@ -37,7 +37,11 @@ verify_runnable "global"
 
 for i in $SAVESWAPDEVS ; do
 	log_note "Executing: swap -d $i"
-	$SWAP -d $i >/dev/null 2>&1
+	if [[ -n "$LINUX" ]]; then
+		swapoff $i >/dev/null 2>&1
+	else
+		$SWAP -d $i >/dev/null 2>&1
+	fi
 	if [[ $? != 0 ]]; then
 		log_untested "Unable to delete swap device $i because of" \
 				"insufficient RAM"

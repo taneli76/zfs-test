@@ -48,7 +48,12 @@ log_assert "Using a zvol as swap space, fill /tmp to 80%."
 
 vol=$TESTPOOL/$TESTVOL
 swapdev=$ZVOL_DEVDIR/$vol
-log_must $SWAP -a $swapdev
+if [[ -n "$LINUX" ]]; then
+	log_must mkswap $swapdev
+	log_must $SWAP $swapdev
+else
+	log_must $SWAP -a $swapdev
+fi
 
 # Get 80% of the number of 512 blocks in the zvol
 typeset -i count blks volsize=$(get_prop volsize $vol)
@@ -59,6 +64,10 @@ typeset -i count blks volsize=$(get_prop volsize $vol)
 log_note "Fill 80% of swap"
 log_must $DD if=/dev/urandom of=/tmp/$TESTFILE bs=1048576 count=$count
 log_must $RM -f /tmp/$TESTFILE
-log_must $SWAP -d $swapdev
+if [[ -n "$LINUX" ]]; then
+	log_must swapoff $swapdev
+else
+	log_must $SWAP -d $swapdev
+fi
 
 log_pass "Using a zvol as swap space, fill /tmp to 80%."

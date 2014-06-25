@@ -59,7 +59,12 @@ for vbs in 512 1024 2048 4096 8192 16384 32768 65536 131072; do
 
 		# Create a sparse volume to test larger sizes
 		log_must $ZFS create -s -b $vbs -V $volsize $vol
-		log_must $SWAP -a $swapname
+		if [[ -n "$LINUX" ]]; then
+			log_must mkswap $swapname
+			log_must $SWAP $swapname
+		else
+			log_must $SWAP -a $swapname
+		fi
 
 		if ((mem <= min)); then		# volsize should be 2G
 			new_volsize=$(get_prop volsize $vol)
@@ -75,7 +80,11 @@ for vbs in 512 1024 2048 4096 8192 16384 32768 65536 131072; do
 			    "Unexpected volsize: $new_volsize"
 		fi
 
-		log_must $SWAP -d $swapname
+		if [[ -n "$LINUX" ]]; then
+			log_must swapoff $swapname
+		else
+			log_must $SWAP -d $swapname
+		fi
 		log_must $ZFS destroy $vol
 	done
 done

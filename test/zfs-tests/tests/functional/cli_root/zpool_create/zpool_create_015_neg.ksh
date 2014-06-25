@@ -52,9 +52,21 @@ function cleanup
 {
 	# cleanup zfs pool and dataset
 	if datasetexists $vol_name; then
-		$SWAP -l | $GREP $ZVOL_DEVDIR/$vol_name > /dev/null 2>&1
+		if [[ -n "$LINUX" ]]; then
+			swap_dev=/dev/$(get_physical_device $ZVOL_DEVDIR/${vol_name})
+			swap_opt="-s"
+		else
+			swap_dev=$ZVOL_DEVDIR/$vol_name
+			swap_opt="-l"
+		fi
+
+		$SWAP $swap_opt | $GREP $swap_dev > /dev/null 2>&1
 		if [[ $? -eq 0 ]]; then
-			$SWAP -d $ZVOL_DEVDIR/${vol_name}
+			if [[ -n "$LINUX" ]]; then
+				swapoff $swap_dev
+			else
+				$SWAP -d $ZVOL_DEVDIR/${vol_name}
+			fi
 		fi
 	fi
 
@@ -83,13 +95,23 @@ log_onexit cleanup
 #
 create_pool $TESTPOOL $pool_dev
 log_must $ZFS create -V 100m $vol_name
-log_must $SWAP -a $ZVOL_DEVDIR/$vol_name
+if [[ -n "$LINUX" ]]; then
+	log_must mkswap $ZVOL_DEVDIR/$vol_name
+	log_must $SWAP $ZVOL_DEVDIR/$vol_name
+else
+	log_must $SWAP -a $ZVOL_DEVDIR/$vol_name
+fi
 for opt in "-n" "" "-f"; do
 	log_mustnot $ZPOOL create $opt $TESTPOOL1 $ZVOL_DEVDIR/${vol_name}
 done
 
 # cleanup
-log_must $SWAP -d $ZVOL_DEVDIR/${vol_name}
+if [[ -n "$LINUX" ]]; then
+	swap_dev=/dev/$(get_physical_device $ZVOL_DEVDIR/${vol_name})
+	log_must swapoff $swap_dev
+else
+	log_must $SWAP -d $ZVOL_DEVDIR/${vol_name}
+fi
 log_must $ZFS destroy $vol_name
 log_must $ZPOOL destroy $TESTPOOL
 

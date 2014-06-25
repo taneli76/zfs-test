@@ -65,6 +65,8 @@ function negative_test
 	typeset options=$1
 	typeset datasets=$2
 
+	$PKILL mkbusy
+
 	for dtst in $datasets; do
 		if ! is_global_zone; then
 			if [[ $dtst == $VOL || $dtst == $VOLSNAP || \

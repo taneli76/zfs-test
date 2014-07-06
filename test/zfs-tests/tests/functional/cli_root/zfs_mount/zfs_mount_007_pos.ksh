@@ -58,7 +58,11 @@ log_assert "Verify '-o' will set filesystem property temporarily, " \
 	"without affecting the property that is stored on disk."
 log_onexit cleanup
 
-set -A properties "atime" "devices" "exec" "readonly" "setuid"
+if [[ -n "$LINUX" ]]; then
+	set -A properties "atime" "dev" "exec" "ro" "suid"
+else
+	set -A properties "atime" "devices" "exec" "readonly" "setuid"
+fi
 
 #
 # Get the specified filesystem property reverse mount option.
@@ -72,11 +76,19 @@ function get_reverse_option
 	typeset prop=$2
 
 	# Define property value: "reverse if value=on" "reverse if value=off"
-	set -A values "noatime"   "atime" \
-		      "nodevices" "devices" \
-		      "noexec"    "exec" \
-		      "rw"        "ro" \
-		      "nosetuid"  "setuid"
+	if [[ -n "$LINUX" ]]; then
+		set -A values "noatime"   "atime" \
+			      "nodev"     "dev" \
+			      "noexec"    "exec" \
+			      "rw"        "ro" \
+			      "nosuid"    "suid"
+	else
+		set -A values "noatime"   "atime" \
+			      "nodevices" "devices" \
+			      "noexec"    "exec" \
+			      "rw"        "ro" \
+			      "nosetuid"  "setuid"
+	fi
 
 	typeset -i i=0
 	while (( i < ${#properties[@]} )); do
@@ -117,7 +129,9 @@ for property in ${properties[@]}; do
 	(($? != 0)) && log_fail "get_prop $property $fs"
 
 	# In LZ, a user with all zone privileges can never with "devices"
-	if ! is_global_zone && [[ $property == devices ]] ; then
+	typeset devices="devices"
+	[[ -n "$LINUX" ]] && devices="dev"
+	if ! is_global_zone && [[ $property == $devices ]] ; then
 		if [[ $cur_val != off || $orig_val != off ]]; then
 			log_fail "'devices' property shouldn't " \
 				"be enabled in LZ"

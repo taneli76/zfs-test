@@ -26,6 +26,7 @@
 #
 . $STF_SUITE/include/libtest.shlib
 . $STF_SUITE/tests/functional/cli_root/zpool_add/zpool_add.kshlib
+. $TMPFILE
 
 #
 # DESCRIPTION:
@@ -45,7 +46,9 @@ function cleanup
         poolexists "$TESTPOOL" && \
                 destroy_pool "$TESTPOOL"
 
-	partition_cleanup
+	# Don't want to repartition the disk(s) on Linux.
+	# We do that in setup.ksh in a very special way.
+	[[ -z "$LINUX" ]] && partition_cleanup
 }
 
 log_assert "'zpool add' should return an error with nonexistent pools and vdevs"
@@ -55,7 +58,10 @@ log_onexit cleanup
 set -A args "" "-f nonexistent_pool ${disk}s${SLICE1}" \
 	"-f $TESTPOOL nonexistent_vdev"
 
-create_pool "$TESTPOOL" "${disk}s${SLICE0}"
+typeset slice_part=s
+[[ -n "$LINUX" ]] && slice_part=p
+
+create_pool "$TESTPOOL" "${disk}${slice_part}${SLICE0}"
 log_must poolexists "$TESTPOOL"
 
 typeset -i i=0

@@ -31,6 +31,7 @@
 
 . $STF_SUITE/include/libtest.shlib
 . $STF_SUITE/tests/functional/cli_root/zpool_create/zpool_create.shlib
+. $TMPFILE
 
 #
 #
@@ -78,8 +79,11 @@ else
         disk=$DISK0
 fi
 
-typeset mddb_dev=${disk}s${SLICE0}
-typeset md_dev=${disk}s${SLICE1}
+typeset slice_part=s
+[[ -n "$LINUX" ]] && slice_part=p
+
+typeset mddb_dev=${disk}${slice_part}${SLICE0}
+typeset md_dev=${disk}${slice_part}${SLICE1}
 typeset md_name=d0
 typeset MD_DSK=/dev/md/dsk/d0
 

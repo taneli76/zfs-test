@@ -26,6 +26,7 @@
 #
 . $STF_SUITE/include/libtest.shlib
 . $STF_SUITE/tests/functional/cli_root/zpool_add/zpool_add.kshlib
+. $TMPFILE
 
 #
 # DESCRIPTION:
@@ -47,7 +48,9 @@ function cleanup
         poolexists $TESTPOOL && \
                 destroy_pool $TESTPOOL
 
-	partition_cleanup
+	# Don't want to repartition the disk(s) on Linux.
+	# We do that in setup.ksh in a very special way.
+	[[ -z "$LINUX" ]] && partition_cleanup
 }
 
 log_assert "'zpool add -f <pool> <vdev> ...' can successfully add" \
@@ -55,13 +58,16 @@ log_assert "'zpool add -f <pool> <vdev> ...' can successfully add" \
 
 log_onexit cleanup
 
-create_pool "$TESTPOOL" mirror "${disk}s${SLICE0}" "${disk}s${SLICE1}"
+typeset slice_part=s
+[[ -n "$LINUX" ]] && slice_part=p
+
+create_pool "$TESTPOOL" mirror "${disk}${slice_part}${SLICE0}" "${disk}${slice_part}${SLICE1}"
 log_must poolexists "$TESTPOOL"
 
-log_mustnot $ZPOOL add "$TESTPOOL" ${disk}s${SLICE3}
-log_mustnot iscontained "$TESTPOOL" "${disk}s${SLICE3}"
+log_mustnot $ZPOOL add "$TESTPOOL" ${disk}${slice_part}${SLICE3}
+log_mustnot iscontained "$TESTPOOL" "${disk}${slice_part}${SLICE3}"
 
-log_must $ZPOOL add -f "$TESTPOOL" ${disk}s${SLICE3}
-log_must iscontained "$TESTPOOL" "${disk}s${SLICE3}"
+log_must $ZPOOL add -f "$TESTPOOL" ${disk}${slice_part}${SLICE3}
+log_must iscontained "$TESTPOOL" "${disk}${slice_part}${SLICE3}"
 
 log_pass "'zpool add -f <pool> <vdev> ...' executes successfully."

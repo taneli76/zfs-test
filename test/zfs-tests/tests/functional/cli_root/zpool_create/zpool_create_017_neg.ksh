@@ -31,6 +31,7 @@
 
 . $STF_SUITE/include/libtest.shlib
 . $STF_SUITE/tests/functional/cli_root/zpool_create/zpool_create.shlib
+. $TMPFILE
 
 #
 #
@@ -62,7 +63,10 @@ else
         disk=$DISK0
 fi
 
-typeset pool_dev=${disk}s${SLICE0}
+typeset slice_part=s
+[[ -n "$LINUX" ]] && slice_part=p
+
+typeset pool_dev=${disk}${slice_part}${SLICE0}
 
 log_assert "'zpool create' should fail with mountpoint exists and not empty."
 log_onexit cleanup

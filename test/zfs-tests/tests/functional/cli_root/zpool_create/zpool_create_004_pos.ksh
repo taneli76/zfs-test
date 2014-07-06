@@ -30,6 +30,7 @@
 #
 
 . $STF_SUITE/tests/functional/cli_root/zpool_create/zpool_create.shlib
+. $TMPFILE
 
 #
 # DESCRIPTION:
@@ -67,7 +68,9 @@ function cleanup
 		log_must $RM -rf $TESTDIR
 	fi
 
+	[[ -n "$LINUX" ]] && disk=$DISK0_orig
 	partition_disk $SIZE $disk 6
+	[[ -n "$LINUX" ]] && update_lo_mappings $disk
 }
 
 #
@@ -113,7 +116,13 @@ function setup_vdevs #<disk>
 		(( slice_size = file_size * (vdevs_num + \
 		    vdevs_num/$MD_OVERHEAD) ))
 		set_partition 0 "" ${slice_size}m $disk
-		vdev=${disk}s0
+		if [[ -n "$LINUX" ]]; then
+			update_lo_mappings $disk
+			. $TMPFILE
+			vdev=${disk}p1
+		else
+			vdev=${disk}s0
+		fi
         fi
 
 	create_pool $TESTPOOL $vdev
@@ -133,22 +142,29 @@ function setup_vdevs #<disk>
 	done
 
 	# wait all mkfiles to finish
-        wait $PIDLIST
-        if (( $? != 0 )); then
-                log_fail "create vdevs failed."
-        fi
+	wait $PIDLIST
+	if (( $? != 0 )); then
+		log_fail "create vdevs failed."
+	fi
 
-        return 0
+	return 0
 }
 
 log_assert " 'zpool create [-f]' can create a storage pool with large " \
     "numbers of vdevs without any errors."
 log_onexit cleanup
 
+typeset slice_part=s
+[[ -n "$LINUX" ]] && slice_part=p
+
 if [[ -n $DISK ]]; then
         disk=$DISK
 else
-        disk=$DISK0
+	if [[ -n "$LINUX" ]]; then
+		disk=$DISK0_orig
+	else
+	        disk=$DISK0
+	fi
 fi
 
 log_note "Create storage pool with number of $VDEVS_NUM file vdevs should " \
@@ -173,7 +189,7 @@ left_space=$(get_prop "available" $TESTPOOL/$TESTFS)
 # Count the broken file size. make sure it should be greater than $left_space
 # so, here, we plus a number -- $file_size, this number can be any other number.
 (( file_size = left_space / (1024 * 1024) + file_size ))
-log_mustnot $MKFILE -s ${file_size}m ${TESTDIR}/broken_file
+log_mustnot $MKFILE ${file_size}m ${TESTDIR}/broken_file
 vdevs_list="$vdevs_list ${TESTDIR}/broken_file"
 
 log_mustnot $ZPOOL create -f $TESTPOOL2 $vdevs_list

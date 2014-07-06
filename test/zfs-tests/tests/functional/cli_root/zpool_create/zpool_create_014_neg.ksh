@@ -31,6 +31,7 @@
 
 . $STF_SUITE/include/libtest.shlib
 . $STF_SUITE/tests/functional/cli_root/zpool_create/zpool_create.shlib
+. $TMPFILE
 
 #
 #
@@ -79,17 +80,21 @@ else
         disk=$DISK0
 fi
 
-typeset pool_dev=${disk}s${SLICE0}
+typeset slice_part=s
+[[ -n "$LINUX" ]] && slice_part=p
+
+typeset pool_dev=${disk}${slice_part}${SLICE0}
 typeset vol_name=$TESTPOOL/$TESTVOL
 typeset mntp=/mnt
 typeset TMP_FILE=$mntp/tmpfile.$$
 
 create_pool $TESTPOOL $pool_dev
 log_must $ZFS create -V 100m $vol_name
+[[ -n "$LINUX" ]] && sleep 1
 log_must $ECHO "y" | $NEWFS $ZVOL_DEVDIR/$vol_name > /dev/null 2>&1
 log_must $MOUNT $ZVOL_DEVDIR/$vol_name $mntp
 
-log_must $MKFILE -s 50m $TMP_FILE
+log_must $MKFILE 50m $TMP_FILE
 if [[ -n "$LINUX" ]]; then
 	log_must mkswap $TMP_FILE
 	log_must $SWAP $TMP_FILE

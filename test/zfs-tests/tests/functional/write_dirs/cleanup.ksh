@@ -30,5 +30,13 @@
 #
 
 . $STF_SUITE/include/libtest.shlib
+. $STF_SUITE/tests/functional/write_dirs/default.cfg
+
+rm -f $TMPFILE
+if [[ -n "$LINUX" ]]; then
+	for dsk in $(losetup -a | $SED 's,.* (\(.*\)),\1,'); do
+	$KPARTX -d $dsk
+	done
+fi
 
 default_cleanup

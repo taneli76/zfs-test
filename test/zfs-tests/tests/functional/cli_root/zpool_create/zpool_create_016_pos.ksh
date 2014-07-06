@@ -31,6 +31,7 @@
 
 . $STF_SUITE/include/libtest.shlib
 . $STF_SUITE/tests/functional/cli_root/zpool_create/zpool_create.shlib
+. $TMPFILE
 
 #
 #
@@ -56,7 +57,11 @@ function cleanup
 	FSTAB=/tmp/fstab_$$
 	$RM -f $FSTAB
 	for sdisk in $swap_disks; do
-		$ECHO "$sdisk	-	-	swap	-	no	-" >> $FSTAB
+		if [[ -n "$LINUX" ]]; then
+			$ECHO "$sdisk	none	swap	sw	0 0" >> $FSTAB
+		else
+			$ECHO "$sdisk	-	-	swap	-	no	-" >> $FSTAB
+		fi
 	done
 	if [ -e $FSTAB ]
 	then
@@ -74,7 +79,11 @@ if [[ -n $DISK ]]; then
 else
 	disk=$DISK0
 fi
-typeset pool_dev=${disk}s${SLICE0}
+
+typeset slice_part=s
+[[ -n "$LINUX" ]] && slice_part=p
+
+typeset pool_dev=${disk}${slice_part}${SLICE0}
 if [[ -n "$LINUX" ]]; then
 	typeset swap_disks=$($SWAP -s | $GREP -v "swapfile" | $AWK '{print $1}')
 else

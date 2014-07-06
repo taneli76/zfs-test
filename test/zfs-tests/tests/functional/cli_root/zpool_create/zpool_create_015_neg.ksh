@@ -31,6 +31,7 @@
 
 . $STF_SUITE/include/libtest.shlib
 . $STF_SUITE/tests/functional/cli_root/zpool_create/zpool_create.shlib
+. $TMPFILE
 
 #
 #
@@ -84,7 +85,10 @@ else
         disk=$DISK0
 fi
 
-typeset pool_dev=${disk}s${SLICE0}
+typeset slice_part=s
+[[ -n "$LINUX" ]] && slice_part=p
+
+typeset pool_dev=${disk}${slice_part}${SLICE0}
 typeset vol_name=$TESTPOOL/$TESTVOL
 
 log_assert "'zpool create' should fail with zfs vol device in swap."
@@ -96,6 +100,7 @@ log_onexit cleanup
 create_pool $TESTPOOL $pool_dev
 log_must $ZFS create -V 100m $vol_name
 if [[ -n "$LINUX" ]]; then
+	sleep 1
 	log_must mkswap $ZVOL_DEVDIR/$vol_name
 	log_must $SWAP $ZVOL_DEVDIR/$vol_name
 else

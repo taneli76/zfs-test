@@ -34,10 +34,21 @@
 
 verify_runnable "global"
 
-if ! $(is_physical_device $DISKS) ; then
+if [[ -z "$LINUX" ]] && ! $(is_physical_device $DISKS) ; then
 	log_unsupported "This directory cannot be run on raw files."
 fi
 
 partition_disk $SIZE $DISK 6
+
+if [[ -n "$LINUX" ]]; then
+	set -- $($KPARTX -asfv $DISK | head -n1)
+	DISK_orig=$DISK
+	DISK=/dev/mapper/${8##*/}
+
+	cat <<EOF > $TMPFILE
+export DISK=$DISK
+export DISK_orig=$DISK_orig
+EOF
+fi
 
 log_pass

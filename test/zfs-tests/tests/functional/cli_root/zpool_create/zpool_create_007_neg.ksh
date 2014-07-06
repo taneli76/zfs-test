@@ -31,6 +31,7 @@
 
 . $STF_SUITE/include/libtest.shlib
 . $STF_SUITE/tests/functional/cli_root/zpool_create/zpool_create.shlib
+. $TMPFILE
 
 #
 # DESCRIPTION:
@@ -50,6 +51,9 @@ else
 	disk=$DISK0
 fi
 
+typeset slice_part=s
+[[ -n "$LINUX" ]] && slice_part=p
+
 set -A args  "" "-?" "-n" "-f" "-nf" "-fn" "-f -n" "--f" "-e" "-s" \
 	"-m" "-R" "-m -R" "-Rm" "-mR" "-m $TESTDIR $TESTPOOL" \
 	"-R $TESTDIR $TESTPOOL" "-m nodir $TESTPOOL $disk" \
@@ -61,12 +65,12 @@ set -A args  "" "-?" "-n" "-f" "-nf" "-fn" "-f -n" "--f" "-e" "-s" \
 	"$TESTPOOL mirror" "$TESTPOOL raidz" "$TESTPOOL mirror raidz" \
 	"$TESTPOOL raidz1" "$TESTPOOL mirror raidz1" \
 	"$TESTPOOL mirror c?t?d?" "$TESTPOOL mirror $disk c0t1d?" \
-	"$TESTPOOL RAIDZ ${disk}s${SLICE0} ${disk}s${SLICE1}" \
-	"$TESTPOOL ${disk}s${SLICE0} log ${disk}s${SLICE1} \
-	log ${disk}s${SLICE3}" \
-	"$TESTPOOL ${disk}s${SLICE0} spare ${disk}s${SLICE1} \
-	spare ${disk}s${SLICE3}" \
-	"$TESTPOOL RAIDZ1 ${disk}s${SLICE0} ${disk}s${SLICE1}" \
+	"$TESTPOOL RAIDZ ${disk}${slice_part}${SLICE0} ${disk}${slice_part}${SLICE1}" \
+	"$TESTPOOL ${disk}${slice_part}${SLICE0} log ${disk}${slice_part}${SLICE1} \
+	log ${disk}${slice_part}${SLICE3}" \
+	"$TESTPOOL ${disk}${slice_part}${SLICE0} spare ${disk}${slice_part}${SLICE1} \
+	spare ${disk}${slice_part}${SLICE3}" \
+	"$TESTPOOL RAIDZ1 ${disk}${slice_part}${SLICE0} ${disk}${slice_part}${SLICE1}" \
 	"$TESTPOOL MIRROR $disk" "$TESTPOOL raidz $disk" \
 	"$TESTPOOL raidz1 $disk" \
 	"1tank $disk" "1234 $disk" "?tank $disk" \

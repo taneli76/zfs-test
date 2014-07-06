@@ -34,7 +34,7 @@
 
 verify_runnable "global"
 
-if ! $(is_physical_device $DISKS) ; then
+if [[ -z "$LINUX" ]] && ! $(is_physical_device $DISKS) ; then
 	log_unsupported "This directory cannot be run on raw files."
 fi
 
@@ -45,6 +45,22 @@ else
 fi
 log_must set_partition ${SIDE_PRIMARY##*s} "" $MIRROR_SIZE $MIRROR_PRIMARY
 log_must set_partition ${SIDE_SECONDARY##*s} "" $MIRROR_SIZE $MIRROR_SECONDARY
+
+if [[ -n "$LINUX" ]]; then
+	set -- $($KPARTX -asfv $MIRROR_PRIMARY | head -n1)
+	SIDE_PRIMARY=/dev/mapper/${8##*/}p1
+
+	set -- $($KPARTX -asfv $MIRROR_SECONDARY | head -n1)
+	SIDE_SECONDARY=/dev/mapper/${8##*/}p1
+
+	cat <<EOF > $TMPFILE
+export SIDE_PRIMARY=$SIDE_PRIMARY
+export SIDE_SECONDARY=$SIDE_SECONDARY
+export DEV_DSKDIR=""
+EOF
+else
+	$TOUCH $TMPFILE
+fi
 
 default_mirror_setup $SIDE_PRIMARY $SIDE_SECONDARY
 

@@ -36,7 +36,7 @@ verify_runnable "global"
 export SIZE="1gb"
 export SLICE=0
 
-if ! $(is_physical_device $DISKS) ; then
+if  [[ -z "$LINUX" ]] && ! $(is_physical_device $DISKS) ; then
 	log_unsupported "This directory cannot be run on raw files."
 fi
 
@@ -44,4 +44,17 @@ DISK=${DISKS%% *}
 
 log_must set_partition $SLICE "" $SIZE $DISK
 
-default_setup "$DISK"s"$SLICE"
+typeset slice_part=s
+if [[ -n "$LINUX" ]]; then
+       set -- $($KPARTX -asfv $DISK | head -n1)
+       DISK=/dev/mapper/${8##*/}
+
+       cat <<EOF > $TMPFILE
+export DISK=$DISK
+EOF
+
+       slice_part=p
+       (( SLICE += 1 ))
+fi
+
+default_setup "$DISK"${slice_part}"$SLICE"

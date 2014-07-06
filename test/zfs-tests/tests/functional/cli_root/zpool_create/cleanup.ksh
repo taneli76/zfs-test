@@ -36,4 +36,11 @@ clean_blockfile "$TESTDIR $TESTDIR0 $TESTDIR1"
 
 cleanup_devices $DISKS
 
+rm -f $TMPFILE
+if [[ -n "$LINUX" ]]; then
+	for dsk in $(losetup -a | $SED 's,.* (\(.*\)),\1,'); do
+		$KPARTX -d $dsk
+	done	
+fi
+
 log_pass

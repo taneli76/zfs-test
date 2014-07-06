@@ -31,6 +31,7 @@
 
 . $STF_SUITE/include/libtest.shlib
 . $STF_SUITE/tests/functional/cli_root/zpool_create/zpool_create.shlib
+. $TMPFILE
 
 #
 # DESCRIPTION:
@@ -58,7 +59,9 @@ function cleanup
 		log_must $DUMPADM -u -d $saved_dump_dev
 	fi
 
+	[[ -n "$LINUX" ]] && disk=$DISK0_orig
         partition_disk $SIZE $disk 6
+	[[ -n "$LINUX" ]] && update_lo_mappings $disk
 }
 
 log_assert "'zpool create' should be failed with inapplicable scenarios."
@@ -69,15 +72,19 @@ if [[ -n $DISK ]]; then
 else
         disk=$DISK0
 fi
-pooldev1=${disk}s${SLICE0}
-pooldev2=${disk}s${SLICE1}
-mirror1="${disk}s${SLICE1} ${disk}s${SLICE3}"
-mirror2="${disk}s${SLICE4} ${disk}s${SLICE5}"
+
+typeset slice_part=s
+[[ -n "$LINUX" ]] && slice_part=p
+
+pooldev1=${disk}${slice_part}${SLICE0}
+pooldev2=${disk}${slice_part}${SLICE1}
+mirror1="${disk}${slice_part}${SLICE1} ${disk}${slice_part}${SLICE3}"
+mirror2="${disk}${slice_part}${SLICE4} ${disk}${slice_part}${SLICE5}"
 raidz1=$mirror1
 raidz2=$mirror2
-diff_size_dev="${disk}s${SLICE6} ${disk}s${SLICE7}"
+diff_size_dev="${disk}${slice_part}${SLICE6} ${disk}${slice_part}${SLICE7}"
 vfstab_dev=$(find_vfstab_dev)
-specified_dump_dev=${disk}s${SLICE0}
+specified_dump_dev=${disk}${slice_part}${SLICE0}
 saved_dump_dev=$(save_dump_dev)
 
 cyl=$(get_endslice $disk $SLICE6)

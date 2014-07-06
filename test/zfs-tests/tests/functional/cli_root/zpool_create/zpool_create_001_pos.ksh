@@ -31,6 +31,7 @@
 
 . $STF_SUITE/include/libtest.shlib
 . $STF_SUITE/tests/functional/cli_root/zpool_create/zpool_create.shlib
+. $TMPFILE
 
 #
 # DESCRIPTION:
@@ -54,9 +55,15 @@ function cleanup
 	if [[ -n $DISK ]]; then
 		partition_disk $SIZE $DISK 7
 	else
+		if [[ -n "$LINUX" ]]; then
+			DISK0=$DISK0_orig
+			DISK1=$DISK1_orig
+		fi
+
 		typeset disk=""
 		for disk in $DISK0 $DISK1; do
 			partition_disk $SIZE $disk 7
+			[[ -n "$LINUX" ]] && update_lo_mappings $disk
 		done
 	fi
 }
@@ -68,6 +75,9 @@ log_onexit cleanup
 
 set -A keywords "" "mirror" "raidz" "raidz1"
 
+typeset slice_part=s
+[[ -n "$LINUX" ]] && slice_part=p
+
 case $DISK_ARRAY_NUM in
 0|1)
 	typeset disk=""
@@ -76,34 +86,34 @@ case $DISK_ARRAY_NUM in
 	else
 		disk=$DISK0
 	fi
-	create_blockfile $FILESIZE $TESTDIR0/$FILEDISK0 ${disk}s${SLICE5}
-        create_blockfile $FILESIZE $TESTDIR1/$FILEDISK1 ${disk}s${SLICE6}
+	create_blockfile $FILESIZE $TESTDIR0/$FILEDISK0 ${disk}${slice_part}${SLICE5}
+        create_blockfile $FILESIZE $TESTDIR1/$FILEDISK1 ${disk}${slice_part}${SLICE6}
 
-	pooldevs="${disk}s${SLICE0} \
-                  $DEV_DSKDIR/${disk}s${SLICE0} \
-                  \"${disk}s${SLICE0} ${disk}s${SLICE1}\" \
+	pooldevs="${disk}${slice_part}${SLICE0} \
+                  $DEV_DSKDIR/${disk}${slice_part}${SLICE0} \
+                  \"${disk}${slice_part}${SLICE0} ${disk}${slice_part}${SLICE1}\" \
                   $TESTDIR0/$FILEDISK0"
-	raidzdevs="\"$DEV_DSKDIR/${disk}s${SLICE0} ${disk}s${SLICE1}\" \
-                   \"${disk}s${SLICE0} ${disk}s${SLICE1} ${disk}s${SLICE3}\" \
-                   \"${disk}s${SLICE0} ${disk}s${SLICE1} ${disk}s${SLICE3} \
-                     ${disk}s${SLICE4}\"\
+	raidzdevs="\"$DEV_DSKDIR/${disk}${slice_part}${SLICE0} ${disk}${slice_part}${SLICE1}\" \
+                   \"${disk}${slice_part}${SLICE0} ${disk}${slice_part}${SLICE1} ${disk}${slice_part}${SLICE3}\" \
+                   \"${disk}${slice_part}${SLICE0} ${disk}${slice_part}${SLICE1} ${disk}${slice_part}${SLICE3} \
+                     ${disk}${slice_part}${SLICE4}\"\
                    \"$TESTDIR0/$FILEDISK0 $TESTDIR1/$FILEDISK1\""
 	mirrordevs=$raidzdevs
 	;;
 2|*)
-	create_blockfile $FILESIZE $TESTDIR0/$FILEDISK0 ${DISK0}s${SLICE5}
-        create_blockfile $FILESIZE $TESTDIR1/$FILEDISK1 ${DISK1}s${SLICE5}
+	create_blockfile $FILESIZE $TESTDIR0/$FILEDISK0 ${DISK0}${slice_part}${SLICE5}
+        create_blockfile $FILESIZE $TESTDIR1/$FILEDISK1 ${DISK1}${slice_part}${SLICE5}
 
-	pooldevs="${DISK0}s${SLICE0}\
-                 \"$DEV_DSKDIR/${DISK0}s${SLICE0} ${DISK1}s${SLICE0}\" \
-                 \"${DISK0}s${SLICE0} ${DISK0}s${SLICE1} ${DISK1}s${SLICE1}\"\
-                 \"${DISK0}s${SLICE0} ${DISK1}s${SLICE0} ${DISK0}s${SLICE1}\
-                   ${DISK1}s${SLICE1}\" \
+	pooldevs="${DISK0}${slice_part}${SLICE0}\
+                 \"$DEV_DSKDIR/${DISK0}${slice_part}${SLICE0} ${DISK1}${slice_part}${SLICE0}\" \
+                 \"${DISK0}${slice_part}${SLICE0} ${DISK0}${slice_part}${SLICE1} ${DISK1}${slice_part}${SLICE1}\"\
+                 \"${DISK0}${slice_part}${SLICE0} ${DISK1}${slice_part}${SLICE0} ${DISK0}${slice_part}${SLICE1}\
+                   ${DISK1}${slice_part}${SLICE1}\" \
                  \"$TESTDIR0/$FILEDISK0 $TESTDIR1/$FILEDISK1\""
-	raidzdevs="\"$DEV_DSKDIR/${DISK0}s${SLICE0} ${DISK1}s${SLICE0}\" \
-                 \"${DISK0}s${SLICE0} ${DISK0}s${SLICE1} ${DISK1}s${SLICE1}\"\
-                 \"${DISK0}s${SLICE0} ${DISK1}s${SLICE0} ${DISK0}s${SLICE1}\
-                   ${DISK1}s${SLICE1}\" \
+	raidzdevs="\"$DEV_DSKDIR/${DISK0}${slice_part}${SLICE0} ${DISK1}${slice_part}${SLICE0}\" \
+                 \"${DISK0}${slice_part}${SLICE0} ${DISK0}${slice_part}${SLICE1} ${DISK1}${slice_part}${SLICE1}\"\
+                 \"${DISK0}${slice_part}${SLICE0} ${DISK1}${slice_part}${SLICE0} ${DISK0}${slice_part}${SLICE1}\
+                   ${DISK1}${slice_part}${SLICE1}\" \
                  \"$TESTDIR0/$FILEDISK0 $TESTDIR1/$FILEDISK1\""
 	mirrordevs=$raidzdevs
 	;;

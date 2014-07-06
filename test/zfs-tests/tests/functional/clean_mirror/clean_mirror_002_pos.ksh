@@ -31,6 +31,7 @@
 
 . $STF_SUITE/include/libtest.shlib
 . $STF_SUITE/tests/functional/clean_mirror/clean_mirror_common.kshlib
+. $TMPFILE
 
 #
 # DESCRIPTION:

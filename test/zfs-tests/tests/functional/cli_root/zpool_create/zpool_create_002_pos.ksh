@@ -31,6 +31,7 @@
 
 . $STF_SUITE/include/libtest.shlib
 . $STF_SUITE/tests/functional/cli_root/zpool_create/zpool_create.shlib
+. $TMPFILE
 
 #
 # DESCRIPTION:
@@ -62,7 +63,9 @@ function cleanup
 		fi
 	done
 
+	[[ -n "$LINUX" ]] && disk=$DISK0_orig
 	partition_disk $SIZE $disk 6
+	[[ -n "$LINUX" ]] && update_lo_mappings $disk
 }
 
 log_onexit cleanup
@@ -75,10 +78,14 @@ if [[ -n $DISK ]]; then
 else
 	disk=$DISK0
 fi
-create_pool "$TESTPOOL" "${disk}s${SLICE0}"
-log_must $ECHO "y" | $NEWFS $DEV_RDSKDIR/${disk}s${SLICE1} >/dev/null 2>&1
-create_blockfile $FILESIZE $TESTDIR0/$FILEDISK0 ${disk}s${SLICE4}
-create_blockfile $FILESIZE1 $TESTDIR1/$FILEDISK1 ${disk}s${SLICE5}
+
+typeset slice_part=s
+[[ -n "$LINUX" ]] && slice_part=p
+
+create_pool "$TESTPOOL" "${disk}${slice_part}${SLICE0}"
+log_must $ECHO "y" | $NEWFS $DEV_RDSKDIR/${disk}${slice_part}${SLICE1} >/dev/null 2>&1
+create_blockfile $FILESIZE $TESTDIR0/$FILEDISK0 ${disk}${slice_part}${SLICE4}
+create_blockfile $FILESIZE1 $TESTDIR1/$FILEDISK1 ${disk}${slice_part}${SLICE5}
 log_must $MKFILE -s $SIZE /var/tmp/$FILEDISK0
 log_must $MKFILE -s $SIZE /var/tmp/$FILEDISK1
 log_must $MKFILE -s $SIZE /var/tmp/$FILEDISK2
@@ -86,14 +93,14 @@ log_must $MKFILE -s $SIZE /var/tmp/$FILEDISK2
 log_must $ZPOOL export $TESTPOOL
 log_note "'zpool create' without '-f' will fail " \
 	"while device is belong to an exported pool."
-log_mustnot $ZPOOL create "$TESTPOOL1" "${disk}s${SLICE0}"
-create_pool "$TESTPOOL1" "${disk}s${SLICE0}"
+log_mustnot $ZPOOL create "$TESTPOOL1" "${disk}${slice_part}${SLICE0}"
+create_pool "$TESTPOOL1" "${disk}${slice_part}${SLICE0}"
 log_must poolexists $TESTPOOL1
 
 log_note "'zpool create' without '-f' will fail " \
 	"while device is using by an $NEWFS_DEFAULT_FS filesystem."
-log_mustnot $ZPOOL create "$TESTPOOL2" "${disk}s${SLICE1}"
-create_pool "$TESTPOOL2" "${disk}s${SLICE1}"
+log_mustnot $ZPOOL create "$TESTPOOL2" "${disk}${slice_part}${SLICE1}"
+create_pool "$TESTPOOL2" "${disk}${slice_part}${SLICE1}"
 log_must poolexists $TESTPOOL2
 
 log_note "'zpool create' mirror without '-f' will fail " \
@@ -105,8 +112,8 @@ log_must poolexists $TESTPOOL3
 log_note "'zpool create' mirror without '-f' will fail " \
 	"while devices are of different types."
 log_mustnot $ZPOOL create "$TESTPOOL4" "mirror" /var/tmp/$FILEDISK0 \
-	${disk}s${SLICE3}
-create_pool "$TESTPOOL4" "mirror" /var/tmp/$FILEDISK0 ${disk}s${SLICE3}
+	${disk}${slice_part}${SLICE3}
+create_pool "$TESTPOOL4" "mirror" /var/tmp/$FILEDISK0 ${disk}${slice_part}${SLICE3}
 log_must poolexists $TESTPOOL4
 
 log_note "'zpool create' without '-f' will fail " \

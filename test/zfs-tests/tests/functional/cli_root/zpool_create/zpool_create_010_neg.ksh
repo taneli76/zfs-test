@@ -31,6 +31,7 @@
 
 . $STF_SUITE/include/libtest.shlib
 . $STF_SUITE/tests/functional/cli_root/zpool_create/zpool_create.shlib
+. $TMPFILE
 
 #
 # DESCRIPTION:
@@ -55,14 +56,20 @@ function cleanup
 
 	[[ -d $TESTDIR ]] && $RM -rf $TESTDIR
 
+	[[ -n "$LINUX" ]] && disk=$DISK0_orig
 	partition_disk $SIZE $disk 6
+	[[ -n "$LINUX" ]] && update_lo_mappings $disk
 }
 log_onexit cleanup
 
 if [[ -n $DISK ]]; then
         disk=$DISK
 else
-        disk=$DISK0
+	if [[ -n "$LINUX" ]]; then
+		disk="$DISK0"p1
+	else
+	        disk=$DISK0
+	fi
 fi
 
 create_pool $TESTPOOL $disk

@@ -31,6 +31,7 @@
 
 . $STF_SUITE/include/libtest.shlib
 . $STF_SUITE/tests/functional/cli_root/zpool_create/zpool_create.shlib
+. $TMPFILE
 
 #
 # DESCRIPTION:
@@ -62,13 +63,16 @@ else
         disk=$DISK0
 fi
 
+typeset slice_part=s
+[[ -n "$LINUX" ]] && slice_part=p
+
 #
 # Make sure disk is clean before we use it
 #
-create_pool $TESTPOOL ${disk}s${SLICE0} > $tmpfile
+create_pool $TESTPOOL ${disk}${slice_part}${SLICE0} > $tmpfile
 destroy_pool $TESTPOOL
 
-$ZPOOL create -n  $TESTPOOL ${disk}s${SLICE0} > $tmpfile
+$ZPOOL create -n  $TESTPOOL ${disk}${slice_part}${SLICE0} > $tmpfile
 
 poolexists $TESTPOOL && \
         log_fail "'zpool create -n <pool> <vspec> ...' fail."

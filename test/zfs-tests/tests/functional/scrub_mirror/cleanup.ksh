@@ -47,4 +47,11 @@ else
 	log_must cleanup_devices $MIRROR_PRIMARY $MIRROR_SECONDARY
 fi
 
+rm -f $TMPFILE
+if [[ -n "$LINUX" ]]; then
+	for dsk in $(losetup -a | $SED 's,.* (\(.*\)),\1,'); do
+		$KPARTX -d $dsk
+	done
+fi
+
 log_pass

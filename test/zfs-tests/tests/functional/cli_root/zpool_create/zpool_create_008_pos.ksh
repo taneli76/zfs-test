@@ -31,6 +31,7 @@
 
 . $STF_SUITE/include/libtest.shlib
 . $STF_SUITE/tests/functional/cli_root/zpool_create/zpool_create.shlib
+. $TMPFILE
 
 #
 # DESCRIPTION:
@@ -48,7 +49,7 @@ function cleanup
 {
 	if [[ $exported_pool == true ]]; then
 		if [[ $force_pool == true ]]; then
-			log_must $ZPOOL create -f $TESTPOOL ${disk}s${SLICE0}
+			log_must $ZPOOL create -f $TESTPOOL ${disk}${slice_part}${SLICE0}
 		else
 			log_must $ZPOOL import $TESTPOOL
 		fi
@@ -68,7 +69,9 @@ function cleanup
 	create_pool $TESTPOOL $disk
 	destroy_pool $TESTPOOL
 
+	[[ -n "$LINUX" ]] && disk=$DISK0_orig
         partition_disk $SIZE $disk 6
+	[[ -n "$LINUX" ]] && update_lo_mappings $disk
 }
 
 #
@@ -109,6 +112,9 @@ function create_overlap_slice
 log_assert "'zpool create' have to use '-f' scenarios"
 log_onexit cleanup
 
+typeset slice_part=s
+[[ -n "$LINUX" ]] && slice_part=p
+
 typeset exported_pool=false
 typeset force_pool=false
 
@@ -128,8 +134,8 @@ destroy_pool $TESTPOOL
 log_must labelvtoc $disk
 log_must create_overlap_slice $disk
 
-log_mustnot $ZPOOL create $TESTPOOL ${disk}s${SLICE0}
-log_must $ZPOOL create -f $TESTPOOL ${disk}s${SLICE0}
+log_mustnot $ZPOOL create $TESTPOOL ${disk}${slice_part}${SLICE0}
+log_must $ZPOOL create -f $TESTPOOL ${disk}${slice_part}${SLICE0}
 destroy_pool $TESTPOOL
 
 # exported device to be as spare vdev need -f to create pool
@@ -137,11 +143,11 @@ destroy_pool $TESTPOOL
 log_must $ZPOOL create -f $TESTPOOL $disk
 destroy_pool $TESTPOOL
 log_must partition_disk $SIZE $disk 6
-create_pool $TESTPOOL ${disk}s${SLICE0} ${disk}s${SLICE1}
+create_pool $TESTPOOL ${disk}${slice_part}${SLICE0} ${disk}${slice_part}${SLICE1}
 log_must $ZPOOL export $TESTPOOL
 exported_pool=true
-log_mustnot $ZPOOL create $TESTPOOL1 ${disk}s${SLICE3} spare ${disk}s${SLICE1}
-create_pool $TESTPOOL1 ${disk}s${SLICE3} spare ${disk}s${SLICE1}
+log_mustnot $ZPOOL create $TESTPOOL1 ${disk}${slice_part}${SLICE3} spare ${disk}${slice_part}${SLICE1}
+create_pool $TESTPOOL1 ${disk}${slice_part}${SLICE3} spare ${disk}${slice_part}${SLICE1}
 force_pool=true
 destroy_pool $TESTPOOL1
 

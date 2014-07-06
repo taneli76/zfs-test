@@ -64,7 +64,7 @@ NUM_WRITES=40
 $ECHO "y" | $NEWFS -v $ZVOL_RDEVDIR/$TESTPOOL/$TESTVOL >/dev/null 2>&1
 (( $? != 0 )) && log_fail "Unable to newfs(1M) $TESTPOOL/$TESTVOL"
 
-log_must $MKDIR $TESTDIR
+log_must $MKDIR -p $TESTDIR
 log_must $MOUNT $ZVOL_DEVDIR/$TESTPOOL/$TESTVOL $TESTDIR
 
 typeset -i fn=0
@@ -81,7 +81,11 @@ while (( 1 )); do
         (( fn = fn + 1 ))
 done
 
-log_must $LOCKFS -f $TESTDIR
+if [[ -n "$LINUX" ]]; then
+	log_must $LOCKFS $TESTDIR
+else
+	log_must $LOCKFS -f $TESTDIR
+fi
 log_must $ZFS snapshot $TESTPOOL/$TESTVOL@snap
 
 $FSCK -n $ZVOL_RDEVDIR/$TESTPOOL/$TESTVOL@snap >/dev/null 2>&1

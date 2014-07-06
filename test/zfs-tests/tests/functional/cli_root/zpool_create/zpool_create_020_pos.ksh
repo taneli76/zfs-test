@@ -31,6 +31,7 @@
 
 . $STF_SUITE/include/libtest.shlib
 . $STF_SUITE/tests/functional/cli_root/zpool_create/zpool_create.cfg
+. $TMPFILE
 
 #
 # DESCRIPTION:
@@ -62,7 +63,11 @@ log_assert "zpool create -R works as expected"
 if [[ -n $DISK ]]; then
 	disk=$DISK
 else
-	disk=$DISK0
+	if [[ -n "$LINUX" ]]; then
+		disk="$DISK0"p1
+	else
+		disk=$DISK0
+	fi
 fi
 
 log_must $MKDIR /${TESTPOOL}.root

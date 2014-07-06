@@ -56,8 +56,9 @@ function iscontained
 
 # remove /dev/dsk in vdev if there is
 		$ECHO $vdev | $GREP "^/dev/dsk" >/dev/null 2>&1
-		(( $? == 0 )) && \
+		if (( $? == 0 )) || [[ -n "$LINUX" ]]; then
 			vdev=${vdev##*/}
+		fi
 
 		$ZPOOL status "$pool" | $AWK '$1 == vdevname {exit 1}' \
 			vdevname=$vdev >/dev/null 2>&1

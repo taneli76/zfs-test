@@ -31,6 +31,7 @@
 
 . $STF_SUITE/include/libtest.shlib
 . $STF_SUITE/tests/functional/cli_root/zpool_remove/zpool_remove.cfg
+. $TMPFILE
 
 #
 # DESCRIPTION:
@@ -50,10 +51,13 @@ function cleanup
 }
 
 log_onexit cleanup
-typeset disk=${DISK}
 
-typeset spare_devs1="${disk}s${SLICE0}"
-typeset spare_devs2="${disk}s${SLICE1}"
+typeset slice_part=s
+[[ -n "$LINUX" ]] && slice_part=p
+
+typeset disk=${DISK}
+typeset spare_devs1="${disk}${slice_part}${SLICE0}"
+typeset spare_devs2="${disk}${slice_part}${SLICE1}"
 
 log_assert "zpool remove can only remove inactive hotspare device from pool"
 

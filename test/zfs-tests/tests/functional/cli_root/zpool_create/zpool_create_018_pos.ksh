@@ -31,6 +31,7 @@
 
 . $STF_SUITE/include/libtest.shlib
 . $STF_SUITE/tests/functional/cli_root/zpool_create/zpool_create.shlib
+. $TMPFILE
 
 #
 # DESCRIPTION:
@@ -56,7 +57,11 @@ log_assert "zpool create can create pools with specified properties"
 if [[ -n $DISK ]]; then
 	disk=$DISK
 else
-	disk=$DISK0
+	if [[ -n "$LINUX" ]]; then
+		disk="$DISK0"p1
+	else
+		disk=$DISK0
+	fi
 fi
 
 #

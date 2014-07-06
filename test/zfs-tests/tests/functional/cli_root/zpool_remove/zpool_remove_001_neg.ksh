@@ -31,6 +31,7 @@
 
 . $STF_SUITE/include/libtest.shlib
 . $STF_SUITE/tests/functional/cli_root/zpool_remove/zpool_remove.cfg
+. $TMPFILE
 
 #
 # DESCRIPTION:
@@ -42,14 +43,17 @@
 # 3. Verify that the remove failed.
 #
 
+typeset slice_part=s
+[[ -n "$LINUX" ]] && slice_part=p
+
 typeset disk=${DISK}
-typeset vdev_devs="${disk}s${SLICE0}"
-typeset mirror_devs="${disk}s${SLICE0} ${disk}s${SLICE1}"
+typeset vdev_devs="${disk}${slice_part}${SLICE0}"
+typeset mirror_devs="${disk}${slice_part}${SLICE0} ${disk}${slice_part}${SLICE1}"
 typeset raidz_devs=${mirror_devs}
 typeset raidz1_devs=${mirror_devs}
-typeset raidz2_devs="${mirror_devs} ${disk}s${SLICE3}"
-typeset spare_devs1="${disk}s${SLICE0}"
-typeset spare_devs2="${disk}s${SLICE1}"
+typeset raidz2_devs="${mirror_devs} ${disk}${slice_part}${SLICE3}"
+typeset spare_devs1="${disk}${slice_part}${SLICE0}"
+typeset spare_devs2="${disk}${slice_part}${SLICE1}"
 
 function check_remove
 {

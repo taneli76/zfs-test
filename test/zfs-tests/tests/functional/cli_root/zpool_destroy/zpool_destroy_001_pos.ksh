@@ -59,9 +59,9 @@ function cleanup
 	zero_partitions $DISK
 }
 
-set -A datasets "$TESTPOOL" "$TESTPOOL2"
+set -A datasets "$TESTPOOL" "$TESTPOOL2" "$TESTPOOL1"
 
-if ! $(is_physical_device $DISKS) ; then
+if [[ -z "$LINUX" ]] && ! $(is_physical_device $DISKS) ; then
 	log_unsupported "This case cannot be run on raw files."
 fi
 
@@ -70,10 +70,21 @@ log_assert "'zpool destroy <pool>' can destroy a specified pool."
 log_onexit cleanup
 
 partition_disk $SLICE_SIZE $DISK 2
+if [[ -n "$LINUX" ]]; then
+	kpartx_dsk=$DISK
+	set -- $($KPARTX -asfv $DISK | head -n1)
+	DISK=/dev/mapper/${8##*/}
+	slice_part=p
+	SLICE0=1
+	SLICE1=2
+else
+	slice_part=s
+fi
 
-create_pool "$TESTPOOL" "${DISK}s${SLICE0}"
-create_pool "$TESTPOOL1" "${DISK}s${SLICE1}"
+create_pool "$TESTPOOL" "${DISK}${slice_part}${SLICE0}"
+create_pool "$TESTPOOL1" "${DISK}${slice_part}${SLICE1}"
 log_must $ZFS create -s -V $VOLSIZE $TESTPOOL1/$TESTVOL
+[[ -n "$LINUX" ]] && sleep 1
 create_pool "$TESTPOOL2" "$ZVOL_DEVDIR/$TESTPOOL1/$TESTVOL"
 
 typeset -i i=0
@@ -83,5 +94,10 @@ while (( i < ${#datasets[*]} )); do
 	log_mustnot poolexists "${datasets[i]}"
 	((i = i + 1))
 done
+
+if [[ -n "$LINUX" ]]; then
+	$KPARTX -d $kpartx_dsk
+	DISK=$kpartx_dsk
+fi
 
 log_pass "'zpool destroy <pool>' executes successfully"

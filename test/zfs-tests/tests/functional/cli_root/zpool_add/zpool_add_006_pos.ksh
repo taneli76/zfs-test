@@ -26,6 +26,7 @@
 #
 . $STF_SUITE/include/libtest.shlib
 . $STF_SUITE/tests/functional/cli_root/zpool_add/zpool_add.kshlib
+. $TMPFILE
 
 #
 # DESCRIPTION:
@@ -57,7 +58,9 @@ function cleanup
 		log_must $RM -rf $TESTDIR
 	fi
 
-	partition_cleanup
+	# Don't want to repartition the disk(s) on Linux.
+	# We do that in setup.ksh in a very special way.
+	[[ -z "$LINUX" ]] && partition_cleanup
 }
 
 
@@ -101,7 +104,12 @@ function setup_vdevs #<disk>
 		# plus $vdevs_num/40 to provide enough space for metadata.
 		(( slice_size = file_size * (vdevs_num + vdevs_num/40) ))
 		set_partition 0 "" ${slice_size}m $disk
-		vdev=${disk}s0
+		if [[ -n "$LINUX" ]]; then
+			set -- $(update_lo_mappings $disk y | head -n1)
+			vdev=/dev/mapper/${8##*/}p1
+		else
+			vdev=${disk}s0
+		fi
         fi
 
 	create_pool $TESTPOOL $vdev
@@ -142,7 +150,11 @@ log_onexit cleanup
 if [[ $DISK_ARRAY_NUM == 0 ]]; then
         disk=$DISK
 else
-        disk=$DISK0
+	if [[ -n "$LINUX" ]]; then
+		disk=$DISK0b
+	else
+	        disk=$DISK0
+	fi
 fi
 
 vdevs_list=""

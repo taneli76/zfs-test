@@ -34,7 +34,7 @@
 
 verify_runnable "global"
 
-if ! $(is_physical_device $DISKS) ; then
+if [[ -z "$LINUX" ]] && ! $(is_physical_device $DISKS) ; then
 	log_unsupported "This directory cannot be run on raw files."
 fi
 
@@ -46,11 +46,37 @@ if [[ -n $DISK ]]; then
 	cleanup_devices $DISK
 
         partition_disk $SIZE $DISK 7
+
+	[[ -n "$LINUX" ]] && start_disks="$DISK"
 else
 	for disk in `$ECHO $DISKSARRAY`; do
 		cleanup_devices $disk
 		partition_disk $SIZE $disk 7
 	done
+
+	[[ -n "$LINUX" ]] && start_disks="$DISKSARRAY"
+fi
+
+if [[ -n "$LINUX" && -n "$start_disks" ]]; then
+	disk="" ; typeset -i i=0
+	for dsk in $start_disks; do
+		set -- $($KPARTX -asfv $dsk | head -n1)
+		eval 'export DISK${i}="/dev/mapper/${8##*/}"'
+		eval 'export DISK${i}b="$dsk"'
+		[[ -z "$disk" ]] && disk=/dev/mapper/${8##*/}
+		((i += 1))
+	done
+
+	cat <<EOF > $TMPFILE
+export disk=$disk
+export DISK0=$DISK0
+export DISK0b=$DISK0b
+export DISK1=$DISK1
+export DISK1b=$DISK1b
+export DISK2=$DISK2
+export DISK2b=$DISK2b
+export DEV_DSKDIR=""
+EOF
 fi
 
 log_pass

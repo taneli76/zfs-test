@@ -26,6 +26,7 @@
 #
 . $STF_SUITE/include/libtest.shlib
 . $STF_SUITE/tests/functional/cli_root/zpool_add/zpool_add.kshlib
+. $TMPFILE
 
 #
 # DESCRIPTION:
@@ -54,24 +55,29 @@ function cleanup
 		log_must eval "$DUMPADM -u -d $saved_dump_dev > /dev/null"
 	fi
 
-	partition_cleanup
+	# Don't want to repartition the disk(s) on Linux.
+	# We do that in setup.ksh in a very special way.
+	[[ -z "$LINUX" ]] && partition_cleanup
 }
 
 log_assert "'zpool add' should fail with inapplicable scenarios."
 
 log_onexit cleanup
 
+typeset slice_part=s
+[[ -n "$LINUX" ]] && slice_part=p
+
 mnttab_dev=$(find_mnttab_dev)
 vfstab_dev=$(find_vfstab_dev)
 saved_dump_dev=$(save_dump_dev)
-dump_dev=${disk}s${SLICE3}
+dump_dev=${disk}${slice_part}${SLICE3}
 
-create_pool "$TESTPOOL" "${disk}s${SLICE0}"
+create_pool "$TESTPOOL" "${disk}${slice_part}${SLICE0}"
 log_must poolexists "$TESTPOOL"
 
-create_pool "$TESTPOOL1" "${disk}s${SLICE1}"
+create_pool "$TESTPOOL1" "${disk}${slice_part}${SLICE1}"
 log_must poolexists "$TESTPOOL1"
-log_mustnot $ZPOOL add -f "$TESTPOOL" ${disk}s${SLICE1}
+log_mustnot $ZPOOL add -f "$TESTPOOL" ${disk}${slice_part}${SLICE1}
 
 log_mustnot $ZPOOL add -f "$TESTPOOL" $mnttab_dev
 

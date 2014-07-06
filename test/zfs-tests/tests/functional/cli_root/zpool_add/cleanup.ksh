@@ -34,4 +34,10 @@
 
 cleanup_devices $DISKS
 
+if [[ -n "$LINUX" ]]; then
+	for dsk in $(losetup -a | $SED 's,.* (\(.*\)),\1,'); do
+		$KPARTX -d $dsk
+	done	
+fi
+
 log_pass

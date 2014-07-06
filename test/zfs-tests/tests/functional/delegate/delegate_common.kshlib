@@ -927,7 +927,7 @@ function verify_fs_share
 		log_note "Current nfs/server status: $stat"
 		# legacy share
 		if [[ -n "$LINUX" ]]; then
-			$SHARE "*:$mntpt"
+			$SHARE -i "*:$mntpt"
 		else
 			user_run $user $SHARE $mntpt
 		fi
@@ -951,14 +951,14 @@ function verify_fs_share
 
 	log_must $MKDIR -p $tmpshare
 	if [[ -n "$LINUX" ]]; then
-		log_must $SHARE "*:$tmpshare"
+		log_must $SHARE -i "*:$tmpshare"
 	else
 		log_must $SHARE $tmpshare
 	fi
 
 	# legacy share
 	if [[ -n "$LINUX" ]]; then
-		$SHARE "*:$mntpt"
+		$SHARE -i "*:$mntpt"
 	else
 		user_run $user $SHARE $mntpt
 	fi
@@ -1367,7 +1367,7 @@ function verify_fs_sharenfs
 	$RM -rf $tmpshare
 	log_must $MKDIR -p $tmpshare
 	if [[ -n "$LINUX" ]]; then
-		log_must $SHARE "*:$tmpshare"
+		log_must $SHARE -i "*:$tmpshare"
 	else
 		log_must $SHARE $tmpshare
 	fi
@@ -1478,7 +1478,7 @@ function verify_vol_rollback
 	log_must $ZFS snapshot $snap
 	oldval=$(datasetcksum $vol)
 
-	do_dd must $DD if=/dev/urandom of=$ZVOL_RDEVDIR/$vol \
+	log_must $DD if=/dev/urandom of=$ZVOL_RDEVDIR/$vol \
 		bs=512 count=1
 
 	user_run $user $ZFS rollback -R $snap

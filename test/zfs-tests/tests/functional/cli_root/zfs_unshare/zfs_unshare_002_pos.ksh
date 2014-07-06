@@ -92,7 +92,7 @@ function test_legacy_unshare # <mntp> <filesystem>
 	    "filesystem $filesystem unshared."
 
 	if [[ -n "$LINUX" ]]; then
-		log_must $SHARE "*:$mntp"
+		log_must $SHARE -i "*:$mntp"
 	else
 		log_must $SHARE -F nfs $mntp
 	fi
@@ -148,6 +148,7 @@ log_note "Verify '$ZFS unshare -a' is aware of legacy share."
 i=0
 while (( i < ${#mntp_fs[*]} )); do
         log_must $ZFS set sharenfs=off ${mntp_fs[((i + 1))]}
+	echo "DEBUG($i): not_shared ${mntp_fs[i]}"
         not_shared ${mntp_fs[i]} || \
                 log_fail "'$ZFS set sharenfs=off' unshares file system failed."
 
@@ -160,7 +161,7 @@ done
 i=0
 while (( i < ${#mntp_fs[*]} )); do
 	if [[ -n "$LINUX" ]]; then
-	        $SHARE "*:${mntp_fs[i]}"
+	        $SHARE -i "*:${mntp_fs[i]}"
 	else
 	        $SHARE -F nfs ${mntp_fs[i]}
 	fi

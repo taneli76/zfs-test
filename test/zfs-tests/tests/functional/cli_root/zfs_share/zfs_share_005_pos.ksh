@@ -69,7 +69,9 @@ do
 		log_fail "get sharenfs failed. ($option != ${shareopts[i]})"
 	fi
 
-	$SHARE | $GREP $option > /dev/null 2>&1
+	typeset share_opt_verbose=""
+	[[ -n "$LINUX" ]] && share_opt_verbose="-v"
+	$SHARE $share_opt_verbose | $GREP $option > /dev/null 2>&1
 	if (( $? != 0 )); then
 		log_fail "The '$option' option was not found in share output."
 	fi

@@ -46,8 +46,8 @@
 verify_runnable "global"
 
 log_assert "zpool upgrade returns an error when run as a user"
+#log_onexit cleanup
 
-log_onexit cleanup
 # zpool upgrade returns 0 when it can't do anything
 log_must $ZPOOL upgrade $TESTPOOL.virt
 

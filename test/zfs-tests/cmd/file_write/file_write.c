@@ -33,7 +33,9 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#ifndef _LINUX
 extern const char *getexecname(void);
+#endif
 
 typedef unsigned char   uchar_t;
 typedef long long       longlong_t;
@@ -237,12 +239,14 @@ static void
 usage(void)
 {
 	char *base = (char *)"file_write";
+#ifndef _LINUX
 	char *exec = (char *)getexecname();
 
 	if (exec != NULL)
 		exec = strdup(exec);
 	if (exec != NULL)
 		base = basename(exec);
+#endif
 
 	(void) printf("Usage: %s [-v] -o {create,overwrite,append} -f file_name"
 	    " [-b block_size]\n"
@@ -250,9 +254,11 @@ usage(void)
 	    "\twhere [data] equal to zero causes chars "
 	    "0->%d to be repeated throughout\n", base, DATA_RANGE);
 
+#ifndef _LINUX
 	if (exec) {
 		free(exec);
 	}
+#endif
 
 	exit(1);
 }

@@ -132,7 +132,7 @@ fi
 if [[ -z $KEEP ]]; then
 	export KEEP="^$(find_rpool)\$"
 else
-	export KEEP="^$(echo $KEEP | sed 's/ /|$/')\$"
+	export KEEP="^$(echo $KEEP | sed 's/ /$|^/g')\$"
 	KEEP+="|^$(find_rpool)\$"
 fi
 

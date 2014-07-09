@@ -1,10 +1,21 @@
-SUBDIRS  = tests/functional/ctime tests/functional/exec cmd/chg_usr_exec
-SUBDIRS := cmd/mktree cmd/file_write cmd/mkbusy cmd/randfree_file
-SUBDIRS := cmd/largest_file cmd/rm_lnkcnt_zero_file cmd/readmmap
-SUBDIRS := cmd/mmapwrite cmd/file_trunc cmd/file_check
+SUBDIRS  = test/zfs-tests/tests/functional/ctime
+SUBDIRS += test/zfs-tests/tests/functional/exec
+SUBDIRS += test/zfs-tests/cmd/chg_usr_exec
+SUBDIRS += test/zfs-tests/cmd/mktree
+SUBDIRS += test/zfs-tests/cmd/file_write
+SUBDIRS += test/zfs-tests/cmd/mkbusy
+SUBDIRS += test/zfs-tests/cmd/randfree_file
+SUBDIRS += test/zfs-tests/cmd/largest_file
+SUBDIRS += test/zfs-tests/cmd/rm_lnkcnt_zero_file
+SUBDIRS += test/zfs-tests/cmd/readmmap
+SUBDIRS += test/zfs-tests/cmd/mmapwrite
+SUBDIRS += test/zfs-tests/cmd/file_trunc
+SUBDIRS += test/zfs-tests/cmd/file_check
 
 abs_top_srcdir = /usr/src/zfs-test
 SHELL = /bin/bash
+
+AUTOMAKE_OPTIONS = foreign
 
 ctags:
 	$(RM) $(top_srcdir)/tags
@@ -15,7 +26,7 @@ etags:
 	find $(top_srcdir) -name .pc -prune -o -name '*.[hc]' | xargs etags -a
 
 test: test_verify test/zfs-tests/cmd
-	@SRC=$(abs_top_srcdir) \
+	@KEEP="`zpool list -H -oname`" \
 	 STF_TOOLS=$(abs_top_srcdir)/test/test-runner/stf \
 	 STF_SUITE=$(abs_top_srcdir)/test/zfs-tests \
 	 DISKS="$(shell for i in {1..3}; do \
@@ -28,46 +39,25 @@ test: test_verify test/zfs-tests/cmd
 test_verify:
 	@# -------------------------------------------------------------------
 	@# adduser --home /var/tmp/test_results --shell /usr/bin/ksh --gecos "ZFS Test Suite" --disabled-password zfs-tests
-	@# echo 'zfs-tests	ALL = NOPASSWD: ALL' >> /etc/sudoers
-	@# mkdir /opt && cd /opt
-	@# ln -s $(top_srcdir)/test/test-runner .
-	@# ln -s $(top_srcdir)/test/zfs-tests .
+	@# echo 'zfs-tests	ALL = (ALL:ALL) NOPASSWD: ALL' >> /etc/sudoers
 	@# -------------------------------------------------------------------
 	@( if ! id zfs-tests > /dev/null 2>&1; then \
-		echo "ERROR: You must create a zfs-test user to run the test as."; \
+		echo "ERROR: You must create a 'zfs-tests' user to run the test as."; \
 		exit 1; \
 	   fi; \
-	   if [ ! -L /opt/test-runner ]; then \
-		echo "ERROR: You will need to create the /opt/test-runner link"; \
-		echo "       pointing to `pwd`/test/test-runner."; \
+	   if ! su - zfs-tests -c "sudo ls" > /dev/null 2>&1; then \
+		echo "ERROR: User zfs-tests is not allowed to run sudo without password."; \
 		exit 1; \
-	   fi; \
-	   if [ ! -L /opt/zfs-tests ]; then \
-		echo "ERROR: You will need to create the /opt/test-runner link"; \
-		echo "       pointing to `pwd`/test/zfs-tests."; \
-		exit 1; \
-	   fi; \
-	   if [ `zpool list -H | wc -l` -gt 0 ]; then \
-		echo "ERROR: You can't be running a pool - it will be destroyed!"; \
-		exit 1; \
-	   fi; \
-	   missing=`for cmd in \`grep '="/' test/zfs-tests/include/commands-linux.cfg | sed -e "s@.*=\"@@" -e 's@ .*@@' -e 's@"@@'\`; do \
-		if [ ! -x "$$cmd" ]; then \
-			echo "$$cmd"; \
-		fi; \
-	   done`; \
-	   if [ -n "$$missing" ]; then \
-		echo "Missing commands: '$$missing'"; \
 	   fi)
 
 test/zfs-tests/cmd:
 	@(for subdir in $(SUBDIRS); do \
-		make -C test/zfs-tests/$$subdir -f Makefile.linux; \
+		make -C $$subdir all; \
 	done)
 
-cleanup:
+clean:
 	@(for subdir in $(SUBDIRS); do \
-		make -C test/zfs-tests/$$subdir -f Makefile.linux; \
+		make -C $$subdir clean; \
 	done)
 
 tags: ctags etags

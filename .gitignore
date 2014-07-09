@@ -1,1 +1,13 @@
 *~
+.deps
+Makefile
+Makefile.in
+aclocal.m4
+autom4te.cache
+configure
+config.log
+config.status
+config/missing
+test/zfs-tests/include/commands.cfg
+test/zfs-tests/include/default.cfg
+test/zfs-tests/runfiles/linux.run

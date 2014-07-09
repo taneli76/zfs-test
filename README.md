@@ -25,11 +25,13 @@ the RUNFILE variable:
   password.
 
 * To run the Test Suite, it is also required that you have a built ZoL
-  zfs repository in ../zfs.
+  zfs repository in:
 
-* You will also need to verify that all the commands specified in
-  test/zfs-tests/include/commands-linux.cfg exists.
+	/var/lib/dkms/zfs/${VERSION}/build
+	/usr/src/zfs-${VERSION}/${LINUX_VERSION}
+	/usr/src/zfs-${VERSION}
+	../zfs
 
 * You will need quite a lot of free space on /var/tmp (which needs
-  to be 'rwxrwxrwt') for temporary files etc. At least 16GB seems
+  to be 'rwxrwxrwt') for temporary files etc. At least 100GB seems
   to be required.

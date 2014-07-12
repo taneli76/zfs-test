@@ -45,8 +45,7 @@ verify_runnable "global"
 
 function cleanup
 {
-	snapexists $TESTPOOL/$TESTVOL@snap && \
-		$ZFS destroy $TESTPOOL/$TESTVOL@snap
+	destroy_dataset $TESTPOOL/$TESTVOL@snap
 
 	ismounted $TESTDIR ufs
 	(( $? == 0 )) && log_must $UMOUNT $TESTDIR

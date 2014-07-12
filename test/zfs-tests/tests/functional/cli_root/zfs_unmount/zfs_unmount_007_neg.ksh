@@ -69,7 +69,7 @@ function cleanup_all
 {
 	typeset fs
 
-	cleanup_filesystem "$TESTPOOL" "$TESTFS1"
+	destroy_dataset $TESTPOOL/$TESTFS1
 	log_must $ZFS set mountpoint=$TESTDIR $TESTPOOL/$TESTFS
 
 	[[ -d ${TEST_BASE_DIR%%/}/testroot$$ ]] && \
@@ -94,11 +94,13 @@ log_onexit cleanup_all
 
 log_must setup_all
 
+export __ZFS_POOL_RESTRICT="$TESTPOOL"
 typeset -i i=0
 while (( i < ${#args[*]} )); do
 	log_mustnot $ZFS ${args[i]}
 	((i = i + 1))
 done
+unset __ZFS_POOL_RESTRICT
 
 log_must verify_all
 

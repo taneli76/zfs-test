@@ -41,10 +41,7 @@ verify_runnable "global"
 
 function cleanup
 {
-	if poolexists $ZPOOL_VERSION_1_NAME; then
-		destroy_pool $ZPOOL_VERSION_1_NAME
-	fi
-
+	destroy_pool -f $ZPOOL_VERSION_1_NAME
 	if [[ -f $TESTDIR/$ZPOOL_VERSION_1_FILES ]]; then
 		rm -f $TESTDIR/$ZPOOL_VERSION_1_FILES
 	fi

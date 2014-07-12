@@ -41,9 +41,7 @@ verify_runnable "both"
 
 function cleanup
 {
-	if datasetexists $initfs ; then
-		log_must $ZFS destroy -rf $initfs
-	fi
+	destroy_dataset -rf $initfs
 }
 
 log_assert "Verify long name filesystem with snapshot should not break ZFS."
@@ -67,9 +65,7 @@ while ((ret == 0)); do
 		# is incorrect
 		#
 		if ((len >= 255)); then
-			if datasetexists $basefs; then
-				log_must $ZFS destroy -r $basefs
-			fi
+			destroy_dataset -r $basefs
 			basefs=${basefs%/*}
 			len=$($ECHO $basefs| $WC -c)
 		fi

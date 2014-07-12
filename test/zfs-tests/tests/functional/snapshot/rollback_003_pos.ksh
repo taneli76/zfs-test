@@ -59,16 +59,12 @@ function cleanup
 
 	for snap in "$SNAPPOOL.1" "$SNAPPOOL"
 	do
-		snapexists $snap
-		[[ $? -eq 0 ]] && \
-			log_must $ZFS destroy $snap
+		destroy_dataset $snap
 	done
 
 	for fs in "$TESTPOOL/$TESTFILE/$TESTFILE.1" "$TESTPOOL/$TESTFILE"
 	do
-		datasetexists $fs
-		[[ $? -eq 0 ]] && \
-			log_must $ZFS destroy -r $fs
+		destroy_dataset -r $fs
 	done
 
 	[[ -e /$TESTPOOL ]] && \

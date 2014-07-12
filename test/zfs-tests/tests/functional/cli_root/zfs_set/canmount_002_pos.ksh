@@ -71,24 +71,14 @@ function cleanup
 		(( i = i + 1 ))
 	done
 
-	ds=$TESTPOOL/$TESTCLONE
-	if datasetexists $ds; then
-		mntp=$(get_prop mountpoint $ds)
-		log_must $ZFS destroy $ds
-		if [[ -d $mntp ]]; then
-			$RM -fr $mntp
-		fi
-	fi
+	destroy_dataset $TESTPOOL/$TESTCLONE
+	destroy_dataset -R $TESTPOOL/$TESTFS@$TESTSNAP
+	destroy_dataset -R $TESTPOOL/$TESTVOL@$TESTSNAP
 
-	if snapexists $TESTPOOL/$TESTFS@$TESTSNAP ; then
-		log_must $ZFS destroy -R $TESTPOOL/$TESTFS@$TESTSNAP
-	fi
-	if snapexists $TESTPOOL/$TESTVOL@$TESTSNAP ; then
-		log_must $ZFS destroy -R $TESTPOOL/$TESTVOL@$TESTSNAP
-	fi
-
+	export __ZFS_POOL_RESTRICT="$TESTPOOL"
 	$ZFS unmount -a > /dev/null 2>&1
 	log_must $ZFS mount -a
+	unset __ZFS_POOL_RESTRICT
 
 	if [[ -d $tmpmnt ]]; then
 		$RM -fr $tmpmnt
@@ -116,6 +106,7 @@ while (( i < ${#dataset_pos[*]} )); do
 	(( i = i + 1 ))
 done
 
+export __ZFS_POOL_RESTRICT="$TESTPOOL"
 i=0
 while (( i < ${#dataset_pos[*]} )) ; do
 	dataset=${dataset_pos[i]}
@@ -141,6 +132,7 @@ while (( i < ${#dataset_pos[*]} )) ; do
 	log_must $ZFS set mountpoint="${old_mnt[i]}" $dataset
 	(( i = i + 1 ))
 done
+unset __ZFS_POOL_RESTRICT
 
 for dataset in "${dataset_neg[@]}" ; do
 	set_n_check_prop "noauto" "canmount" "$dataset" "false"

@@ -44,7 +44,7 @@ log_onexit cleanup_testenv
 setup_testenv snap
 
 for snap in $FSSNAP $VOLSNAP; do
-    log_must $ZFS destroy -d $snap
+    destroy_dataset -d $snap
     log_mustnot datasetexists $snap
 done
 

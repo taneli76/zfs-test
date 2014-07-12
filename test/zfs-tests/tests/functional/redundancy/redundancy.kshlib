@@ -33,9 +33,8 @@
 
 function cleanup
 {
-	if poolexists $TESTPOOL; then
-		destroy_pool $TESTPOOL
-	fi
+	destroy_pool -f $TESTPOOL
+
 	typeset dir
 	for dir in $TESTDIR $BASEDIR; do
 		if [[ -d $dir ]]; then
@@ -115,9 +114,7 @@ function setup_test_env
 		log_must $MKDIR $BASEDIR
 	fi
 
-	if poolexists $pool ; then
-		destroy_pool $pool
-	fi
+	destroy_pool -f $pool
 
 	log_must $MKFILE -s $DEV_SIZE $vdevs
 

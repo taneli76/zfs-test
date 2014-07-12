@@ -67,10 +67,7 @@ function cleanup
 		$METADB -df $DEV_DSKDIR/$mddb_dev
 	fi
 
-	if poolexists $TESTPOOL; then
-		destroy_pool $TESTPOOL
-	fi
-
+	destroy_pool -f $TESTPOOL
 }
 
 if [[ -n $DISK ]]; then

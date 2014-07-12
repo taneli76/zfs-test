@@ -76,15 +76,15 @@ while ((i < 10)); do
 
 	wait
 
-	$ZFS destroy $TESTPOOL/$TESTFS1 &
-	$ZFS destroy $TESTPOOL/$TESTFS2 &
-	$ZFS destroy $TESTPOOL/$TESTFS3 &
+	destroy_dataset $TESTPOOL/$TESTFS1 &
+	destroy_dataset $TESTPOOL/$TESTFS2 &
+	destroy_dataset $TESTPOOL/$TESTFS3 &
 
 	wait
 
-	$ZFS destroy -Rf $TESTPOOL/clone1 &
-	$ZFS destroy -Rf $TESTPOOL/clone2 &
-	$ZFS destroy -Rf $TESTPOOL/clone3 &
+	destroy_dataset -Rf $TESTPOOL/clone1 &
+	destroy_dataset -Rf $TESTPOOL/clone2 &
+	destroy_dataset -Rf $TESTPOOL/clone3 &
 
 	wait
 	((i += 1))

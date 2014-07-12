@@ -53,13 +53,8 @@ set -A args "" \
 
 function cleanup
 {
-	if datasetexists $clone; then
-		log_must $ZFS destroy $clone
-	fi
-
-	if snapexists $snap; then
-		destroy_snapshot  $snap
-	fi
+	destroy_dataset $clone
+	destroy_dataset $snap
 }
 
 log_assert "'zfs promote' will fail with invalid arguments. "

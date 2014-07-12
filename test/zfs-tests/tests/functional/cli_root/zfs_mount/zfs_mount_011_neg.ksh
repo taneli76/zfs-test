@@ -41,13 +41,8 @@ verify_runnable "both"
 
 function cleanup
 {
-	if snapexists $TESTPOOL/$TESTFS@$TESTSNAP; then
-		log_must $ZFS destroy $TESTPOOL/$TESTFS@$TESTSNAP
-	fi
-
-	if is_global_zone && datasetexists $TESTPOOL/$TESTVOL; then
-		log_must $ZFS destroy $TESTPOOL/$TESTVOL
-	fi
+	destroy_dataset $TESTPOOL/$TESTFS@$TESTSNAP
+	destroy_dataset $TESTPOOL/$TESTVOL
 }
 
 log_assert "zfs mount fails with bad parameters"

@@ -105,10 +105,8 @@ function cleanup
 	cd $DEVICE_DIR || log_fail "Unable change directory to $DEVICE_DIR"
 
 	for pool in $TESTPOOL1 $TESTPOOL2; do
-		if poolexists "$pool" ; then
-			cleanup_filesystem $pool $TESTFS
-			destroy_pool $pool
-		fi
+		destroy_dataset $pool/$TESTFS
+		destroy_pool -f $pool
 	done
 
 	[[ -e $DEVICE_DIR/$DEVICE_ARCHIVE ]] && \

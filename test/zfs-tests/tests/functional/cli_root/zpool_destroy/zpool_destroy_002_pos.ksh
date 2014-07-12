@@ -60,12 +60,11 @@ function cleanup
 
 	typeset -i i=0
 	while (( $i < ${#datasets[*]} )); do
-		datasetexists ${datasets[i]} && \
-			log_must $ZFS destroy ${datasets[i]}
+		destroy_dataset ${datasets[i]}
 		(( i = i + 1 ))
 	done
 
-	poolexists $TESTPOOL && destroy_pool $TESTPOOL
+	destroy_pool -f $TESTPOOL
 }
 
 set -A datasets "$TESTPOOL/$TESTFS" "$TESTPOOL/$TESTCTR/$TESTFS1" \
@@ -101,7 +100,9 @@ for dir in $TESTDIR /$TESTPOOL/$TESTCTR /$TESTPOOL/$TESTCTR/$TESTFS1 ; do
 	log_mustnot $ZPOOL destroy $TESTPOOL
 
 	# Need mount here, otherwise some dataset may be unmounted.
+	export __ZFS_POOL_RESTRICT="$TESTPOOL"
 	log_must $ZFS mount -a
+	unset __ZFS_POOL_RESTRICT
 
 	i=0
 	while (( i < ${#datasets[*]} )); do
@@ -111,7 +112,7 @@ for dir in $TESTDIR /$TESTPOOL/$TESTCTR /$TESTPOOL/$TESTCTR/$TESTFS1 ; do
 	done
 done
 
-destroy_pool $TESTPOOL
+destroy_pool -f $TESTPOOL
 log_mustnot poolexists "$TESTPOOL"
 
 log_pass "'zpool destroy -f <pool>' success."

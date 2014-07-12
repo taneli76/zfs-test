@@ -55,19 +55,14 @@ function cleanup
 		fi
 	fi
 
-	if poolexists $TESTPOOL ; then
-                destroy_pool $TESTPOOL
-	fi
-
-	if poolexists $TESTPOOL1 ; then
-                destroy_pool $TESTPOOL1
-	fi
+	destroy_pool -f $TESTPOOL
+	destroy_pool -f $TESTPOOL1
 
 	#
 	# recover it back to EFI label
 	#
 	create_pool $TESTPOOL $disk
-	destroy_pool $TESTPOOL
+	destroy_pool -f $TESTPOOL
 
 	[[ -n "$LINUX" ]] && disk=$DISK0_orig
         partition_disk $SIZE $disk 6
@@ -128,7 +123,7 @@ fi
 
 # Make the disk is EFI labeled first via pool creation
 create_pool $TESTPOOL $disk
-destroy_pool $TESTPOOL
+destroy_pool -f $TESTPOOL
 
 # Make the disk is VTOC labeled since only VTOC label supports overlap
 log_must labelvtoc $disk
@@ -136,12 +131,12 @@ log_must create_overlap_slice $disk
 
 log_mustnot $ZPOOL create $TESTPOOL ${disk}${slice_part}${SLICE0}
 log_must $ZPOOL create -f $TESTPOOL ${disk}${slice_part}${SLICE0}
-destroy_pool $TESTPOOL
+destroy_pool -f $TESTPOOL
 
 # exported device to be as spare vdev need -f to create pool
 
 log_must $ZPOOL create -f $TESTPOOL $disk
-destroy_pool $TESTPOOL
+destroy_pool -f $TESTPOOL
 log_must partition_disk $SIZE $disk 6
 create_pool $TESTPOOL ${disk}${slice_part}${SLICE0} ${disk}${slice_part}${SLICE1}
 log_must $ZPOOL export $TESTPOOL
@@ -149,6 +144,6 @@ exported_pool=true
 log_mustnot $ZPOOL create $TESTPOOL1 ${disk}${slice_part}${SLICE3} spare ${disk}${slice_part}${SLICE1}
 create_pool $TESTPOOL1 ${disk}${slice_part}${SLICE3} spare ${disk}${slice_part}${SLICE1}
 force_pool=true
-destroy_pool $TESTPOOL1
+destroy_pool -f $TESTPOOL1
 
 log_pass "'zpool create' have to use '-f' scenarios"

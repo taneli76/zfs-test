@@ -102,9 +102,7 @@ function default_cleanup_datasets #rootfs
 {
 	typeset rootfs=$1
 
-	if datasetexists $rootfs ; then
-		log_must $ZFS destroy -Rf $rootfs
-	fi
+	destroy_dataset -Rf $rootfs
 
 	if datasetnonexists $rootfs ; then
 		log_must $ZFS create $rootfs

@@ -52,17 +52,11 @@ function cleanup
 	typeset pool=""
 
 	for pool in foo $TESTPOOL2 $TESTPOOL1; do
-		poolexists $pool && \
-			destroy_pool $pool
+		destroy_pool -f $pool
 	done
 
-	if datasetexists $TESTPOOL/$TESTFS; then
-		log_must $ZFS destroy -f $TESTPOOL/$TESTFS
-	fi
-
-	if poolexists $TESTPOOL; then
-		destroy_pool $TESTPOOL
-	fi
+	destroy_dataset -f $TESTPOOL/$TESTFS
+	destroy_pool -f $TESTPOOL
 
 	if [[ -d $TESTDIR ]]; then
 		log_must $RM -rf $TESTDIR
@@ -92,7 +86,7 @@ function setup_vdevs #<disk>
 	create_pool foo $disk
 	log_must $ZFS create foo/fs
 	typeset -l fs_size=$(get_prop "available" foo/fs)
-	destroy_pool foo
+	destroy_pool -f foo
 
 	(( largest_num = fs_size / (1024 * 1024 * ${POOL_MINSIZE}) ))
 	if (( largest_num < $VDEVS_NUM )); then
@@ -176,11 +170,10 @@ file_size=$FILE_SIZE
 setup_vdevs $disk
 create_pool $TESTPOOL1 $vdevs_list
 
-if poolexists $TESTPOOL1; then
-	destroy_pool $TESTPOOL1
-else
+if ! poolexists $TESTPOOL1; then
 	log_fail " Creating pool with large numbers of file-vdevs fail."
 fi
+destroy_pool -f $TESTPOOL1
 
 log_note "Creating storage pool with partially written file as vdev should " \
     "fail."

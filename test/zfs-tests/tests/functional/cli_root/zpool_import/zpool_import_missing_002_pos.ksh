@@ -74,9 +74,8 @@ function cleanup
 	poolexists $TESTPOOL1 || \
 		log_must $ZPOOL import -d $DEVICE_DIR $TESTPOOL1
 
-	cleanup_filesystem $TESTPOOL1 $TESTFS
-
-	destroy_pool $TESTPOOL1
+	destroy_dataset $TESTPOOL1/$TESTFS
+	destroy_pool -f $TESTPOOL1
 }
 
 function cleanup_all

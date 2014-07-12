@@ -42,9 +42,7 @@ verify_runnable "both"
 function cleanup
 {
 	for pool in $SNAPPOOL1 $SNAPPOOL2 ; do
-		if poolexists $pool ; then
-			log_must $ZPOOL destroy -f $pool
-		fi
+		destroy_pool -f $pool
 	done
 
 	for dev in $SNAPDEV1 $SNAPDEV2 ; do

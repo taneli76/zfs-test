@@ -49,8 +49,7 @@ function cleanup
 {
 	log_must force_unmount $TESTPOOL/$TESTFS
 
-	datasetexists $TESTPOOL/$TESTFS1 && \
-		cleanup_filesystem $TESTPOOL $TESTFS1
+	destroy_dataset $TESTPOOL/$TESTFS1
 
 	[[ -d $TESTDIR ]] && \
 		log_must $RM -rf $TESTDIR

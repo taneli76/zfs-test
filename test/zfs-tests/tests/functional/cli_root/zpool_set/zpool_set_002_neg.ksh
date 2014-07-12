@@ -44,7 +44,7 @@ verify_runnable "global"
 # before running this test...
 function cleanup {
 
-	$ZPOOL destroy bootfs
+	destroy_pool bootfs
 	$RM /tmp/zpool_set_002.$$.dat
 }
 

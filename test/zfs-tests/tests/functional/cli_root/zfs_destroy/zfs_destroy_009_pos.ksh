@@ -49,10 +49,10 @@ setup_testenv clone
 for dstype in FS VOL; do
     snap=$(eval echo \$${dstype}SNAP)
     clone=$(eval echo \$${dstype}CLONE)
-    log_must $ZFS destroy -d $snap
+    destroy_dataset -d $snap
     log_must datasetexists $snap
     log_must eval "[[ $(get_prop defer_destroy $snap) == 'on' ]]"
-    log_must $ZFS destroy $clone
+    destroy_dataset $clone
     log_mustnot datasetexists $snap
     log_mustnot datasetexists $clone
 done

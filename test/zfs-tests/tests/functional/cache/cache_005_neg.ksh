@@ -59,7 +59,7 @@ do
 	log_must verify_cache_device $TESTPOOL $sdev 'ONLINE'
 	log_must check_vdev_state $TESTPOOL $tdev ""
 
-	log_must $ZPOOL destroy -f $TESTPOOL
+	destroy_pool -f $TESTPOOL
 done
 
 log_pass "Replacing a cache device fails."

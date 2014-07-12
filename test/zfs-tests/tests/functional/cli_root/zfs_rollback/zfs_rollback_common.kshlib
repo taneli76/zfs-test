@@ -189,9 +189,7 @@ function cleanup_env
 			$UMOUNT -f $link
 		fi
 		for snap in $TESTSNAP $TESTSNAP1 $TESTSNAP2; do
-			if snapexists $dtst@$snap; then
-				 log_must $ZFS destroy -Rf $dtst@$snap
-			fi
+			destroy_dataset -Rf $dtst@$snap
 		done
 	done
 

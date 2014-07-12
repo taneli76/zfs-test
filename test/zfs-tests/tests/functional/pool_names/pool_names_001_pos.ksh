@@ -50,9 +50,7 @@ log_assert "Ensure that pool names can use the ASCII subset of UTF-8"
 
 function cleanup
 {
-	if [[ -n $name ]] && poolexists $name ; then
-		log_must $ZPOOL destroy $name
-	fi
+	destroy_pool $name
 
 	if [[ -d $TESTDIR ]]; then
 		log_must $RM -rf $TESTDIR
@@ -81,7 +79,7 @@ do
 		log_fail "Could not create a pool called '$name'"
 	fi
 
-	log_must $ZPOOL destroy $name
+	destroy_pool $name
 done
 
 log_note "Ensure a variety of unusual names passes"
@@ -109,7 +107,7 @@ do
 	log_must $ZFS clone $name/$name@$name $name/clone_$name
 	log_must $ZFS create -V 150m $name/$name/$name
 
-	log_must $ZPOOL destroy $name
+	destroy_pool $name
 done
 
 log_pass "Valid pool names were accepted correctly."

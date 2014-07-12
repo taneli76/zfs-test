@@ -27,7 +27,6 @@
 
 . $STF_SUITE/include/libtest.shlib
 
-poolexists $TESTPOOL1 && \
-	destroy_pool $TESTPOOL1
+destroy_pool -f $TESTPOOL1
 
 default_cleanup

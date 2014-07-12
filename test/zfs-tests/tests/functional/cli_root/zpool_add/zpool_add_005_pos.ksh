@@ -46,10 +46,8 @@ verify_runnable "global"
 
 function cleanup
 {
-	poolexists "$TESTPOOL" && \
-		destroy_pool "$TESTPOOL"
-	poolexists "$TESTPOOL1" && \
-		destroy_pool "$TESTPOOL1"
+	destroy_pool -f $TESTPOOL
+	destroy_pool -f $TESTPOOL1
 
 	if [[ -n $saved_dump_dev ]]; then
 		log_must eval "$DUMPADM -u -d $saved_dump_dev > /dev/null"

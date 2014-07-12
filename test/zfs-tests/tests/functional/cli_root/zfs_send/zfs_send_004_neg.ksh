@@ -44,8 +44,7 @@ function cleanup
 	typeset snap f
 
 	for snap in $snap1 $snap2 $snap3; do
-		snapexists $snap && \
-			log_must $ZFS destroy -f $snap
+		destroy_dataset -f $snap
 	done
 
 	for f in $tmpfile1 $tmpfile2; do

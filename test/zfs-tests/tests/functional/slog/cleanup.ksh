@@ -38,12 +38,9 @@ if ! verify_slog_support ; then
 	log_unsupported "This system doesn't support separate intent logs"
 fi
 
-if datasetexists $TESTPOOL ; then
-	log_must $ZPOOL destroy -f $TESTPOOL
-fi
-if datasetexists $TESTPOOL2 ; then
-	log_must $ZPOOL destroy -f $TESTPOOL2
-fi
+destroy_pool -f $TESTPOOL
+destroy_pool -f $TESTPOOL2
+
 if [[ -d $VDIR ]]; then
 	log_must $RM -rf $VDIR
 fi

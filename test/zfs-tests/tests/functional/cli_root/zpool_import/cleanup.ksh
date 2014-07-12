@@ -35,9 +35,8 @@
 verify_runnable "global"
 
 for pool in "$TESTPOOL" "$TESTPOOL1"; do
-	datasetexists $pool/$TESTFS && \
-		log_must $ZFS destroy -Rf $pool/$TESTFS
-	destroy_pool "$pool"
+	destroy_dataset -Rf $pool/$TESTFS
+	destroy_pool -f $pool
 done
 
 typeset FS="ufs"

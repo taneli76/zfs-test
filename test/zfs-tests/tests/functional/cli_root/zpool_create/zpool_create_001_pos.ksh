@@ -48,7 +48,7 @@ verify_runnable "global"
 
 function cleanup
 {
-	poolexists $TESTPOOL && destroy_pool $TESTPOOL
+	destroy_pool -f $TESTPOOL
 
 	clean_blockfile "$TESTDIR0 $TESTDIR1"
 

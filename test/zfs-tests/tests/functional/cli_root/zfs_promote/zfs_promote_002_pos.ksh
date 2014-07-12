@@ -53,7 +53,7 @@ function cleanup
 	typeset ds
 	typeset data
 	for ds in $snap $snap1; do
-		log_must $ZFS destroy -rR $ds
+		destroy_dataset -rR $ds
 	done
 	for file in $TESTDIR/$TESTFILE0 $TESTDIR/$TESTFILE1; do
 		[[ -e $file ]] && $RM -f $file

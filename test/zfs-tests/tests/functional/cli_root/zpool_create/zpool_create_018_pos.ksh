@@ -47,7 +47,7 @@
 
 function cleanup
 {
-	poolexists $TESTPOOL && destroy_pool $TESTPOOL
+	destroy_pool -f $TESTPOOL
 	[[ -f $CPATH ]] && log_must $RM $CPATH
 }
 
@@ -83,12 +83,12 @@ do
 		log_fail "Pool was created without setting the ${props[$i]} " \
 		    "property"
 	fi
-	log_must $ZPOOL destroy $TESTPOOL
+	destroy_pool $TESTPOOL
 	((i = i + 1))
 done
 
 # Destroy our pool
-poolexists $TESTPOOL && destroy_pool $TESTPOOL
+destroy_pool -f $TESTPOOL
 
 # pick two properties, and verify we can create with those as well
 log_must $ZPOOL create -o delegation=off -o cachefile=$CPATH $TESTPOOL $disk

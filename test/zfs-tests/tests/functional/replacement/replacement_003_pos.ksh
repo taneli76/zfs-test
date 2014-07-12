@@ -54,9 +54,7 @@ function cleanup
 		done
 	fi
 
-	if poolexists $TESTPOOL1; then
-		destroy_pool $TESTPOOL1
-	fi
+	destroy_pool -f $TESTPOOL1
 
 	[[ -e $TESTDIR ]] && log_must $RM -rf $TESTDIR/*
 }
@@ -142,7 +140,7 @@ if [[ $? -eq 0 ]]; then
 	log_fail "$TESTFILE1.1 should no longer be present."
 fi
 
-destroy_pool $TESTPOOL1
+destroy_pool -f $TESTPOOL1
 
 log_note "Verify 'zpool detach' fails with non-mirrors."
 
@@ -158,7 +156,7 @@ for type in "" "raidz" "raidz1" ; do
 	        log_fail "$TESTFILE1.1 is not present."
 	fi
 
-	destroy_pool $TESTPOOL1
+	destroy_pool -f $TESTPOOL1
 done
 
 log_pass

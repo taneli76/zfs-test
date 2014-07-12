@@ -42,7 +42,7 @@ for dstype in FS VOL; do
     log_mustnot $ZFS destroy $snap
     log_must datasetexists $snap
     log_must $ZFS release zfstest $snap
-    log_must $ZFS destroy $snap
+    destroy_dataset $snap
     log_mustnot datasetexists $snap
 done
 

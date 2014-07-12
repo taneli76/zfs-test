@@ -46,9 +46,7 @@ verify_runnable "global"
 verify_disk_count "$LDEV2"
 
 function cleanup {
-	if datasetexists $TESTPOOL ; then
-		log_must $ZPOOL destroy -f $TESTPOOL
-	fi
+	destroy_pool -f $TESTPOOL
 }
 
 log_assert "Remove cache device from pool with spare device should succeed"
@@ -62,7 +60,7 @@ do
 	log_must $ZPOOL remove $TESTPOOL $LDEV
 	log_must display_status $TESTPOOL
 
-	log_must $ZPOOL destroy -f $TESTPOOL
+	destroy_pool -f $TESTPOOL
 done
 
 log_pass "Remove cache device from pool with spare device should succeed"

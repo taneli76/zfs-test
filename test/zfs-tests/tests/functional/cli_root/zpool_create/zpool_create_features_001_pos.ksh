@@ -43,7 +43,7 @@ verify_runnable "global"
 
 function cleanup
 {
-	datasetexists $TESTPOOL && log_must $ZPOOL destroy $TESTPOOL
+	destroy_pool -f $TESTPOOL
 }
 
 function check_features
@@ -62,7 +62,7 @@ log_assert "'zpool create' creates pools with all features enabled"
 
 log_must $ZPOOL create -f $TESTPOOL $DISKS
 check_features
-log_must $ZPOOL destroy -f $TESTPOOL
+destroy_pool -f $TESTPOOL
 
 log_must $ZPOOL create -f -o feature@async_destroy=enabled $TESTPOOL $DISKS
 check_features

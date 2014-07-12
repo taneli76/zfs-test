@@ -68,7 +68,7 @@ function test_n_check #opt num_snap_clone num_rollback
 		log_fail "Unsupported testing condition."
 
 	# Clean up the test environment
-	datasetexists $FS && log_must $ZFS destroy -Rf $FS
+	destroy_dataset -Rf $FS
 	if datasetexists $VOL; then
 		if [[ -n "$LINUX" ]]; then
 			$DF -lhTt $NEWFS_DEFAULT_FS "$ZVOL_DEVDIR/$VOL" > /dev/null 2>&1
@@ -77,7 +77,7 @@ function test_n_check #opt num_snap_clone num_rollback
 		fi
 		(( $? == 0 )) && log_must $UMOUNT -f $TESTDIR1
 
-		log_must $ZFS destroy -Rf $VOL
+		destroy_dataset -Rf $VOL
 	fi
 
 	# Create specified test environment

@@ -72,14 +72,14 @@ do
 	#
 	# Destroy the pool and import again
 	#
-	log_must $ZPOOL destroy $TESTPOOL
+	destroy_pool $TESTPOOL
 	log_must $ZPOOL import -Df -d $VDIR $TESTPOOL
 	log_must display_status $TESTPOOL
 	ldev=$(random_get $LDEV $LDEV2)
 	log_must verify_cache_device \
 		$TESTPOOL $ldev 'ONLINE'
 
-	log_must $ZPOOL destroy -f $TESTPOOL
+	destroy_pool -f $TESTPOOL
 done
 
 log_pass "Exporting and importing pool with cache devices passes."

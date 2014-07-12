@@ -49,9 +49,7 @@ function cleanup
 	typeset dtst
 	for dtst in $new_fsclone $new_volclone $fsclone $volclone \
 	    $fssnap $volsnap; do
-		if datasetexists $dtst; then
-			log_must $ZFS destroy -f $dtst
-		fi
+		destroy_dataset -f $dtst
 	done
 
 	cleanup_user_prop $pool

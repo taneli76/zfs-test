@@ -50,8 +50,7 @@ function cleanup
 	if snapexists $csnap; then
 		log_must $ZFS promote $fs
 	fi
-	snapexists $snap && \
-		log_must $ZFS destroy -rR $snap
+	destroy_dataset -rR $snap
 
 	typeset data
 	for data in $file0 $file1; do

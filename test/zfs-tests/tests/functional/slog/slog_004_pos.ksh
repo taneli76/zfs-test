@@ -66,7 +66,7 @@ do
 				$TESTPOOL $ldev2 'ONLINE' 'mirror'
 
 			[[ -n "$LINUX" ]] && sleep 1
-			log_must $ZPOOL destroy -f $TESTPOOL
+			destroy_pool -f $TESTPOOL
 		done
 	done
 done

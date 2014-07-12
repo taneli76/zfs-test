@@ -70,7 +70,7 @@ typeset slice_part=s
 # Make sure disk is clean before we use it
 #
 create_pool $TESTPOOL ${disk}${slice_part}${SLICE0} > $tmpfile
-destroy_pool $TESTPOOL
+destroy_pool -f $TESTPOOL
 
 $ZPOOL create -n  $TESTPOOL ${disk}${slice_part}${SLICE0} > $tmpfile
 

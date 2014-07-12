@@ -57,8 +57,7 @@ log_assert "Destroying top level filesystem with reservation allows more " \
 
 function cleanup
 {
-	datasetexists $TESTPOOL/$TESTFS1 && \
-	    log_must $ZFS destroy $TESTPOOL/$TESTFS1
+	destroy_dataset $TESTPOOL/$TESTFS1
 
 	[[ -e $TESTDIR/$TESTFILE1 ]] && log_must $RM -rf $TESTDIR/$TESTFILE1
 	[[ -e $TESTDIR/$TESTFILE2 ]] && log_must $RM -rf $TESTDIR/$TESTFILE2
@@ -93,7 +92,7 @@ if (($ret != $ENOSPC)); then
 	log_fail "Did not get ENOSPC as expected (got $ret)."
 fi
 
-log_must $ZFS destroy -f $TESTPOOL/$TESTFS1
+destroy_dataset -f $TESTPOOL/$TESTFS1
 
 log_must $FILE_WRITE -o create -f $TESTDIR/$TESTFILE2 -b $PAGESIZE \
     -c 1000 -d 0

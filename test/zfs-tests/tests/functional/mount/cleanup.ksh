@@ -31,7 +31,7 @@
 
 . $STF_SUITE/include/libtest.shlib
 
-log_must destroy_pool $TESTPOOL
+destroy_pool -f $TESTPOOL
 
 for dir in $TESTDIRS; do
 	$RM -rf $dir

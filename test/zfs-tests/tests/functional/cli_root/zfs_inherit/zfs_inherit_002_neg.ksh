@@ -45,9 +45,7 @@ verify_runnable "both"
 
 function cleanup
 {
-	if snapexists $TESTPOOL/$TESTFS@$TESTSNAP; then
-		log_must $ZFS destroy $TESTPOOL/$TESTFS@$TESTSNAP
-	fi
+	destroy_dataset $TESTPOOL/$TESTFS@$TESTSNAP
 }
 
 log_assert "'zfs inherit' should return an error with bad parameters in \

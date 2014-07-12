@@ -50,12 +50,9 @@ verify_runnable "both"
 function cleanup
 {
 	for snap in $init_snap $inc_snap $rst_snap $rst_inc_snap; do
-                snapexists $snap && \
-                        log_must $ZFS destroy -f $snap
+		destroy_dataset -f $snap
         done
-
-	datasetexists $rst_root && \
-		log_must $ZFS destroy -Rf $rst_root
+	destroy_dataset -Rf $rst_root
 
 	for file in $full_bkup $inc_bkup \
 			$init_data $inc_data

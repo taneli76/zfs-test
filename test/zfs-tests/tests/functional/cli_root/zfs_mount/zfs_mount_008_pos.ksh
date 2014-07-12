@@ -43,9 +43,7 @@ function cleanup
 {
 	! ismounted $fs && log_must $ZFS mount $fs
 
-	if datasetexists $fs1; then
-		log_must $ZFS destroy $fs1
-	fi
+	destroy_dataset $fs1
 
 	if [[ -f $testfile ]]; then
 		log_must $RM -f $testfile

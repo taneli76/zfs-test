@@ -43,9 +43,7 @@
 function cleanup
 {
 	for dset in $rst_snap $rst_fs $orig_snap; do
-		if datasetexists $dset; then
-			log_must $ZFS destroy -fr $dset
-		fi
+		destroy_dataset -fr $dset
 	done
 
 	for file in $fbackup $mnt_file $tmp_out; do
@@ -55,7 +53,7 @@ function cleanup
 	done
 
 	if datasetexists $TESTPOOL/$TESTFS; then
-		log_must $ZFS destroy -Rf $TESTPOOL/$TESTFS
+		destroy_dataset -Rf $TESTPOOL/$TESTFS
 		log_must $ZFS create $TESTPOOL/$TESTFS
 		log_must $ZFS set mountpoint=$TESTDIR $TESTPOOL/$TESTFS
 	fi
@@ -95,9 +93,8 @@ for orig_fs in $datasets ; do
 	log_must eval "$ZFS send $orig_snap > $fbackup"
 
 	for opt in "-v"  "-vn"; do
-		if datasetexists $rst_fs; then
-			log_must $ZFS destroy -fr $rst_fs
-		fi
+		destroy_dataset -fr $rst_fs
+
 		log_note "Check ZFS receive $opt [<filesystem|snapshot>]"
 		log_must eval "$ZFS receive $opt $rst_fs < $fbackup > $tmp_out 2>&1"
 		if [[ $opt == "-v" ]]; then
@@ -135,7 +132,7 @@ for orig_fs in $datasets ; do
 	if datasetexists $rst_snap; then
 		log_fail "dataset $rst_snap should not existed."
 	fi
-	log_must $ZFS destroy -Rf $rst_fs
+	destroy_dataset -Rf $rst_fs
 
 	cleanup
 done

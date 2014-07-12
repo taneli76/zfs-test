@@ -43,12 +43,8 @@ verify_runnable "global"
 
 function cleanup
 {
-	# destroy_pool verifies before destroy
-	destroy_pool $TESTPOOL1
-
-	if datasetexists $vol; then
-		log_must $ZFS destroy $vol
-	fi
+	destroy_pool -f $TESTPOOL1
+	destroy_dataset $vol
 }
 
 log_assert "Verify that ZFS volume space used by multiple copies is charged correctly."

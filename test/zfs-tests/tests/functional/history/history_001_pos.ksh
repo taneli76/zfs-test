@@ -46,8 +46,8 @@ verify_runnable "global"
 
 function cleanup
 {
-	destroy_pool $MPOOL
-	destroy_pool $upgrade_pool
+	destroy_pool -f $MPOOL
+	destroy_pool -f $upgrade_pool
 
 	[[ -d $import_dir ]] && $RM -rf $import_dir
 	for file in $VDEV1 $VDEV2 $VDEV3 $VDEV4; do

@@ -48,11 +48,8 @@ verify_runnable "both"
 
 function cleanup
 {
-	datasetexists $ctrfs && \
-		$ZFS destroy -r $ctrfs
-
-	snapexists $snappool && \
-		log_must $ZFS destroy -r $snappool
+	destroy_dataset -r $ctrfs
+	destroy_dataset -r $snappool
 
 	[[ -e $TESTDIR ]] && \
 		log_must $RM -rf $TESTDIR/* > /dev/null 2>&1

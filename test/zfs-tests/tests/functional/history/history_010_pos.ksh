@@ -47,7 +47,7 @@ function cleanup
 {
 	del_user $HIST_USER
 	del_group $HIST_GROUP
-	datasetexists $root_testfs && log_must $ZFS destroy -rf $root_testfs
+	destroy_dataset -rf $root_testfs
 }
 
 log_assert "Verify internal long history information are correct."

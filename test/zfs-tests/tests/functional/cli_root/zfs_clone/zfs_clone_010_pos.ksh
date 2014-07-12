@@ -38,9 +38,8 @@ function local_cleanup
 {
 	typeset -i i=1
 	for ds in $datasets; do
-                datasetexists $ds/$TESTCLONE.$i && \
-		    log_must $ZFS destroy -rf $ds/$TESTCLONE.$i
-                datasetexists $ds && log_must $ZFS destroy -Rf $ds
+		destroy_dataset -rf $ds/$TESTCLONE.$i
+		destroy_dataset -Rf $ds
 		((i=i+1))
 	done
 }
@@ -153,7 +152,7 @@ log_must verify_clones 3 0
 log_note "verfify clone property for clone deletion"
 i=1
 for ds in $datasets; do
-	log_must $ZFS destroy $ds/$TESTCLONE.$i
+	destroy_dataset $ds/$TESTCLONE.$i
 	((i=i+1))
 done
 names=$($ZFS list -rt all -o name $TESTPOOL)
@@ -167,7 +166,7 @@ log_note "verify zfs deferred destroy on clones property"
 i=1
 names=$($ZFS list -rt all -o name $TESTPOOL)
 for ds in $datasets; do
-	log_must $ZFS destroy -d $ds@snap
+	destroy_dataset -d $ds@snap
 	deferred_snaps=( "${deferred_snaps[@]}" "$ds@snap" )
 	((i=i+1))
 done
@@ -178,7 +177,7 @@ d_clones=()
 i=1
 for ds in $datasets; do
 	for fs in $datasets; do
-		log_must $ZFS destroy $fs/$TESTCLONE.$i
+		destroy_dataset $fs/$TESTCLONE.$i
 		d_clones=( "${d_clones[@]}" "$fs/$TESTCLONE.$i" )
 	done
 	((i=i+1))

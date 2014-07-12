@@ -51,9 +51,7 @@ function cleanup
 
 	for fs in $TESTPOOL/$TESTFS $TESTPOOL ; do
 		typeset snap=$fs@$TESTSNAP
-		if snapexists $snap; then
-			log_must $ZFS destroy $snap
-		fi
+		destroy_dataset $snap
 	done
 
 	if ! poolexists $TESTPOOL && is_global_zone; then
@@ -82,6 +80,7 @@ function restore_dataset
 log_assert "zfs fource unmount and destroy in snapshot directory will not cause error."
 log_onexit cleanup
 
+export __ZFS_POOL_RESTRICT="$TESTPOOL"
 for fs in $TESTPOOL/$TESTFS $TESTPOOL ; do
 	typeset snap=$fs@$TESTSNAP
 	typeset mtpt=$(get_prop mountpoint $fs)
@@ -101,16 +100,17 @@ for fs in $TESTPOOL/$TESTFS $TESTPOOL ; do
 	log_must cd .zfs/snapshot/$TESTSNAP
 
 	if is_global_zone || [[ $fs != $TESTPOOL ]] ; then
-		log_must $ZFS destroy -rf $fs
+		destroy_dataset -rf $fs
 		log_mustnot $LS
 		log_must cd /
 	fi
 
 	restore_dataset
 done
+unset __ZFS_POOL_RESTRICT
 
 if is_global_zone ; then
-	log_must $ZPOOL destroy -f $TESTPOOL
+	destroy_pool -f $TESTPOOL
 	log_mustnot $LS
 	log_must cd /
 fi

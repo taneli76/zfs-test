@@ -63,6 +63,6 @@ function setup_snap_clone
 
 function cleanup
 {
-	destroy_clone $TESTPOOL/$TESTCLONE
-	destroy_snapshot $TESTPOOL/$TESTFS@$TESTSNAP
+	destroy_dataset $TESTPOOL/$TESTCLONE
+	destroy_dataset $TESTPOOL/$TESTFS@$TESTSNAP
 }

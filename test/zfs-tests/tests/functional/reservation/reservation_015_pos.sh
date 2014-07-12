@@ -57,8 +57,7 @@ log_assert "Setting volume reservation to 'none' allows more data to be " \
 
 function cleanup
 {
-	datasetexists $TESTPOOL/$TESTVOL && \
-	log_must $ZFS destroy $TESTPOOL/$TESTVOL
+	destroy_dataset $TESTPOOL/$TESTVOL
 
 	[[ -e $TESTDIR/$TESTFILE1 ]] && log_must $RM -rf $TESTDIR/$TESTFILE1
 	[[ -e $TESTDIR/$TESTFILE2 ]] && log_must $RM -rf $TESTDIR/$TESTFILE2

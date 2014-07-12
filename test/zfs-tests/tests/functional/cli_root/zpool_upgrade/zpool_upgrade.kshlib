@@ -90,9 +90,8 @@ function destroy_upgraded_pool {
 	POOL_FILES=$(eval $ECHO \$ZPOOL_VERSION_${VERSION}_FILES)
 	POOL_NAME=$(eval $ECHO \$ZPOOL_VERSION_${VERSION}_NAME)
 
-	if poolexists $POOL_NAME; then
-		log_must $ZPOOL destroy $POOL_NAME
-	fi
+	destroy_pool $POOL_NAME
+
 	for file in $POOL_FILES; do
 		if [ -e /var/tmp/test_results/$file ]; then
 			$RM /var/tmp/test_results/$file

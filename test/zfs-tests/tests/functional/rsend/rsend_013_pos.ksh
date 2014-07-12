@@ -66,12 +66,9 @@ cleanup
 log_must eval "$ZFS send -R $POOL@final > $BACKDIR/pool-final-R"
 log_must eval "$ZFS receive -dF $POOL2 < $BACKDIR/pool-final-R"
 
-log_must $ZFS destroy -Rf $POOL/$FS
-log_must $ZFS destroy -Rf $POOL/pclone
-
-if is_global_zone ; then
-	log_must $ZFS destroy -Rf $POOL/vol
-fi
+destroy_dataset -Rf $POOL/$FS
+destroy_dataset -Rf $POOL/pclone
+destroy_dataset -Rf $POOL/vol
 log_must $ZFS snapshot -r $POOL@destroy
 
 log_must eval "$ZFS send -R -I @final $POOL@destroy > " \

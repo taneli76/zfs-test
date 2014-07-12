@@ -40,8 +40,8 @@ verify_runnable "both"
 
 function cleanup
 {
-	datasetexists $snap1 && log_must $ZFS destroy $snap1
-	datasetexists $snap2 && log_must $ZFS destroy $snap2
+	destroy_dataset $snap1
+	destroy_dataset $snap2
 }
 
 log_assert "'zfs send -i' can deal with abbreviated snapshot name."

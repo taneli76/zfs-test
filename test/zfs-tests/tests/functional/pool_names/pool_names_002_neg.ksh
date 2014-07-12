@@ -52,9 +52,7 @@ POOLNAME=""
 
 function cleanup
 {
-	if poolexists $POOLNAME; then
-		log_must $ZPOOL destroy $POOLNAME
-	fi
+	destroy_pool $POOLNAME
 
 	if [[ -d $TESTDIR ]]; then
 		log_must $RM -rf $TESTDIR
@@ -68,7 +66,7 @@ for pool in $($ZPOOL list -H -o name | \
 	$EGREP -v "$exclude" | \
 	$GREP -v "$TESTPOOL" | \
 	$EGREP -v "$NO_POOLS"); do
-	log_must $ZPOOL destroy $pool
+	destroy_pool $pool
 done
 
 DISK=${DISKS%% *}

@@ -49,15 +49,11 @@ function cleanup
 {
 	cd $olddir
 
-	datasetexists $clone && \
-		log_must $ZFS destroy -f $clone
-
-	snapexists $snap && \
-		log_must $ZFS destroy -f $snap
+	destroy_dataset -f $clone
+	destroy_dataset -f $snap
 
 	for fs in $fs1 $fs2; do
-		datasetexists $fs && \
-			log_must $ZFS destroy -f $fs
+		destroy_dataset -f $fs
 	done
 
 	for dir in $TESTDIR1 $TESTDIR2; do
@@ -110,7 +106,7 @@ for arg in "$fs1 $mntp1" "$clone $mntp2"; do
 	cd $mntp
 	log_mustnot $ZFS destroy $fs
 
-	log_must $ZFS destroy -f $fs
+	destroy_dataset -f $fs
 	datasetexists $fs && \
 		log_fail "'zfs destroy -f' fails to destroy busy filesystem."
 

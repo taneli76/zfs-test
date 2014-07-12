@@ -34,7 +34,7 @@ log_onexit cleanup
 
 function cleanup
 {
-	datasetexists $origin && log_must $ZFS destroy -R $origin
+	destroy_dataset -R $origin
 	log_must $ZFS create -o mountpoint=$TESTDIR $origin
 }
 
@@ -53,7 +53,7 @@ $DD if=/$TESTDIR/file of=/$TESTDIR/clone/file bs=1024k count=$MEGS \
 log_mustnot verify_nopwrite $origin $origin@a $origin/clone
 
 # Verify nopwrite is disabled with decreased redundancy
-$ZFS destroy -R $origin || log_fail "Couldn't destroy $origin"
+destroy_dataset -R $origin
 $ZFS create -o mountpoint=$TESTDIR $origin || \
     log_fail "Couldn't recreate $origin"
 log_must $ZFS set compress=on $origin

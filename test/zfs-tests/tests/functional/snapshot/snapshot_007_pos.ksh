@@ -49,10 +49,7 @@ function cleanup
 {
 	typeset -i i=1
 	while [ $i -lt $COUNT ]; do
-		snapexists $SNAPCTR.$i
-		if [[ $? -eq 0 ]]; then
-			log_must $ZFS destroy $SNAPCTR.$i
-		fi
+		destroy_dataset $SNAPCTR.$i
 
 		if [[ -e $SNAPDIR.$i ]]; then
 			log_must $RM -rf $SNAPDIR1.$i > /dev/null 2>&1

@@ -47,13 +47,8 @@ function cleanup
 	log_must $ZFS set sharenfs=off $TESTPOOL/$TESTFS
 	unshare_fs $TESTPOOL/$TESTFS
 
-	if snapexists "$TESTPOOL/$TESTFS@snapshot"; then
-		log_must $ZFS destroy -f $TESTPOOL/$TESTFS@snapshot
-	fi
-
-	if datasetexists $TESTPOOL/$TESTFS/fs2 ; then
-		log_must $ZFS destroy -f $TESTPOOL/$TESTFS/fs2
-	fi
+	destroy_dataset -f $TESTPOOL/$TESTFS@snapshot
+	destroy_dataset -f $TESTPOOL/$TESTFS/fs2
 }
 
 log_assert "Verify that umount and destroy fail, and do not unshare the shared" \

@@ -61,12 +61,8 @@ function cleanup
 		log_must $ZFS unmount $TESTDIR2
 	fi
 
-	datasetexists $TESTPOOL/$TESTFS-clone && \
-		log_must $ZFS destroy -f $TESTPOOL/$TESTFS-clone
-
-	if snapexists "$TESTPOOL/$TESTFS@snapshot"; then
-		log_must $ZFS destroy -f $TESTPOOL/$TESTFS@snapshot
-	fi
+	destroy_dataset -f $TESTPOOL/$TESTFS-clone
+	destroy_dataset -f $TESTPOOL/$TESTFS@snapshot
 }
 
 

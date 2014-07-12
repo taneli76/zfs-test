@@ -66,9 +66,7 @@ function cleanup
 
 	typeset snap
 	for snap in snap0 snap1 ; do
-		if datasetexists $TESTPOOL/$TESTVOL@$snap ; then
-			log_must $ZFS destroy $TESTPOOL/$TESTVOL@$snap
-		fi
+		destroy_dataset $TESTPOOL/$TESTVOL@$snap
 	done
 }
 
@@ -80,13 +78,13 @@ function verify_snapshot
 	log_must $ZFS snapshot $volume@snap1
 	log_must datasetexists $volume@snap0 $volume@snap1
 
-	log_must $ZFS destroy $volume@snap1
+	destroy_dataset $volume@snap1
 	log_must $ZFS snapshot $volume@snap1
 
 	log_mustnot $ZFS rollback -r $volume@snap0
 	log_must datasetexists $volume@snap0
 
-	log_must $ZFS destroy -r $volume@snap0
+	destroy_dataset -r $volume@snap0
 }
 
 log_assert "Verify the ability to take snapshots of zvols used as dump or swap."

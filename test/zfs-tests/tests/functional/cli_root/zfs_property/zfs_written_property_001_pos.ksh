@@ -36,7 +36,7 @@
 function cleanup
 {
 	for ds in $datasets; do
-		datasetexists $ds && log_must $ZFS destroy -R $TESTPOOL/$TESTFS1
+		destroy_dataset -R $TESTPOOL/$TESTFS1
 	done
 }
 function get_prop_mb
@@ -172,7 +172,7 @@ typeset -l before_written1=$(get_prop_mb written@snap1 $TESTPOOL/$TESTFS1)
 typeset -l before_written3=$(get_prop_mb written@snap3 $TESTPOOL/$TESTFS1)
 typeset -l snap_before_written2=$(get_prop_mb written $TESTPOOL/$TESTFS1@snap2)
 typeset -l snap_before_written3=$(get_prop_mb written $TESTPOOL/$TESTFS1@snap3)
-log_must $ZFS destroy $TESTPOOL/$TESTFS1@snap2
+destroy_dataset $TESTPOOL/$TESTFS1@snap2
 log_mustnot snapexists $TESTPOOL/$TESTFS1@snap2
 log_must $SYNC
 written1=$(get_prop_mb written@snap1 $TESTPOOL/$TESTFS1)
@@ -185,7 +185,7 @@ prev_written=$(get_prop_mb written $TESTPOOL/$TESTFS1@snap3)
 within_percent $prev_written $expected_written3 99.5 || \
     log_fail "unexpected written value $prev_written $expected_written3"
 
-log_must $ZFS destroy $TESTPOOL/$TESTFS1@snap3
+destroy_dataset $TESTPOOL/$TESTFS1@snap3
 log_mustnot snapexists $TESTPOOL/$TESTFS1@snap3
 written=$(get_prop written $TESTPOOL/$TESTFS1)
 writtenat1=$(get_prop written@snap1 $TESTPOOL/$TESTFS1)

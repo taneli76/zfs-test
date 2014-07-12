@@ -59,7 +59,7 @@ log_assert "Reservation properties preserved across exports and imports"
 function cleanup
 {
 	for obj in $OBJ_LIST; do
-                datasetexists $obj && log_must $ZFS destroy -f $obj
+		destroy_dataset -f $obj
         done
 
 	log_must zero_reservation $TESTPOOL/$TESTFS

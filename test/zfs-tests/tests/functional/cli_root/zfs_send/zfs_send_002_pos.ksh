@@ -48,11 +48,8 @@ verify_runnable "both"
 
 function cleanup
 {
-	snapexists $snap && \
-		log_must $ZFS destroy $snap
-
-	datasetexists $ctr && \
-		log_must $ZFS destroy -r $ctr
+	destroy_dataset $snap
+	destroy_dataset -r $ctr
 
 	[[ -e $origfile ]] && \
 		log_must $RM -f $origfile
@@ -89,9 +86,9 @@ function do_testing # <prop> <prop_value>
 	compare_cksum $origsnapfile $rstsnapfile
 
 	#Destroy datasets and stream for next testing
-	log_must $ZFS destroy $snap
+	destroy_dataset $snap
 	if is_global_zone ; then
-		log_must $ZFS destroy -r $rstfs
+		destroy_dataset -r $rstfs
 	else
 		log_must $ZFS destroy -r $ds_path
 	fi

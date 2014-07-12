@@ -45,10 +45,7 @@ verify_runnable "global"
 
 function cleanup
 {
-	if snapexists $TESTPOOL/$TESTFS@snapshot; then
-		log_must $ZFS destroy $TESTPOOL/$TESTFS@snapshot
-	fi
-
+	destroy_dataset $TESTPOOL/$TESTFS@snapshot
 	log_must $ZFS set sharenfs=off $TESTPOOL/$TESTFS
 }
 

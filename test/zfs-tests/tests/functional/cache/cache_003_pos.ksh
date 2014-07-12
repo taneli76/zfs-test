@@ -63,7 +63,7 @@ do
 	log_must $ZPOOL remove $TESTPOOL $ldev
 	log_must check_vdev_state $TESTPOOL $ldev ""
 
-	log_must $ZPOOL destroy -f $TESTPOOL
+	destroy_pool -f $TESTPOOL
 done
 
 log_pass "Adding an extra cache device works."

@@ -30,9 +30,9 @@
 
 function cleanup
 {
-	datasetexists $TESTPOOL/$TESTFS1 && $ZFS destroy -R $TESTPOOL/$TESTFS1
-	datasetexists $TESTPOOL/$TESTFS2 && $ZFS destroy -R $TESTPOOL/$TESTFS2
-	poolexists $TESTPOOL2 && $ZPOOL destroy $TESTPOOL2
+	destroy_dataset -R $TESTPOOL/$TESTFS1
+	destroy_dataset -R $TESTPOOL/$TESTFS2
+	destroy_pool $TESTPOOL2
 	$RM -rf $VIRTUAL_DISK
 }
 
@@ -48,7 +48,7 @@ for i in 1 2 3 4 5; do
 	snaplist=$snaplist,snap$i
 done
 snaplist=${snaplist#,}
-log_must $ZFS destroy $TESTPOOL/$TESTFS1@$snaplist
+destroy_dataset $TESTPOOL/$TESTFS1@$snaplist
 for i in 1 2 3 4 5; do
 	log_mustnot snapexists $TESTPOOL/$TESFS1@snap$i
 done
@@ -60,7 +60,7 @@ log_note "zfs destroy with some bogus snapshot names"
 for i in 1 2 3; do
 	log_must $ZFS snapshot $TESTPOOL/$TESTFS1@snap$i
 done
-log_must $ZFS destroy $TESTPOOL/$TESTFS1@snap1,snap2,snapple1,snappy2,snap3
+destroy_dataset $TESTPOOL/$TESTFS1@snap1,snap2,snapple1,snappy2,snap3
 for i in 1 2 3; do
 	log_mustnot snapexists $TESTPOOL/$TESTFS1@snap$i
 done
@@ -69,7 +69,7 @@ log_note "zfs destroy with some snapshot names having special characters"
 for i in 1 2 3; do
 	log_must $ZFS snapshot $TESTPOOL/$TESTFS1@snap$i
 done
-log_must $ZFS destroy $TESTPOOL/$TESTFS1@snap1,@,snap2,,,,snap3,
+destroy_dataset $TESTPOOL/$TESTFS1@snap1,@,snap2,,,,snap3,
 for i in 1 2 3; do
 	log_mustnot snapexists $TESTPOOL/$TESTFS1@snap$i
 done
@@ -80,7 +80,7 @@ for i in {1..100}; do
 	snaplist=$snaplist,snap$i
 done
 snaplist=${snaplist#,}
-log_must $ZFS destroy $TESTPOOL/$TESTFS1@$snaplist
+destroy_dataset $TESTPOOL/$TESTFS1@$snaplist
 for i in {1..100}; do
 	log_mustnot snapexists $TESTPOOL/$TESTFS1@snap$i
 done
@@ -96,7 +96,7 @@ log_mustnot $ZFS destroy $TESTPOOL/$TESTFS1@$snaplist
 for i in 1 2 3 4 5; do
 	log_must $ZFS release keep $TESTPOOL/$TESTFS1@snap$i
 done
-log_must $ZFS destroy $TESTPOOL/$TESTFS1@$snaplist
+destroy_dataset $TESTPOOL/$TESTFS1@$snaplist
 
 log_note "zfs destroy for multiple snapshots having clones"
 for i in 1 2 3 4 5; do
@@ -111,7 +111,7 @@ snaplist=${snaplist#,}
 log_mustnot $ZFS destroy $TESTPOOL/$TESTFS1@$snaplist
 for i in 1 2 3 4 5; do
 	log_must snapexists $TESTPOOL/$TESTFS1@snap$i
-	log_must $ZFS destroy $TESTPOOL/$TESTFS1/clone$i
+	destroy_dataset $TESTPOOL/$TESTFS1/clone$i
 done
 
 log_note "zfs destroy for snapshots for different datasets"
@@ -122,17 +122,17 @@ log_must $ZFS snapshot $TESTPOOL/$TESTFS1/$TESTFS2@fs12snap
 
 long_arg=$TESTPOOL/$TESTFS1@snap1,$TESTPOOL/$TESTFS2@fs2snap,
 long_arg=$long_arg$TESTPOOL/$TESTFS1/$TESTFS2@fs12snap
-log_must $ZFS destroy $long_arg
+destroy_dataset $long_arg
 log_mustnot snapexists $TESTPOOL/$TESTFS1@snap1
 log_must snapexists $TESTPOOL/$TESTFS2@fs2snap
 log_must snapexists $TESTPOOL/$TESTFS1/$TESTFS2@fs12snap
 
-log_must $ZFS destroy $TESTPOOL/$TESTFS1@fs2snap,fs12snap,snap2
+destroy_dataset $TESTPOOL/$TESTFS1@fs2snap,fs12snap,snap2
 log_must snapexists $TESTPOOL/$TESTFS2@fs2snap
 log_must snapexists $TESTPOOL/$TESTFS1/$TESTFS2@fs12snap
 log_mustnot snapexists $TESTPOOL/$TESTFS1@snap2
 
-log_must $ZFS destroy $TESTPOOL/$TESTFS2@fs2snap,fs12snap,snap3
+destroy_dataset $TESTPOOL/$TESTFS2@fs2snap,fs12snap,snap3
 log_mustnot snapexists $TESTPOOL/$TESTFS2@fs2snap
 log_must snapexists $TESTPOOL/$TESTFS1/$TESTFS2@fs12snap
 log_must snapexists $TESTPOOL/$TESTFS1@snap3
@@ -147,13 +147,13 @@ log_must $ZFS create $TESTPOOL2/$TESTFS1
 log_must $ZFS snapshot $TESTPOOL2/$TESTFS1@snap
 long_arg=$TESTPOOL2/$TESTFS1@snap,$TESTPOOL/$TESTFS1@snap3,
 long_arg=$long_arg$TESTPOOL/$TESTFS1@snap5
-log_must $ZFS destroy $long_arg
+destroy_dataset $long_arg
 log_mustnot snapexists $TESTPOOL2/$TESTFS1@snap
 log_must snapexists $TESTPOOL/$TESTFS1@snap3
 log_must snapexists $TESTPOOL/$TESTFS1@snap5
 
 log_must $ZFS snapshot $TESTPOOL2/$TESTFS1@snap
-log_must $ZFS destroy $TESTPOOL2/$TESTFS1@snap5,snap3,snap
+destroy_dataset $TESTPOOL2/$TESTFS1@snap5,snap3,snap
 log_mustnot snapexists $TESTPOOL2/$TESTFS1@snap
 log_must snapexists $TESTPOOL/$TESTFS1@snap3
 log_must snapexists $TESTPOOL/$TESTFS1@snap5

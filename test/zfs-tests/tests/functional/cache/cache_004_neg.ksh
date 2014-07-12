@@ -58,7 +58,7 @@ do
 	log_mustnot $ZPOOL attach $TESTPOOL $ldev $ldev2
 	log_must check_vdev_state $TESTPOOL $ldev2 ""
 
-	log_must $ZPOOL destroy -f $TESTPOOL
+	destroy_pool -f $TESTPOOL
 done
 
 log_pass "Attaching a cache device fails for an existing cache device."

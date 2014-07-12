@@ -385,7 +385,6 @@ function default_cleanup_noexit
 	# filesystems it contains.
 	#
 	if is_global_zone; then
-		$ZFS unmount -a > /dev/null 2>&1
 		exclude=`eval $ECHO \"'(${KEEP})'\"`
 		ALL_POOLS=$($ZPOOL list -H -o name \
 		    | $GREP -v "$NO_POOLS" | $EGREP -v "$exclude")
@@ -396,6 +395,10 @@ function default_cleanup_noexit
 		do
 			for pool in ${ALL_POOLS}
 			do
+				export __ZFS_POOL_RESTRICT="$pool"
+				$ZFS unmount -a
+				unset __ZFS_POOL_RESTRICT
+
 				if safe_to_destroy_pool $pool ;
 				then
 					destroy_pool $pool
@@ -405,20 +408,11 @@ function default_cleanup_noexit
 				    | $EGREP -v "$exclude")
 			done
 		done
-
-		$ZFS mount -a
 	else
 		typeset fs=""
 		for fs in $($ZFS list -H -o name \
 		    | $GREP "^$ZONE_POOL/$ZONE_CTR[01234]/"); do
-			datasetexists $fs && \
-				log_must $ZFS destroy -Rf $fs
-		done
-
-		# Need cleanup here to avoid garbage dir left.
-		for fs in $($ZFS list -H -o name); do
-			[[ $fs == /$ZONE_POOL ]] && continue
-			[[ -d $fs ]] && log_must $RM -rf $fs/*
+			destroy_dataset -Rf $fs
 		done
 
 		#
@@ -468,73 +462,13 @@ function default_container_cleanup
 	[[ $? -eq 0 ]] && \
 	    log_must $ZFS unmount $TESTPOOL/$TESTCTR/$TESTFS1
 
-	datasetexists $TESTPOOL/$TESTCTR/$TESTFS1 && \
-	    log_must $ZFS destroy -R $TESTPOOL/$TESTCTR/$TESTFS1
-
-	datasetexists $TESTPOOL/$TESTCTR && \
-	    log_must $ZFS destroy -Rf $TESTPOOL/$TESTCTR
+	destroy_dataset -R $TESTPOOL/$TESTCTR/$TESTFS1
+	destroy_dataset -Rf $TESTPOOL/$TESTCTR
 
 	[[ -e $TESTDIR1 ]] && \
 	    log_must $RM -rf $TESTDIR1 > /dev/null 2>&1
 
 	default_cleanup
-}
-
-#
-# Common function used to cleanup snapshot of file system or volume. Default to
-# delete the file system's snapshot
-#
-# $1 snapshot name
-#
-function destroy_snapshot
-{
-	typeset snap=${1:-$TESTPOOL/$TESTFS@$TESTSNAP}
-
-	if ! snapexists $snap; then
-		log_fail "'$snap' does not existed."
-	fi
-
-	#
-	# For the sake of the value which come from 'get_prop' is not equal
-	# to the really mountpoint when the snapshot is unmounted. So, firstly
-	# check and make sure this snapshot's been mounted in current system.
-	#
-	typeset mtpt=""
-	if ismounted $snap; then
-		mtpt=$(get_prop mountpoint $snap)
-		(($? != 0)) && \
-			log_fail "get_prop mountpoint $snap failed."
-	fi
-
-	log_must $ZFS destroy $snap
-	[[ $mtpt != "" && -d $mtpt ]] && \
-		log_must $RM -rf $mtpt
-}
-
-#
-# Common function used to cleanup clone.
-#
-# $1 clone name
-#
-function destroy_clone
-{
-	typeset clone=${1:-$TESTPOOL/$TESTCLONE}
-
-	if ! datasetexists $clone; then
-		log_fail "'$clone' does not existed."
-	fi
-
-	# With the same reason in destroy_snapshot
-	typeset mtpt=""
-	if ismounted $clone; then
-		mtpt=$(get_prop mountpoint $clone)
-		(($? != 0)) && \
-			log_fail "get_prop mountpoint $clone failed."
-	fi
-
-	log_must $ZFS destroy $clone
-	[[ $mtpt != "" && -d $mtpt ]] && \
-		log_must $RM -rf $mtpt
 }
 
 # Return 0 if a snapshot exists; $? otherwise
@@ -1206,8 +1140,13 @@ function create_pool #pool devs_list
 
 function destroy_pool #pool
 {
-	typeset pool=${1%%/*}
-	typeset mtpt
+	typeset pool opts mtpt
+	if [[ "$1" == "-"* ]]; then
+		opts="$1"
+		pool=${2%%/*}
+	else
+		pool=${1%%/*}
+	fi
 
 	if [[ -z $pool ]]; then
 		log_note "No pool name given."
@@ -1217,12 +1156,54 @@ function destroy_pool #pool
 	if is_global_zone ; then
 		if poolexists "$pool" ; then
 			mtpt=$(get_prop mountpoint "$pool")
-			log_must $ZPOOL destroy -f $pool
+			log_must $ZPOOL destroy $opts $pool
 
 			[[ -d $mtpt ]] && \
 				log_must $RM -rf $mtpt
 		else
 			log_note "Pool does not exist. ($pool)"
+			return 1
+		fi
+	fi
+
+	return 0
+}
+
+# Return 0 if destroy successfully or the dataset exists; $? otherwise
+# Note: In local zones, this function should return 0 silently.
+#
+# $1 - dataset name
+# Destroy dataset with the given parameters.
+
+function destroy_dataset #dataset
+{
+	typeset dataset opts mtpt
+	if [[ "$1" == "-"* ]]; then
+		opts="$1"
+		dataset="$2"
+	else
+		dataset="$1"
+	fi
+
+	if [[ -z $dataset ]]; then
+		log_note "No dataset name given."
+		return 1
+	fi
+
+	if is_global_zone ; then
+		if [[ $dataset == *"@"*"%"* ]] || \
+		   [[ $dataset == *"@"*","* ]] || \
+		    datasetexists "$dataset" ;
+		then
+			[[ "$dataset" != *"@"* ]] && \
+				mtpt=$(get_prop mountpoint "$dataset")
+
+			log_must $ZFS destroy $opts $dataset
+
+			[[ -d $mtpt ]] && \
+				log_must $RM -rf $mtpt
+		else
+			log_note "Dataset does not exist. ($dataset)"
 			return 1
 		fi
 	fi
@@ -1424,7 +1405,9 @@ function verify_filesys # pool filesystem dir
 	typeset search_path=""
 
 	log_note "Calling $ZDB to verify filesystem '$filesys'"
-	$ZFS unmount -a > /dev/null 2>&1
+	export __ZFS_POOL_RESTRICT="$pool"
+	$ZFS unmount -a
+	unset __ZFS_POOL_RESTRICT=
 	log_must $ZPOOL export $pool
 
 	if [[ -n $dirs ]] ; then
@@ -1442,7 +1425,9 @@ function verify_filesys # pool filesystem dir
 		log_fail "$ZDB detected errors with: '$filesys'"
 	fi
 
-	log_must $ZFS mount -a
+	export __ZFS_POOL_RESTRICT="$pool"
+	$ZFS mount -a
+	unset __ZFS_POOL_RESTRICT
 	log_must $RM -rf $zdbout
 }
 
@@ -2280,9 +2265,7 @@ function verify_opt_p_ops
 	esac
 
 	# make sure the upper level filesystem does not exist
-	if datasetexists ${newdataset%/*} ; then
-		log_must $ZFS destroy -rRf ${newdataset%/*}
-	fi
+	destroy_dataset -rRf ${newdataset%/*}
 
 	# without -p option, operation will fail
 	log_mustnot $ZFS $ops $dataset $newdataset

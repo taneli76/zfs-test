@@ -50,9 +50,7 @@ function cleanup
 {
 	typeset file
 
-	if poolexists $TESTPOOL ; then
-		destroy_pool $TESTPOOL
-	fi
+	destroy_pool -f $TESTPOOL
 
         for file in $CPATH1 $CPATH2 ; do
                 if [[ -f $file ]] ; then
@@ -93,7 +91,7 @@ while (( i < ${#opts[*]} )); do
 		log_fail "cachefile property not set as expected. " \
 			"Expect: ${opts[((i+1))]}, Current: $PROP"
 	fi
-	log_must $ZPOOL destroy $TESTPOOL
+	destroy_pool $TESTPOOL
 	(( i = i + 2 ))
 done
 

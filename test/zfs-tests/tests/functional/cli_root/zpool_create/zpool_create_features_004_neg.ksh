@@ -45,7 +45,7 @@ properties="feature@async_destroy=disabled " \
 
 function cleanup
 {
-	datasetexists $TESTPOOL && log_must $ZPOOL destroy $TESTPOOL
+	destroy_pool $TESTPOOL
 }
 
 log_assert "'zpool create with invalid features fails"

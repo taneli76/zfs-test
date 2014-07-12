@@ -48,10 +48,7 @@ function cleanup
 {
 	typeset -i i=1
 	while [[ $i -lt $COUNT ]]; do
-		snapexists $SNAPFS.$i
-		[[ $? -eq 0 ]] && \
-			log_must $ZFS destroy $SNAPFS.$i
-
+		destroy_dataset $SNAPFS.$i
 		(( i = i + 1 ))
 	done
 
@@ -83,8 +80,7 @@ done
 typeset -i i=1
 while [[ $i -lt $COUNT ]]; do
 	log_must rm -rf $TESTDIR/file$i > /dev/null 2>&1
-	log_must $ZFS destroy $SNAPFS.$i
-
+	destroy_dataset $SNAPFS.$i
 	(( i = i + 1 ))
 done
 

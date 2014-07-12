@@ -60,21 +60,13 @@ function cleanup
 		(( i = i + 1 ))
 	done
 
-	ds=$TESTPOOL/$TESTCLONE
-	if datasetexists $ds; then
-		mntp=$(get_prop mountpoint $ds)
-		log_must $ZFS destroy $ds
-		if [[ -d $mntp ]]; then
-			log_must $RM -fr $mntp
-		fi
-	fi
+	destroy_dataset $TESTPOOL/$TESTCLONE
+	destroy_dataset -R $TESTPOOL/$TESTFS@$TESTSNAP
 
-	if snapexists $TESTPOOL/$TESTFS@$TESTSNAP ; then
-		log_must $ZFS destroy -R $TESTPOOL/$TESTFS@$TESTSNAP
-	fi
-
+	export __ZFS_POOL_RESTRICT="$TESTPOOL"
 	$ZFS unmount -a > /dev/null 2>&1
 	log_must $ZFS mount -a
+	unset __ZFS_POOL_RESTRICT
 }
 
 log_assert "While canmount=noauto and  the dataset is mounted,"\

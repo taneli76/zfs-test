@@ -60,7 +60,7 @@ function cleanup
 	log_must zero_reservation $TESTPOOL/$TESTFS
 
 	for obj in $OBJ_LIST; do
-	datasetexists $obj && log_must $ZFS destroy -f $obj
+		destroy_dataset -f $obj
 	done
 }
 

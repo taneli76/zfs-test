@@ -46,9 +46,8 @@ verify_runnable "global"
 
 function cleanup
 {
-	poolexists $TESTPOOL1 && destroy_pool $TESTPOOL1
-
-	poolexists $TESTPOOL2 && destroy_pool $TESTPOOL2
+	destroy_pool -f $TESTPOOL1
+	destroy_pool -f $TESTPOOL2
 
 	$METASTAT d99 > /dev/null 2>&1
 	(( $? == 0 )) && $METACLEAR -f d99

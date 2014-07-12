@@ -82,11 +82,9 @@ function cleanup
 		((i = i + 1))
 	done
 
-	destroy_pool $TESTPOOL1
+	destroy_pool -f $TESTPOOL1
+	destroy_dataset -Rf $TESTPOOL/$TESTFS
 
-	if datasetexists $TESTPOOL/$TESTFS; then
-		log_must $ZFS destroy -Rf $TESTPOOL/$TESTFS
-	fi
 	log_must $ZFS create $TESTPOOL/$TESTFS
 	log_must $ZFS set mountpoint=$TESTDIR $TESTPOOL/$TESTFS
 
@@ -149,7 +147,7 @@ for option in "" "-Df"; do
 					if [[ -z $option ]]; then
 						log_must $ZPOOL export $pool
 					else
-						log_must $ZPOOL destroy $pool
+						destroy_pool -f $pool
 					fi
 
 					typeset target=$pool

@@ -51,8 +51,8 @@ function cleanup
 	if datasetexists $clonesnap; then
 		log_must $ZFS promote $fs
 	fi
-	datasetexists $clone && log_must $ZFS destroy $clone
-	datasetexists $fssnap && log_must $ZFS destroy $fssnap
+	destroy_dataset $clone
+	destroy_dataset $fssnap
 }
 
 log_assert "Destroy dataset which is namespace-parent of origin should failed."

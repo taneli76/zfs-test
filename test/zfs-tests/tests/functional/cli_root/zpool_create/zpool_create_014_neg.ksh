@@ -63,12 +63,10 @@ function cleanup
 		fi
 		$RM -f $TMP_FILE
 		log_must $UMOUNT $mntp
-		$ZFS destroy $vol_name
+		destroy_dataset $vol_name
 	fi
 
-	if poolexists $TESTPOOL; then
-		destroy_pool $TESTPOOL
-	fi
+	destroy_pool -f $TESTPOOL
 }
 
 log_assert "'zpool create' should fail with regular file in swap."

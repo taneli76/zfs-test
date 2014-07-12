@@ -46,13 +46,10 @@ verify_runnable "global"
 
 function cleanup
 {
-	poolexists $TESTPOOL1 && \
-		destroy_pool $TESTPOOL1
+	destroy_pool -f $TESTPOOL1
 
-	datasetexists $TESTPOOL/$TESTFS && \
-		log_must $ZFS destroy -f $TESTPOOL/$TESTFS
-	poolexists $TESTPOOL && \
-		destroy_pool $TESTPOOL
+	destroy_dataset -f $TESTPOOL/$TESTFS
+	destroy_pool -f $TESTPOOL
 
 	if [[ -d $TESTDIR ]]; then
 		log_must $RM -rf $TESTDIR
@@ -85,7 +82,7 @@ function setup_vdevs #<disk>
 	create_pool foo $disk
 	log_must $ZFS create foo/fs
 	typeset -l fs_size=$(get_prop "available" foo/fs)
-	destroy_pool foo
+	destroy_pool -f foo
 
 	#64m is the minmum size for pool
 	(( largest_num = fs_size / (1024 * 1024 * 64) ))

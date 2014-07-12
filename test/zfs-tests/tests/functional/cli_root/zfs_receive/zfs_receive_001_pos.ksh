@@ -48,11 +48,9 @@ function cleanup
 {
 	typeset -i i=0
 
-	datasetexists $rst_root && \
-		log_must $ZFS destroy -Rf $rst_root
+	destroy_dataset -Rf $rst_root
 	while (( i < 2 )); do
-		snapexists ${orig_snap[$i]} && \
-			log_must $ZFS destroy -f ${orig_snap[$i]}
+		destroy_dataset -f ${orig_snap[$i]}
 		log_must $RM -f ${bkup[$i]}
 
 		(( i = i + 1 ))
@@ -63,8 +61,7 @@ function cleanup
 
 function recreate_root
 {
-	datasetexists $rst_root && \
-		log_must $ZFS destroy -Rf $rst_root
+	destroy_dataset -Rf $rst_root
 	if [[ -d $TESTDIR1 ]] ; then
 		log_must $RM -rf $TESTDIR1
 	fi
@@ -137,7 +134,7 @@ for orig_fs in $datasets ; do
 		(( i = i + 1 ))
 	done
 
-	log_must $ZFS destroy -Rf $rst_fs
+	destroy_dataset -Rf $rst_fs
 
 	log_note "Verifying 'zfs receive <snapshot>' works."
 	i=0
@@ -153,7 +150,7 @@ for orig_fs in $datasets ; do
 		(( i = i + 1 ))
 	done
 
-	log_must $ZFS destroy -Rf $rst_fs
+	destroy_dataset -Rf $rst_fs
 
 	log_note "Verfiying 'zfs receive -d <filesystem>' works."
 

@@ -60,7 +60,7 @@ do
 		log_mustnot verify_cache_device \
 			$TESTPOOL $ldev 'ONLINE' $cachetype
 
-		log_must $ZPOOL destroy $TESTPOOL
+		destroy_pool $TESTPOOL
 	done
 done
 

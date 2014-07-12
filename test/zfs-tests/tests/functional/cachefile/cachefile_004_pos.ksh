@@ -52,8 +52,8 @@ verify_runnable "global"
 
 function cleanup
 {
-	poolexists $TESTPOOL1 && destroy_pool $TESTPOOL1
-	poolexists $TESTPOOL2 && destroy_pool $TESTPOOL2
+	destroy_pool -f $TESTPOOL1
+	destroy_pool -f $TESTPOOL2
 
 	mntpnt=$(get_prop mountpoint $TESTPOOL)
 	typeset -i i=0
@@ -64,9 +64,7 @@ function cleanup
 		((i += 1))
 	done
 
-	if poolexists $TESTPOOL ; then
-		destroy_pool $TESTPOOL
-	fi
+	destroy_pool -f $TESTPOOL
 
 	for file in $CPATH1 $CPATH2 ; do
 		if [[ -f $file ]] ; then
@@ -115,8 +113,8 @@ log_must $ZPOOL import -d $mntpnt $TESTPOOL2
 log_must $ZPOOL set cachefile=$CPATH2 $TESTPOOL2
 log_must pool_in_cache $TESTPOOL2 $CPATH2
 
-log_must $ZPOOL destroy $TESTPOOL1
-log_must $ZPOOL destroy $TESTPOOL2
+destroy_pool $TESTPOOL1
+destroy_pool $TESTPOOL2
 if [[ -f $CPATH2 ]]; then
 	log_fail "Verify destroy when cachefile is set on pool."
 fi

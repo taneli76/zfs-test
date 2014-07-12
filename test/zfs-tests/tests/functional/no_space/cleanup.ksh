@@ -39,12 +39,12 @@ ismounted "$TESTPOOL/$TESTFS"
 (( $? == 0 )) && \
         log_must $ZFS umount $TESTDIR
 
-destroy_pool $TESTPOOL
+destroy_pool -f $TESTPOOL
 #
 # Remove 100mb partition.
 #
 create_pool dummy$$ "$DISK"
-destroy_pool dummy$$
+destroy_pool -f dummy$$
 
 rm -f $TMPFILE
 if [[ -n "$LINUX" ]]; then

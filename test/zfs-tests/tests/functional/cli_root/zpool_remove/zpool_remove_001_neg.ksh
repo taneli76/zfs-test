@@ -65,15 +65,13 @@ function check_remove
                 log_mustnot $ZPOOL remove $dev
         done
 
-        destroy_pool $pool
+        destroy_pool -f $pool
 
 }
 
 function cleanup
 {
-        if poolexists $TESTPOOL; then
-                destroy_pool $TESTPOOL
-        fi
+	destroy_pool -f $TESTPOOL
 }
 
 set -A create_args "$vdev_devs" "mirror $mirror_devs"  \

@@ -44,14 +44,11 @@ function cleanup
 {
 	typeset ds
 
-	if snapexists $snap; then
-		log_must $ZFS destroy $snap
-	fi
+	destroy_dataset $snap
 	for ds in $ctr1 $ctr2 $fs1; do
-		if datasetexists $ds; then
-			log_must $ZFS destroy -rf $ds
-		fi
+		destroy_dataset -rf $ds
 	done
+
 	if [[ -d $TESTDIR2 ]]; then
 		$RM -rf $TESTDIR2
 	fi

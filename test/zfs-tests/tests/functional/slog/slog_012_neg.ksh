@@ -67,7 +67,7 @@ do
 		log_must verify_slog_device $TESTPOOL $ldev 'UNAVAIL' 'mirror'
 
 		[[ -n "$LINUX" ]] && sleep 1
-		log_must $ZPOOL destroy -f $TESTPOOL
+		destroy_pool -f $TESTPOOL
 	done
 done
 

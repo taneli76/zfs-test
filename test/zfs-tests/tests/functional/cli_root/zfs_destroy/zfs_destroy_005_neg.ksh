@@ -201,7 +201,7 @@ log_note "$MKBUSY $mntpt (pidlist: $pidlist)"
 
 for option in -R -rR ; do
 	setup_testenv clone
-	log_must $ZFS destroy $option $FSSNAP
+	destroy_dataset $option $FSSNAP
 	check_dataset datasetexists $CTR $FS $VOL
 	check_dataset datasetnonexists $FSSNAP $FSCLONE
 done

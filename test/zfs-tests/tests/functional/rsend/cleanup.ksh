@@ -42,8 +42,8 @@ if (($? != 0)); then
 fi
 
 if is_global_zone ; then
-	destroy_pool $POOL
-	destroy_pool $POOL2
+	destroy_pool -f $POOL
+	destroy_pool -f $POOL2
 else
 	cleanup_pool $POOL
 	cleanup_pool $POOL2

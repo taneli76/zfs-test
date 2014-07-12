@@ -49,7 +49,7 @@ function cleanup
 	if is_global_zone ; then
 		log_must $ZFS set refreservation=none $TESTPOOL
 	fi
-	log_must $ZFS destroy -rf $TESTPOOL/$TESTFS
+	destroy_dataset -rf $TESTPOOL/$TESTFS
 	log_must $ZFS create $TESTPOOL/$TESTFS
 	log_must $ZFS set mountpoint=$TESTDIR $TESTPOOL/$TESTFS
 }

@@ -77,9 +77,7 @@ function test_n_check
 	fi
 
 	# Clean the test environment and make it clear.
-	if datasetexists $CTR; then
-		log_must $ZFS destroy -Rf $CTR
-	fi
+	destroy_dataset -Rf $CTR
 
 	# According to option create test compatible environment.
 	case $opt in
@@ -126,7 +124,7 @@ function test_n_check
 				    "(pidlist: $pidlist)"
 				[[ -z $pidlist ]] && \
 				    log_fail "Failure from $MKBUSY"
-				log_must $ZFS destroy -rR $dtst
+				destroy_dataset -rR $dtst
 				log_must $ZFS snapshot $dtst
 			fi
 			;;
@@ -137,7 +135,7 @@ function test_n_check
 				log_note "$MKBUSY $mpt_dir (pidlist: $pidlist)"
 				[[ -z $pidlist ]] && \
 				    log_fail "Failure from $MKBUSY"
-				log_must $ZFS destroy -rR $dtst
+				destroy_dataset -rR $dtst
 				log_must $ZFS snapshot $dtst
 			fi
 			;;
@@ -150,7 +148,7 @@ function test_n_check
 	fi
 
 	# Invoke 'zfs destroy [-rRf] <dataset>'
-	log_must $ZFS destroy $opt $dtst
+	destroy_dataset $opt $dtst
 
 	# Kill any lingering instances of mkbusy, and clear the list.
 	[[ -z $pidlist ]] || log_must $KILL -TERM $pidlist

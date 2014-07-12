@@ -47,9 +47,7 @@ verify_runnable "global"
 
 function cleanup
 {
-	poolexists $TESTPOOL && \
-		log_must $ZPOOL destroy -f $TESTPOOL
-
+	destroy_pool $TESTPOOL
 	for dir in $TESTDIR $TESTDIR1; do
 		[[ -d $dir ]] && $RM -rf $dir
 	done
@@ -65,9 +63,7 @@ set -A pooltype "" "mirror" "raidz" "raidz1" "raidz2"
 # cleanup the pools created in previous case if zpool_create_004_pos timedout
 #
 for pool in $TESTPOOL2 $TESTPOOL1 $TESTPOOL; do
-	if poolexists $pool; then
-		destroy_pool $pool
-	fi
+	destroy_pool -f $pool
 done
 
 #prepare raw file for file disk
@@ -90,8 +86,7 @@ do
 	i=0
 	while (( i < ${#pooltype[*]} )); do
 		#Remove the testing pool and its mount directory
-		poolexists $TESTPOOL && \
-			log_must $ZPOOL destroy -f $TESTPOOL
+		destroy_pool -f $TESTPOOL
 		[[ -d $TESTDIR1 ]] && $RM -rf $TESTDIR1
 		log_must $ZPOOL create $opt $TESTPOOL ${pooltype[i]} \
 			$file.1 $file.2 $file.3

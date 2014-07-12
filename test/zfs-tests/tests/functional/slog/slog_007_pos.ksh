@@ -80,7 +80,7 @@ do
 			#
 			# Destroy the pool and import again
 			#
-			log_must $ZPOOL destroy $TESTPOOL
+			destroy_pool $TESTPOOL
 			log_must $ZPOOL import -Df -d $VDIR -d $VDIR2 $TESTPOOL
 			log_must display_status $TESTPOOL
 			ldev=$(random_get $LDEV $LDEV2)
@@ -88,7 +88,7 @@ do
 				$TESTPOOL $ldev 'ONLINE' $logtype
 
 			[[ -n "$LINUX" ]] && sleep 1
-			log_must $ZPOOL destroy -f $TESTPOOL
+			destroy_pool -f $TESTPOOL
 		done
 	done
 done

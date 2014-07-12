@@ -47,12 +47,8 @@ function cleanup
 {
 	typeset -i i=0
 	while ((i < ${#datasets[@]})); do
-		if datasetexists ${datasets[$i]}@snap ; then
-			log_must $ZFS destroy ${datasets[$i]}@snap
-		fi
-		if datasetexists ${datasets[$i]}@snap-new ; then
-			log_must $ZFS destroy ${datasets[$i]}@snap-new
-		fi
+		destroy_dataset ${datasets[$i]}@snap
+		destroy_dataset ${datasets[$i]}@snap-new
 
 		((i += 1))
 	done
@@ -83,6 +79,6 @@ while ((i < ${#datasets[@]})); do
 	((i += 1))
 done
 
-log_must $ZFS destroy -rf ${TESTPOOL}@snap-new
+destroy_dataset -rf ${TESTPOOL}@snap-new
 
 log_pass "Verify zfs rename -r passed."

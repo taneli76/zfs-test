@@ -42,8 +42,7 @@ verify_runnable "global"
 
 function my_cleanup
 {
-	poolexists $TESTPOOL1 && \
-		destroy_pool $TESTPOOL1
+	destroy_pool -f $TESTPOOL1
 	[[ -e $TESTDIR/$TESTFILE1 ]] && \
 		log_must $RM -f $TESTDIR/$TESTFILE1
 	cleanup

@@ -48,13 +48,10 @@ function cleanup
 	for snap in $TESTPOOL/$TESTCTR/$TESTFS1@$TESTSNAP \
 		$TESTPOOL/$TESTCTR/$TESTVOL@$TESTSNAP;
 	do
-		snapexists $snap && \
-			log_must $ZFS destroy $snap
+		destroy_dataset $snap
 	done
 
-	datasetexists $TESTPOOL/$TESTCTR/$TESTVOL && \
-		log_must $ZFS destroy -rf $TESTPOOL/$TESTCTR/$TESTVOL
-
+	destroy_dataset -rf $TESTPOOL/$TESTCTR/$TESTVOL
 }
 
 log_assert "'zfs snapshot -r' fails with invalid arguments or scenarios. "
@@ -80,7 +77,7 @@ done
 # Testing the invalid senario: the child volume already has an
 # identical name snapshot, zfs snapshot -r should fail when
 # creating snapshot with -r for the parent
-log_must $ZFS destroy $TESTPOOL/$TESTCTR/$TESTFS1@$TESTSNAP
+destroy_dataset $TESTPOOL/$TESTCTR/$TESTFS1@$TESTSNAP
 if is_global_zone; then
 	log_must $ZFS create -V $VOLSIZE $TESTPOOL/$TESTCTR/$TESTVOL
 else

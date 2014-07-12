@@ -50,14 +50,10 @@ verify_runnable "global"
 
 function cleanup
 {
-        if poolexists $TESTPOOL1; then
-                log_must $ZPOOL destroy $TESTPOOL1
-        fi
+	destroy_pool $TESTPOOL1
 
 	for i in 1 2 3; do
-		if datasetexists $VFS/vol$i; then
-			log_must $ZFS destroy $VFS/vol$i
-		fi
+		destroy_dataset $VFS/vol$i
 	done
 }
 
@@ -105,7 +101,7 @@ for type in " " mirror raidz raidz2; do
 		log_fail "pool $TESTPOOL1 size changed after LUN expansion"
 	fi
 
-	log_must $ZPOOL destroy $TESTPOOL1
+	destroy_pool $TESTPOOL1
 
 	for i in 1 2 3; do
 		log_must $ZFS set volsize=$org_size $VFS/vol$i

@@ -36,7 +36,7 @@ verify_runnable "global"
 
 ismounted $TESTFS && \
         log_must $ZFS umount $TESTDIR
-destroy_pool "$TESTPOOL"
+destroy_pool -f $TESTPOOL
 
 #
 # Here we create & destroy a zpool using the disks
@@ -44,10 +44,10 @@ destroy_pool "$TESTPOOL"
 #
 if [[ -z $DISK ]]; then
         create_pool "ZZZ" "$DISK0 $DISK1"
-        destroy_pool "ZZZ"
+        destroy_pool -f ZZZ
 else
         create_pool "ZZZ" "$DISK"
-        destroy_pool "ZZZ"
+        destroy_pool -f ZZZ
 fi
 
 log_pass

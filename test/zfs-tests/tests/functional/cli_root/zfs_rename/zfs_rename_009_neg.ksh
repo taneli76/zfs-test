@@ -61,10 +61,10 @@ function cleanup
 		if [[ -n $exclude ]]; then
 			$ECHO "$pool_name" | $EGREP -v "$exclude" > /dev/null 2>&1
 			if [[ $? -eq 0 ]]; then
-				log_must $ZFS destroy $snap
+				destroy_dataset $snap
 			fi
 		else
-			log_must $ZFS destroy $snap
+			destroy_dataset $snap
 		fi
 	done
 }
@@ -84,7 +84,7 @@ while ((i < ${#datasets[@]})); do
 	# Create one more snapshot
 	log_must $ZFS snapshot ${datasets[$i]}@snap2
 	log_mustnot $ZFS rename -r ${TESTPOOL}@snap ${TESTPOOL}@snap2
-	log_must $ZFS destroy ${datasets[$i]}@snap2
+	destroy_dataset ${datasets[$i]}@snap2
 
 	# Check datasets, make sure none of them was renamed.
 	typeset -i j=0

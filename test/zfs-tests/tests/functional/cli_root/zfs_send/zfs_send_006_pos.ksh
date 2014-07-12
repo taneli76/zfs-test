@@ -37,7 +37,7 @@ verify_runnable "both"
 function cleanup
 {
 	for ds in $datasets; do
-                datasetexists $ds && $ZFS destroy -rf $ds
+		destroy_dataset -rf $ds
 	done
 }
 
@@ -155,7 +155,7 @@ options="-vPni"
 estimate_size=$(get_estimate_size $increamental_snapshot $options $full_snapshot)
 log_must verify_size_estimates $options $increamental_send
 
-log_must $ZFS destroy -r $TESTPOOL/$TESTFS1
+destroy_dataset -r $TESTPOOL/$TESTFS1
 
 #setup_recursive_send
 datasets="$TESTPOOL/$TESTFS1 $TESTPOOL/$TESTFS1/$TESTFS2

@@ -54,9 +54,7 @@ function cleanup
 		done
 	fi
 
-	if poolexists $TESTPOOL1; then
-		destroy_pool $TESTPOOL1
-	fi
+	destroy_pool -f $TESTPOOL1
 
 	[[ -e $TESTDIR ]] && log_must $RM -rf $TESTDIR/*
 }
@@ -151,7 +149,7 @@ for op in "" "-f"; do
 		log_fail "$REPLACEFILE is not present."
 	fi
 
-	destroy_pool $TESTPOOL1
+	destroy_pool -f $TESTPOOL1
 done
 
 log_note "Verify 'zpool attach' fails with non-mirrors."
@@ -170,7 +168,7 @@ for type in "" "raidz" "raidz1"; do
 		        log_fail "$REPLACEFILE should not be present."
 		fi
 
-		destroy_pool $TESTPOOL1
+		destroy_pool -f $TESTPOOL1
 	done
 done
 

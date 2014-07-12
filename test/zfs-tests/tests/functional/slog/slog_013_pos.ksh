@@ -47,9 +47,9 @@ verify_runnable "global"
 function cleanup_testenv
 {
 	cleanup
-	if datasetexists $TESTPOOL2 ; then
-		log_must $ZPOOL destroy -f $TESTPOOL2
-	fi
+
+	destroy_pool -f $TESTPOOL2
+
 	if [[ -n $lofidev ]]; then
 		$LOFIADM -d $lofidev
 	fi

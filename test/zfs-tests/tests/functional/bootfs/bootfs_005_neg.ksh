@@ -49,14 +49,10 @@ function cleanup {
 	typeset pool_name
 	for config in $CONFIGS; do
 		pool_name=$(eval $ECHO \$ZPOOL_VERSION_${config}_NAME)
-		if poolexists $pool_name; then
-			log_must $ZPOOL destroy $pool_name
-		fi
+		destroy_pool $pool_name
 	done
 
-	if poolexists $TESTPOOL ; then
-		log_must $ZPOOL destroy $TESTPOOL
-	fi
+	destroy_pool $TESTPOOL
 }
 
 log_assert "Boot properties cannot be set on pools with older versions"

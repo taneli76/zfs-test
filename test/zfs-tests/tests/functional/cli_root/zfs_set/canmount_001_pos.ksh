@@ -59,20 +59,18 @@ set -A values "on" "off"
 
 function cleanup
 {
-	if snapexists $TESTPOOL/$TESTFS@$TESTSNAP ; then
-		log_must $ZFS destroy -R $TESTPOOL/$TESTFS@$TESTSNAP
-	fi
-	if snapexists $TESTPOOL/$TESTVOL@$TESTSNAP ; then
-		log_must $ZFS destroy -R $TESTPOOL/$TESTVOL@$TESTSNAP
-	fi
+	destroy_dataset -R $TESTPOOL/$TESTFS@$TESTSNAP
+	destroy_dataset -R $TESTPOOL/$TESTVOL@$TESTSNAP
 
 	[[ -n $old_ctr_canmount ]] && \
 		log_must $ZFS set canmount=$old_ctr_canmount $TESTPOOL/$TESTCTR
 	[[ -n $old_fs_canmount ]] && \
 		log_must $ZFS set canmount=$old_fs_canmount $TESTPOOL/$TESTFS
 
+	export __ZFS_POOL_RESTRICT="$TESTPOOL"
 	$ZFS unmount -a > /dev/null 2>&1
 	log_must $ZFS mount -a
+	unset __ZFS_POOL_RESTRICT
 }
 
 log_assert "Setting a valid property of canmount to file system, it must be successful."

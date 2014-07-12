@@ -32,15 +32,8 @@
 . $STF_SUITE/tests/functional/cli_user/misc/misc.cfg
 . $STF_SUITE/include/libtest.shlib
 
-if poolexists $TESTPOOL.virt
-then
-	log_must $ZPOOL destroy $TESTPOOL.virt
-fi
-
-if poolexists v1-pool
-then
-	log_must $ZPOOL destroy v1-pool
-fi
+destroy_pool $TESTPOOL.virt
+destroy_pool v1-pool
 
 if [[ -f /tmp/zfstest_datastream.dat ]]
 then

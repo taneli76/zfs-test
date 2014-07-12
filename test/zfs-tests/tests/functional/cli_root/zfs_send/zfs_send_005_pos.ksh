@@ -52,8 +52,7 @@ function cleanup
 	poolexists $TESTPOOL && log_must $ZPOOL export $TESTPOOL
 	log_must $ZPOOL import $devopt $TESTPOOL
 
-	datasetexists $TESTPOOL@snap && \
-	    log_must $ZFS destroy -r $TESTPOOL@snap
+	destroy_dataset -r $TESTPOOL@snap
 }
 
 log_assert "'zfs send -R' can send from read-only pools"

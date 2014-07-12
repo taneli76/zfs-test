@@ -41,8 +41,8 @@ verify_runnable "global"
 
 function cleanup
 {
-	datasetexists $TESTPOOL1 && destroy_pool $TESTPOOL1
-	datasetexists $TESTPOOL && destroy_pool $TESTPOOL
+	destroy_pool -f $TESTPOOL1
+	destroy_pool -f $TESTPOOL
 }
 
 
@@ -105,7 +105,7 @@ i=0
 while ((i < ${#valid_args[@]})); do
 	log_must $ZPOOL create $TESTPOOL1 ${valid_args[$i]}
 	$SYNC; $SYNC
-	log_must $ZPOOL destroy -f $TESTPOOL1
+	destroy_pool $TESTPOOL1
 
 	((i += 1))
 done
@@ -115,7 +115,7 @@ while ((i < ${#forced_args[@]})); do
 	log_mustnot $ZPOOL create $TESTPOOL1 ${forced_args[$i]}
 	log_must $ZPOOL create -f $TESTPOOL1 ${forced_args[$i]}
 	$SYNC; $SYNC
-	log_must $ZPOOL destroy -f $TESTPOOL1
+	destroy_pool $TESTPOOL1
 
 	((i += 1))
 done

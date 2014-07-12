@@ -59,7 +59,7 @@ if is_global_zone ; then
 	#
 	log_must eval "$ZFS send -I $POOL2@psnap $POOL2/pclone@final > " \
 		"$BACKDIR/pool-clone-I"
-	log_must $ZFS destroy -rf $POOL2/pclone
+	destroy_dataset -rf $POOL2/pclone
 	log_must eval "$ZFS receive -d -F $POOL2 < $BACKDIR/pool-clone-I"
 	log_must cmp_ds_subs $POOL $POOL2
 	log_must cmp_ds_cont $POOL $POOL2
@@ -73,7 +73,7 @@ dstds=$(get_dst_ds $POOL $POOL2)
 ds=$dstds/$FS/fs1
 log_must eval "$ZFS send -I $ds/fs2@fsnap $ds/fclone@final > " \
 	"$BACKDIR/fs-clone-I"
-log_must $ZFS destroy -rf $ds/fclone
+destroy_dataset -rf $ds/fclone
 log_must eval "$ZFS receive -F $ds/fclone < $BACKDIR/fs-clone-I"
 
 log_must cmp_ds_subs $POOL $dstds
@@ -86,7 +86,7 @@ if is_global_zone ; then
 	ds=$POOL2/$FS
 	log_must eval "$ZFS send -I $ds/vol@vsnap $ds/vclone@final > " \
 		"$BACKDIR/vol-clone-I"
-	log_must $ZFS destroy -rf $ds/vclone
+	destroy_dataset -rf $ds/vclone
 	log_must eval "$ZFS receive -d -F $POOL2 < $BACKDIR/vol-clone-I"
 	log_must cmp_ds_subs $POOL $POOL2
 	log_must cmp_ds_cont $POOL $POOL2

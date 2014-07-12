@@ -45,7 +45,7 @@ datasets="$TESTPOOL/$TESTFS1 $TESTPOOL/$TESTFS1/$TESTFS2
 function cleanup
 {
 	for ds in $datasets; do
-		datasetexists $ds && $ZFS destroy -rf $ds
+		destroy_dataset -rf $ds
 	done
 }
 
@@ -64,7 +64,7 @@ for ds in $datasets; do
 done
 
 # destroy nested snapshot recursively
-log_must $ZFS destroy -R $TESTPOOL/$TESTFS1@snap
+destroy_dataset -R $TESTPOOL/$TESTFS1@snap
 
 # verify snapshot destroy
 for ds in $datasets; do

@@ -55,7 +55,7 @@ function cleanup
 	typeset disk
 
 	for dtst in $TESTPOOL $TESTPOOL1; do
-		poolexists $dtst && destroy_pool $dtst
+		destroy_pool -f $dtst
 	done
 
 	for disk in $DISKS; do
@@ -80,12 +80,12 @@ for opt in "" "mirror" "raidz" "raidz1"; do
 	# Create two pools but using the same disks.
 	create_pool $TESTPOOL $opt $disk
 	log_mustnot $ZPOOL create -f $TESTPOOL1 $opt $disk
-	destroy_pool $TESTPOOL
+	destroy_pool -f $TESTPOOL
 
 	# Create two pools and part of the devices were overlapped
 	create_pool $TESTPOOL $opt $disk
 	log_mustnot $ZPOOL create -f $TESTPOOL1 $opt ${DISKS% *}
-	destroy_pool $TESTPOOL
+	destroy_pool -f $TESTPOOL
 
 	# Create one pool but using the same disks twice.
 	log_mustnot $ZPOOL create -f $TESTPOOL $opt $disk $disk

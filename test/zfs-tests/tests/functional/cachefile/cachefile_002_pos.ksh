@@ -51,9 +51,7 @@
 
 function cleanup
 {
-	if poolexists $TESTPOOL ; then
-                destroy_pool $TESTPOOL
-        fi
+	destroy_pool -f $TESTPOOL
 }
 
 verify_runnable "global"
@@ -77,6 +75,6 @@ log_must $ZPOOL export $TESTPOOL
 log_must $ZPOOL import -o cachefile=$CPATH -d $DEVICEDIR $TESTPOOL
 log_must pool_in_cache $TESTPOOL
 
-log_must $ZPOOL destroy $TESTPOOL
+destroy_pool $TESTPOOL
 
 log_pass "Importing a pool with \"cachefile\" set doesn't update zpool.cache"

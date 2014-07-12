@@ -63,7 +63,7 @@ do
 	log_must display_status $TESTPOOL
 	log_must verify_cache_device $TESTPOOL $ldev 'ONLINE' ''
 
-	log_must $ZPOOL destroy -f $TESTPOOL
+	destroy_pool -f $TESTPOOL
 done
 
 log_pass "Offline and online a cache device succeed."

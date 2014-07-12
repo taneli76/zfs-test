@@ -49,12 +49,9 @@ function cleanup
 	typeset bkup
 
 	for snap in $init_snap $inc_snap; do
-		snapexists $snap && \
-			log_must $ZFS destroy -f $snap
+		destroy_dataset -f $snap
 	done
-
-	datasetexists $rst_root && \
-		log_must $ZFS destroy -Rf $rst_root
+	destroy_dataset -Rf $rst_root
 
 	for bkup in $full_bkup $inc_bkup; do
 		[[ -e $bkup ]] && \

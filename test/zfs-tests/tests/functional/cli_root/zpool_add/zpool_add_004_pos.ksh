@@ -43,13 +43,10 @@ verify_runnable "global"
 
 function cleanup
 {
-	poolexists $TESTPOOL && \
-		destroy_pool "$TESTPOOL"
+	destroy_pool -f $TESTPOOL
 
-	datasetexists $TESTPOOL1/$TESTVOL && \
-		log_must $ZFS destroy -f $TESTPOOL1/$TESTVOL
-	poolexists $TESTPOOL1 && \
-		destroy_pool "$TESTPOOL1"
+	destroy_dataset -f $TESTPOOL1/$TESTVOL
+	destroy_pool -f $TESTPOOL1
 
 	# Don't want to repartition the disk(s) on Linux.
 	# We do that in setup.ksh in a very special way.

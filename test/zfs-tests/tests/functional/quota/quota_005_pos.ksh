@@ -48,8 +48,7 @@ verify_runnable "both"
 
 function cleanup
 {
-	datasetexists $fs_child && \
-		log_must $ZFS destroy $fs_child
+	destroy_dataset $fs_child
 
 	log_must $ZFS set quota=$quota_val $fs
 }

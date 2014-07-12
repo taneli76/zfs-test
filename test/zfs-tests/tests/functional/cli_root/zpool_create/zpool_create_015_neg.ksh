@@ -72,9 +72,7 @@ function cleanup
 	fi
 
 	for pool in $TESTPOOL1 $TESTPOOL; do
-		if poolexists $pool; then
-			destroy_pool $pool
-		fi
+		destroy_pool -f $pool
 	done
 
 }
@@ -117,7 +115,8 @@ if [[ -n "$LINUX" ]]; then
 else
 	log_must $SWAP -d $ZVOL_DEVDIR/${vol_name}
 fi
-log_must $ZFS destroy $vol_name
-log_must $ZPOOL destroy $TESTPOOL
+
+destroy_dataset $vol_name
+destroy_pool $TESTPOOL
 
 log_pass "'zpool create' passed as expected with inapplicable scenario."

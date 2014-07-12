@@ -42,7 +42,9 @@ verify_runnable "both"
 
 function cleanup
 {
+	export __ZFS_POOL_RESTRICT="$TESTPOOL"
 	log_must $ZFS mount -a
+	unset __ZFS_POOL_RESTRICT
 }
 
 log_onexit cleanup

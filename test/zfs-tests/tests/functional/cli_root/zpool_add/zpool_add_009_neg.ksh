@@ -43,9 +43,7 @@ verify_runnable "global"
 
 function cleanup
 {
-
-        poolexists "$TESTPOOL" && \
-                destroy_pool "$TESTPOOL"
+	destroy_pool -f $TESTPOOL
 
 	# Don't want to repartition the disk(s) on Linux.
 	# We do that in setup.ksh in a very special way.

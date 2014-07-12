@@ -70,6 +70,6 @@ for input in $VOL_R_PATH ${VOL_R_PATH}@$snap; do
 	fi
 done
 
-log_must $ZFS destroy $vol@$snap
+destroy_dataset $vol@$snap
 
 log_pass "'zfs rename' can rename volume snapshot as expected."

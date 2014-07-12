@@ -56,7 +56,7 @@ function cleanup
 	typeset vol
 
 	for vol in $regvol $sparsevol; do
-		datasetexists $vol &&  log_must $ZFS destroy $vol
+		destroy_dataset $vol
 	done
 }
 log_onexit cleanup

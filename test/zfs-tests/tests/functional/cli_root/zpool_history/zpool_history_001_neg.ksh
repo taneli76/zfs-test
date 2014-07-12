@@ -47,8 +47,8 @@ set -A neg_opt "$TESTPOOL/$TESTCTR" "$TESTPOOL/$TESTVOL" "-t $TESTPOOL" \
 
 function cleanup
 {
-	datasetexists $clone && log_must $ZFS destroy $clone
-	datasetexists $snap && log_must $ZFS destroy $snap
+	destroy_dataset $clone
+	destroy_dataset $snap
 }
 
 log_assert "Verify 'zpool history' can deal with non-existent pools and " \

@@ -51,8 +51,7 @@ function cleanup
 	[[ -e $TESTDIR1 ]] && \
 		log_must $RM -rf $TESTDIR1/* > /dev/null 2>&1
 
-	snapexists $SNAPCTR && \
-		log_must $ZFS destroy $SNAPCTR
+	destroy_dataset $SNAPCTR
 
 	datasetexists $TESTPOOL/$TESTCTR/$TESTFS1 && \
 		log_must $ZFS set quota=none $TESTPOOL/$TESTCTR/$TESTFS1
@@ -66,7 +65,7 @@ log_must $ZFS set quota=$FSQUOTA $TESTPOOL/$TESTCTR/$TESTFS1
 log_must $MKFILE $FILESIZE $TESTDIR1/$TESTFILE
 
 log_must $ZFS snapshot $SNAPCTR
-log_must $ZFS destroy $SNAPCTR
+destroy_dataset $SNAPCTR
 
 log_note "Make the quota of filesystem is reached"
 log_mustnot $MKFILE $FILESIZE1 $TESTDIR1/$TESTFILE1

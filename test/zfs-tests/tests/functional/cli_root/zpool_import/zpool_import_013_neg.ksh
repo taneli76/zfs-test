@@ -60,7 +60,7 @@ function uncompress_pool
 
 function cleanup
 {
-	poolexists $POOL_NAME && log_must $ZPOOL destroy $POOL_NAME
+	destroy_pool $POOL_NAME
 	[[ -e /$TESTPOOL/$POOL_FILE ]] && $RM /$TESTPOOL/$POOL_FILE
 	return 0
 }

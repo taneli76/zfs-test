@@ -60,10 +60,8 @@ fi
 
 function cleanup
 {
-	datasetexists $TESTPOOL/$TESTVOL@$TESTSNAP && \
-		destroy_snapshot $TESTPOOL/$TESTVOL@$TESTSNAP
-	datasetexists $TESTPOOL/$TESTFS@$TESTSNAP && \
-		destroy_snapshot $TESTPOOL/$TESTFS@$TESTSNAP
+	destroy_dataset $TESTPOOL/$TESTVOL@$TESTSNAP
+	destroy_dataset $TESTPOOL/$TESTFS@$TESTSNAP
 }
 
 log_assert "Verify that read-only properties are immutable."

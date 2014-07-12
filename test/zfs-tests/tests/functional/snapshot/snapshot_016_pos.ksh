@@ -47,17 +47,12 @@ verify_runnable "both"
 
 function cleanup
 {
-	datasetexists $SNAPFS && \
-		log_must $ZFS destroy -Rf $SNAPFS
-	datasetexists $TESTPOOL/$TESTFS@snap_a && \
-		log_must $ZFS destroy -Rf $TESTPOOL/$TESTFS@snap_a
-	datasetexists $TESTPOOL/$TESTCLONE@snap_a && \
-		log_must $ZFS destroy -Rf $TESTPOOL/$TESTCLONE@snap_a
+	destroy_dataset -Rf $SNAPFS
+	destroy_dataset -Rf $TESTPOOL/$TESTFS@snap_a
+	destroy_dataset -Rf $TESTPOOL/$TESTCLONE@snap_a
 
-	datasetexists $TESTPOOL/$TESTCLONE && \
-		log_must $ZFS destroy $TESTPOOL/$TESTCLONE
-	datasetexists $TESTPOOL/$TESTFS && \
-		log_must $ZFS destroy $TESTPOOL/$TESTFS
+	destroy_dataset $TESTPOOL/$TESTCLONE
+	destroy_dataset $TESTPOOL/$TESTFS
 
 	log_must $ZFS create $TESTPOOL/$TESTFS
 	log_must $ZFS set mountpoint=$TESTDIR $TESTPOOL/$TESTFS
@@ -73,7 +68,7 @@ log_must $MV $TESTDIR/$SNAPROOT/$TESTSNAP $TESTDIR/$SNAPROOT/snap_a
 
 datasetexists $TESTPOOL/$TESTFS@snap_a || \
 	log_fail "rename snapshot via mv in .zfs/snapshot fails."
-log_must $ZFS destroy $TESTPOOL/$TESTFS@snap_a
+destroy_dataset $TESTPOOL/$TESTFS@snap_a
 
 # scenario 2
 
@@ -86,8 +81,8 @@ datasetexists $TESTPOOL/$TESTFS@snap_a || \
 log_must $ZFS promote $TESTPOOL/$TESTCLONE
 # promote back to $TESTPOOL/$TESTFS for scenario 3
 log_must $ZFS promote $TESTPOOL/$TESTFS
-log_must $ZFS destroy $TESTPOOL/$TESTCLONE
-log_must $ZFS destroy $TESTPOOL/$TESTFS@snap_a
+destroy_dataset $TESTPOOL/$TESTCLONE
+destroy_dataset $TESTPOOL/$TESTFS@snap_a
 
 # scenario 3
 
@@ -95,7 +90,7 @@ log_must $ZFS snapshot $SNAPFS
 log_must $ZFS clone $SNAPFS $TESTPOOL/$TESTCLONE
 log_must $ZFS rename $SNAPFS $TESTPOOL/$TESTFS@snap_a
 log_must $ZFS promote $TESTPOOL/$TESTCLONE
-log_must $ZFS destroy $TESTPOOL/$TESTFS
-log_must $ZFS destroy $TESTPOOL/$TESTCLONE@snap_a
+destroy_dataset $TESTPOOL/$TESTFS
+destroy_dataset $TESTPOOL/$TESTCLONE@snap_a
 
 log_pass "Verify renamed snapshots via mv can be destroyed."

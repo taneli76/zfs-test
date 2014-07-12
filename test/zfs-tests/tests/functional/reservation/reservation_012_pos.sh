@@ -55,7 +55,7 @@ log_assert "Verify reservations protect space"
 
 function cleanup
 {
-	log_must $ZFS destroy -f $TESTPOOL/$TESTFS2
+	destroy_dataset -f $TESTPOOL/$TESTFS2
 	log_must zero_reservation $TESTPOOL/$TESTFS
 
 	[[ -e $TESTDIR/$TESTFILE2 ]] && log_must $RM -rf $TESTDIR/$TESTFILE2

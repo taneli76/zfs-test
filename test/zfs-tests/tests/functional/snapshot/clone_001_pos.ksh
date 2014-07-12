@@ -74,8 +74,7 @@ function cleanup_all
 
 	i=0
 	while (( i < ${#args[*]} )); do
-		snapexists ${args[i]} && \
-			log_must $ZFS destroy -Rf ${args[i]}
+		destroy_dataset -Rf ${args[i]}
 
 		[[ -d ${args[i+3]} ]] && \
 			log_must $RM -rf ${args[i+3]}
@@ -86,10 +85,9 @@ function cleanup_all
 		(( i = i + 4 ))
 	done
 
-	datasetexists $TESTPOOL1/$TESTFS  && \
-		log_must $ZFS destroy -f $TESTPOOL1/$TESTFS
+	destroy_dataset -f $TESTPOOL1/$TESTFS
 
-	destroy_pool $TESTPOOL1
+	destroy_pool -f $TESTPOOL1
 
 	[[ -d $TESTDIR2 ]] && \
 		log_must $RM -rf $TESTDIR2

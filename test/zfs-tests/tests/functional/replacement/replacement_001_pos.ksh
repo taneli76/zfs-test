@@ -54,9 +54,7 @@ function cleanup
 		done
 	fi
 
-	if poolexists $TESTPOOL1; then
-		destroy_pool $TESTPOOL1
-	fi
+	destroy_pool -f $TESTPOOL1
 
 	[[ -e $TESTDIR ]] && log_must $RM -rf $TESTDIR/*
 }
@@ -152,8 +150,7 @@ for type in "" "raidz" "raidz1" "mirror"; do
 			log_fail "$REPLACEFILE is not present."
 		fi
 
-		destroy_pool $TESTPOOL1
-		log_must $RM -rf /$TESTPOOL1
+		destroy_pool -f $TESTPOOL1
 	done
 done
 

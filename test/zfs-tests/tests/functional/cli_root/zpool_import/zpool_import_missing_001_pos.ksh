@@ -81,10 +81,8 @@ function cleanup
 
 function recreate_files
 {
-	if poolexists "$TESTPOOL1" ; then
-		cleanup_filesystem $TESTPOOL1 $TESTFS
-		destroy_pool $TESTPOOL1
-	fi
+	destroy_dataset $TESTPOOL1/$TESTFS
+	destroy_pool -f $TESTPOOL1
 
 	log_must $RM -rf $DEVICE_DIR/*
 	typeset i=0

@@ -48,7 +48,7 @@ verify_runnable "global"
 
 function cleanup
 {
-	destroy_pool $TESTPOOL1
+	destroy_pool -f $TESTPOOL1
 
 	log_must $RM -rf $DEVICE_DIR/*
 	typeset i=0
@@ -69,7 +69,7 @@ if (( RANDOM % 2 == 0 )) ; then
 	target=$guid
 	log_note "Import by guid."
 fi
-log_must $ZPOOL destroy $TESTPOOL1
+destroy_pool $TESTPOOL1
 
 log_note "Devices was moved to different directories."
 log_must $MKDIR $DEVICE_DIR/newdir1 $DEVICE_DIR/newdir2
@@ -77,12 +77,12 @@ log_must $MV $VDEV1 $DEVICE_DIR/newdir1
 log_must $MV $VDEV2 $DEVICE_DIR/newdir2
 log_must $ZPOOL import -d $DEVICE_DIR/newdir1 -d $DEVICE_DIR/newdir2 \
 	-d $DEVICE_DIR -D -f $target
-log_must $ZPOOL destroy -f $TESTPOOL1
+destroy_pool -f $TESTPOOL1
 
 log_note "Devices was moved to same directory."
 log_must $MV $VDEV0 $DEVICE_DIR/newdir2
 log_must $MV $DEVICE_DIR/newdir1/* $DEVICE_DIR/newdir2
 log_must $ZPOOL import -d $DEVICE_DIR/newdir2 -D -f $target
-log_must $ZPOOL destroy -f $TESTPOOL1
+destroy_pool -f $TESTPOOL1
 
 log_pass "Destroyed pools devices was moved, 'zpool import -D' passed."

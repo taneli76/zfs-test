@@ -48,7 +48,7 @@ verify_runnable "both"
 
 function cleanup
 {
-	datasetexists $TEST_FS && log_must $ZFS destroy $TEST_FS
+	destroy_dataset $TEST_FS
 }
 
 log_onexit cleanup
@@ -61,7 +61,7 @@ log_must $ZFS create -o recordsize=512 -o compression=off $TEST_FS
 #
 log_must $DD bs=1024k count=2048 if=/dev/zero of=/$TEST_FS/file
 
-log_must $ZFS destroy $TEST_FS
+destroy_dataset $TEST_FS
 
 count=0
 while [[ "0" != "$($ZPOOL list -Ho freeing $TESTPOOL)" ]]; do

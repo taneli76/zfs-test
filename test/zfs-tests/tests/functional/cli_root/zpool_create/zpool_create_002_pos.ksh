@@ -51,7 +51,7 @@ function cleanup
 	for pool in $TESTPOOL $TESTPOOL1 $TESTPOOL2 $TESTPOOL3 $TESTPOOL4 \
 		$TESTPOOL5 $TESTPOOL6
 	do
-		poolexists $pool && destroy_pool $pool
+		destroy_pool -f $pool
 	done
 
 	clean_blockfile "$TESTDIR0 $TESTDIR1"

@@ -47,7 +47,7 @@ verify_runnable "global"
 
 function cleanup
 {
-	datasetexists $spool && log_must $ZPOOL destroy $spool
+	destroy_pool $spool
 	[[ -f $VDEV0 ]] && log_must $RM -f $VDEV0
 	[[ -f $VDEV1 ]] && log_must $RM -f $VDEV1
 	[[ -f $TMPFILE ]] && log_must $RM -f $TMPFILE

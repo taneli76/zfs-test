@@ -46,7 +46,7 @@ verify_runnable "global"
 
 function cleanup
 {
-	destroy_pool $TESTPOOL1
+	destroy_pool -f $TESTPOOL1
 
 	log_must $RM $VDEV0 $VDEV1
 	log_must $MKFILE -s $FILE_SIZE $VDEV0 $VDEV1
@@ -56,7 +56,7 @@ log_assert "Destroyed pools are not listed unless with -D option is specified."
 log_onexit cleanup
 
 log_must $ZPOOL create $TESTPOOL1 $VDEV0 $VDEV1
-log_must $ZPOOL destroy $TESTPOOL1
+destroy_pool $TESTPOOL1
 
 #
 # 'pool:' is the keywords of 'zpool import -D' output.

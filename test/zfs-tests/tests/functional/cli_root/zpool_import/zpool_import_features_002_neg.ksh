@@ -46,7 +46,7 @@ active_features="com.test:xxx_unsup0 com.test:xxx_unsup2"
 
 function cleanup
 {
-	poolexists $TESTPOOL1 && destroy_pool $TESTPOOL1
+	destroy_pool -f $TESTPOOL1
 
 	log_must $RM $VDEV0
 	log_must $MKFILE -s $FILE_SIZE $VDEV0

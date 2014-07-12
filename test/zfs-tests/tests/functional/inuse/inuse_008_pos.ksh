@@ -49,7 +49,7 @@ function cleanup
 {
 	poolexists $TESTPOOL1 || $ZPOOL import $TESTPOOL1 >/dev/null 2>&1
 
-	poolexists $TESTPOOL1 && destroy_pool $TESTPOOL1
+	destroy_pool -f $TESTPOOL1
 
 	#
 	# Tidy up the disks we used.

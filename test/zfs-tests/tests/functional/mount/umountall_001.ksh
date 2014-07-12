@@ -32,10 +32,12 @@
 # 3. Run umountall -n and verify the file systems it reports are in the list.
 #
 
+export __ZFS_POOL_RESTRICT="$TESTPOOL"
 log_must $ZFS mount -a
 for fs in 1 2 3 ; do
 	log_must mounted $TESTPOOL/$TESTFS.$fs
 done
+unset __ZFS_POOL_RESTRICT
 
 # This is the list we check the output of umountall -n against. We seed it
 # with these values because umountall will ignore them, and they're possible

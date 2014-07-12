@@ -44,8 +44,8 @@
 
 function cleanup {
 
-	log_must $ZFS destroy $TESTPOOL/$TESTFS/clone
-	log_must $ZFS destroy $TESTPOOL/$TESTFS@snapshot1
+	destroy_dataset $TESTPOOL/$TESTFS/clone
+	destroy_dataset $TESTPOOL/$TESTFS@snapshot1
 	log_must $RM $TESTDIR/myfile.$$
 }
 

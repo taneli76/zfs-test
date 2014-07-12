@@ -43,8 +43,7 @@ verify_runnable "global"
 
 function cleanup
 {
-	poolexists $TESTPOOL && \
-		destroy_pool $TESTPOOL
+	destroy_pool -f $TESTPOOL
 
 	# Don't want to repartition the disk(s) on Linux.
 	# We do that in setup.ksh in a very special way.
@@ -96,7 +95,7 @@ while (( $i < ${#keywords[*]} )); do
 			log_must poolexists "$TESTPOOL"
 			log_must $ZPOOL add -f "$TESTPOOL" ${keywords[i]} $vdev
 			log_must iscontained "$TESTPOOL" "$vdev"
-			destroy_pool "$TESTPOOL"
+			destroy_pool -f $TESTPOOL
 		done
 
 		;;
@@ -108,7 +107,7 @@ while (( $i < ${#keywords[*]} )); do
 			log_must poolexists "$TESTPOOL"
 			log_must $ZPOOL add "$TESTPOOL" ${keywords[i]} $vdev
 			log_must iscontained "$TESTPOOL" "$vdev"
-			destroy_pool "$TESTPOOL"
+			destroy_pool -f $TESTPOOL
 		done
 
 		;;
@@ -120,7 +119,7 @@ while (( $i < ${#keywords[*]} )); do
 			log_must poolexists "$TESTPOOL"
 			log_must $ZPOOL add "$TESTPOOL" ${keywords[i]} $vdev
 			log_must iscontained "$TESTPOOL" "$vdev"
-			destroy_pool "$TESTPOOL"
+			destroy_pool -f $TESTPOOL
 		done
 
 		;;

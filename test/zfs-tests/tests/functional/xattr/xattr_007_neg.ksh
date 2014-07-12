@@ -46,7 +46,7 @@
 #
 
 function cleanup {
-	log_must $ZFS destroy $TESTPOOL/$TESTFS@snap
+	destroy_dataset $TESTPOOL/$TESTFS@snap
 	log_must $RM $TESTDIR/myfile2.$$
 	log_must $RM $TESTDIR/myfile.$$
 	log_must $RM /tmp/output.$$

@@ -99,21 +99,19 @@ function cleanup_all
 		if is_global_zone ; then
 			j=0
 			while (( j < ${#vol[*]} )); do
-				cleanup_filesystem "$TESTPOOL" \
-					"${ctr[i]}/${vol[j]}"
+				destroy_dataset $TESTPOOL/${ctr[i]}/${vol[j]}
 				((j = j + 1))
 			done
 		fi
 
 		j=0
 		while (( j < ${#fs[*]} )); do
-			cleanup_filesystem "$TESTPOOL" \
-				"${ctr[i]}/${fs[j]}"
+			destroy_dataset $TESTPOOL/${ctr[i]}/${fs[j]}
 			((j = j + 1))
 		done
 
 		[[ -n ${ctr[i]} ]] && \
-			cleanup_filesystem "$TESTPOOL" "${ctr[i]}"
+			destroy_dataset $TESTPOOL/${ctr[i]}
 
 		((i = i - 1))
 	done
@@ -168,7 +166,6 @@ typeset opt
 for opt in "-a" "-fa"; do
 	export __ZFS_POOL_RESTRICT="$TESTPOOL"
 	log_must $ZFS $mountall
-	unset __ZFS_POOL_RESTRICT
 
 	if [[ $opt == "-fa" ]]; then
 		mntpnt=$(get_prop mountpoint ${TESTPOOL}/${TESTCTR}/${TESTFS})
@@ -176,7 +173,6 @@ for opt in "-a" "-fa"; do
 		log_mustnot $ZFS unmount -a
 	fi
 
-	export __ZFS_POOL_RESTRICT="$TESTPOOL"
 	log_must $ZFS unmount $opt
 	unset __ZFS_POOL_RESTRICT
 

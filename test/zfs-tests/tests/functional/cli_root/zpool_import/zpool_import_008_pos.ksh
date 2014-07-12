@@ -48,8 +48,8 @@ verify_runnable "global"
 
 function cleanup
 {
-	destroy_pool $TESTPOOL2
-	destroy_pool $TESTPOOL1
+	destroy_pool -f $TESTPOOL2
+	destroy_pool -f $TESTPOOL1
 
 	log_must $RM -rf $DEVICE_DIR/*
 	typeset i=0
@@ -70,22 +70,22 @@ if (( RANDOM % 2 == 0 )) ; then
 	target=$guid
 	log_note "Import by guid."
 fi
-log_must $ZPOOL destroy $TESTPOOL1
+destroy_pool $TESTPOOL1
 
 log_must $ZPOOL create $TESTPOOL2 $VDEV0 $VDEV1
 log_must $ZPOOL import -d $DEVICE_DIR -D -f $target
-log_must $ZPOOL destroy $TESTPOOL1
+destroy_pool $TESTPOOL1
 
-log_must $ZPOOL destroy $TESTPOOL2
+destroy_pool $TESTPOOL2
 log_must $RM -rf $VDEV0 $VDEV1
 log_must $ZPOOL import -d $DEVICE_DIR -D -f $target
-log_must $ZPOOL destroy $TESTPOOL1
+destroy_pool $TESTPOOL1
 
 log_note "For raidz2, more than two destroyed pool's devices were used, " \
 	"import failed."
 log_must $MKFILE -s $FILE_SIZE $VDEV0 $VDEV1
 log_must $ZPOOL create $TESTPOOL2 $VDEV0 $VDEV1 $VDEV2
 log_mustnot $ZPOOL import -d $DEVICE_DIR -D -f $target
-log_must $ZPOOL destroy $TESTPOOL2
+destroy_pool $TESTPOOL2
 
 log_pass "zpool import -D raidz2 passed."

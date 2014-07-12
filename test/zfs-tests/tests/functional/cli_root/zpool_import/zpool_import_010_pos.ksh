@@ -51,7 +51,7 @@ function cleanup
 {
 	typeset dt
 	for dt in $poolE $poolD $poolC $poolB $poolA; do
-		destroy_pool $dt
+		destroy_pool -f $dt
 	done
 
 	log_must $RM -rf $DEVICE_DIR/*
@@ -69,19 +69,19 @@ log_onexit cleanup
 poolA=poolA.$$; poolB=poolB.$$; poolC=poolC.$$; poolD=poolD.$$; poolE=poolE.$$
 
 log_must $ZPOOL create $poolA mirror $VDEV0 $VDEV1 $VDEV2 $VDEV3 $VDEV4
-log_must $ZPOOL destroy $poolA
+destroy_pool $poolA
 
 log_must $ZPOOL create $poolB $VDEV1
-log_must $ZPOOL destroy $poolB
+destroy_pool $poolB
 
 log_must $ZPOOL create $poolC raidz2 $VDEV2 $VDEV3 $VDEV4
-log_must $ZPOOL destroy $poolC
+destroy_pool $poolC
 
 log_must $ZPOOL create $poolD raidz $VDEV3 $VDEV4
-log_must $ZPOOL destroy $poolD
+destroy_pool $poolD
 
 log_must $ZPOOL create $poolE $VDEV4
-log_must $ZPOOL destroy $poolE
+destroy_pool $poolE
 
 log_must $ZPOOL import -d $DEVICE_DIR -D -f -a
 

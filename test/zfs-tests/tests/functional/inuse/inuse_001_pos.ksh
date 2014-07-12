@@ -52,7 +52,7 @@ function cleanup
 		log_must $DUMPADM -u -d $PREVDUMPDEV > /dev/null
 	fi
 
-	destroy_pool $TESTPOOL
+	destroy_pool -f $TESTPOOL
 }
 
 log_assert "Ensure ZFS cannot use a device designated as a dump device"

@@ -94,21 +94,18 @@ function cleanup
                                 typeset newfs=${dataset[i]}-new
                                 typeset oldfs=${dataset[i]}
                                 typeset mntp=$(get_prop mountpoint  $newfs)
-                                log_must $ZFS destroy -f $newfs
+				destroy_dataset -f $newfs
                                 log_must $ZFS create -p $oldfs
                                 log_must $ZFS set mountpoint=$mntp $oldfs
                         fi
                 else
-                        log_must $ZFS destroy -fR ${dataset[i]}-new
+			destroy_dataset -fR ${dataset[i]}-new
                 fi
 
                 ((i = i + 1))
 	done
 
-	if snapexists $TESTPOOL/$TESTFS@snapshot; then
-		log_must $ZFS destroy -fR $TESTPOOL/$TESTFS@snapshot
-	fi
-
+	destroy_dataset -fR $TESTPOOL/$TESTFS@snapshot
 }
 
 function cmp_data #<$1 src data, $2 tgt data>

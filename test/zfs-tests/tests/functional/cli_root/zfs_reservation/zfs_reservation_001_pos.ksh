@@ -42,10 +42,7 @@ RESERVATION="reserve"
 
 function cleanup
 {
-	if datasetexists $TESTPOOL/$RESERVATION ; then
-		log_must $ZFS unmount $TESTPOOL/$RESERVATION
-		log_must $ZFS destroy $TESTPOOL/$RESERVATION
-	fi
+	destroy_dataset $TESTPOOL/$RESERVATION
 }
 
 log_onexit cleanup

@@ -42,13 +42,13 @@ verify_runnable "both"
 function cleanup
 {
 	if datasetexists $fssnap ; then
-		datasetexists $clone && log_must $ZFS destroy $clone
-		log_must $ZFS destroy $fssnap
+		destroy_dataset $clone
+		destroy_dataset $fssnap
 	fi
 	if datasetexists $clone ; then
 		log_must $ZFS promote $fs
-		log_must $ZFS destroy $clone
-		log_must $ZFS destroy $fssnap
+		destroy_dataset $clone
+		destroy_dataset $fssnap
 	fi
 }
 

@@ -36,7 +36,7 @@ verify_runnable "global"
 
 ismounted $TESTPOOL/$TESTFS
 (( $? == 0 )) && log_must $ZFS umount -f $TESTDIR
-destroy_pool $TESTPOOL
+destroy_pool -f $TESTPOOL
 
 if [[ -n "$LINUX" ]]; then
 	for i in {0..2}; do

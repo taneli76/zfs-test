@@ -49,10 +49,9 @@ verify_runnable "global"
 
 function cleanup
 {
-        poolexists $TOOSMALL && destroy_pool $TOOSMALL
-        poolexists $TESTPOOL1 && destroy_pool $TESTPOOL1
-
-        poolexists $TESTPOOL && destroy_pool $TESTPOOL
+        destroy_pool -f $TOOSMALL
+        destroy_pool -f $TESTPOOL1
+        destroy_pool -f $TESTPOOL
 
 	[[ -d $TESTDIR ]] && $RM -rf $TESTDIR
 

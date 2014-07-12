@@ -58,17 +58,9 @@ function cleanup
 	[[ -d $TESTDIR2 ]] && \
 		log_must $RM -rf $TESTDIR2
 
-	if datasetexists "$TESTPOOL/$TESTCLONE"; then
-		log_must $ZFS destroy -f $TESTPOOL/$TESTCLONE
-	fi
-
-	if snapexists "$TESTPOOL/$TESTFS2@snapshot"; then
-		log_must $ZFS destroy -f $TESTPOOL/$TESTFS2@snapshot
-	fi
-
-	if datasetexists "$TESTPOOL/$TESTFS2"; then
-		log_must $ZFS destroy -f $TESTPOOL/$TESTFS2
-	fi
+	destroy_dataset -f $TESTPOOL/$TESTCLONE
+	destroy_dataset -f $TESTPOOL/$TESTFS2@snapshot
+	destroy_dataset -f $TESTPOOL/$TESTFS2
 }
 
 #

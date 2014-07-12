@@ -49,8 +49,8 @@ verify_runnable "global"
 
 function cleanup
 {
-	destroy_pool $TESTPOOL1
-	destroy_pool $TESTPOOL2
+	destroy_pool -f $TESTPOOL1
+	destroy_pool -f $TESTPOOL2
 
 	#
 	# Recreate virtual devices to avoid destroyed pool information on files.
@@ -70,12 +70,12 @@ if (( RANDOM % 2 == 0 )) ; then
 	target=$guid
 	log_note "Import by guid."
 fi
-log_must $ZPOOL destroy $TESTPOOL1
+destroy_pool $TESTPOOL1
 log_must $ZPOOL create $TESTPOOL2 $VDEV2
 
 log_mustnot $ZPOOL import -d $DEVICE_DIR -D -f $target
 
-log_must $ZPOOL destroy $TESTPOOL2
+destroy_pool $TESTPOOL2
 log_mustnot $ZPOOL import -d $DEVICE_DIR -D -f $target
 
 log_pass "Any strip pool devices damaged, pool can't be import passed."

@@ -33,8 +33,8 @@
 
 verify_runnable "global"
 
-log_must $ZPOOL destroy $TESTPOOL
-log_must $ZPOOL destroy $TESTPOOL2
+destroy_pool $TESTPOOL
+destroy_pool $TESTPOOL2
 
 log_must $RM /tmp/zpool_version_1.dat
 log_must $RM /tmp/zpool2_version_1.dat

@@ -36,7 +36,7 @@ log_onexit cleanup
 
 function cleanup
 {
-	datasetexists $origin && log_must $ZFS destroy -R $origin
+	destroy_dataset -R $origin
 	log_must $ZFS create -o mountpoint=$TESTDIR $origin
 }
 
@@ -51,7 +51,7 @@ log_must $ZFS set checksum=sha256 $origin/clone
 $DD if=/$TESTDIR/file of=/$TESTDIR/clone/file bs=1024k count=$MEGS \
     conv=notrunc >/dev/null 2>&1 || log_fail "dd failed."
 log_mustnot verify_nopwrite $origin $origin@a $origin/clone
-$ZFS destroy -R $origin@a || log_fail "zfs destroy failed"
+destroy_dataset -R $origin@a
 log_must $RM -f $TESTDIR/file
 
 # Data written to origin fs before checksum enabled
@@ -64,7 +64,7 @@ log_must $ZFS clone $origin@a $origin/clone
 $DD if=/$TESTDIR/file of=/$TESTDIR/clone/file bs=1024k count=$MEGS \
     conv=notrunc >/dev/null 2>&1 || log_fail "dd failed."
 log_mustnot verify_nopwrite $origin $origin@a $origin/clone
-$ZFS destroy -R $origin@a || log_fail "zfs destroy failed"
+destroy_dataset -R $origin@a
 log_must $RM -f $TESTDIR/file
 
 # Clone with compression=off
@@ -75,7 +75,7 @@ log_must $ZFS clone -o compress=off $origin@a $origin/clone
 $DD if=/$TESTDIR/file of=/$TESTDIR/clone/file bs=1024k count=$MEGS \
     conv=notrunc >/dev/null 2>&1 || log_fail "dd failed."
 log_mustnot verify_nopwrite $origin $origin@a $origin/clone
-$ZFS destroy -R $origin@a || log_fail "zfs destroy failed"
+destroy_dataset -R $origin@a
 log_must $RM -f $TESTDIR/file
 
 # Clone with fletcher4, rather than sha256

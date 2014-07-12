@@ -50,8 +50,8 @@ function cleanup
 {
 	mntpnt=$(get_prop mountpoint $TESTPOOL)
         datasetexists $TESTPOOL1 || log_must $ZPOOL import -d $mntpnt $TESTPOOL1
-	datasetexists $TESTPOOL1 && destroy_pool $TESTPOOL1
-	datasetexists $TESTPOOL2 && destroy_pool $TESTPOOL2
+	destroy_pool -f $TESTPOOL1
+	destroy_pool -f $TESTPOOL2
 	typeset -i i=0
 	while ((i < 5)); do
 		if [[ -e $mntpnt/vdev$i ]]; then

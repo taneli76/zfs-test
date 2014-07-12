@@ -52,9 +52,7 @@ function cleanup
 		$RM -rf $corepath
 	fi
 	for ds in $fs1 $fs $ctr; do
-		if datasetexists $ds; then
-			log_must $ZFS destroy -rRf $ds
-		fi
+		destroy_dataset -rRf $ds
 	done
 	if [[ -n "$LINUX" && -n "$def_cor_pat" ]]; then
 		echo "$def_cor_pat" > /proc/sys/kernel/core_pattern

@@ -103,9 +103,8 @@ function cleanup_all
 			[[ -e $TESTDIR/$TESTFILE0 ]] && \
 				log_must $RM -rf $TESTDIR/$TESTFILE0
 		else
-			cleanup_filesystem "${TESTPOOL}-$id" $TESTFS
-
-			destroy_pool ${TESTPOOL}-$id
+			destroy_dataset ${TESTPOOL}-$id/$TESTFS
+			destroy_pool -f ${TESTPOOL}-$id
 		fi
 
 		(( id = id + 1 ))

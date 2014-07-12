@@ -74,7 +74,7 @@ do
 			log_fail "log device should display correct status"
 		fi
 
-		log_must $ZPOOL destroy -f $TESTPOOL
+		destroy_pool -f $TESTPOOL
 	done
 done
 

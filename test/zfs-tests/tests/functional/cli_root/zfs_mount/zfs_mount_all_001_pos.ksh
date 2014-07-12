@@ -99,21 +99,19 @@ function cleanup_all
 		if is_global_zone ; then
 			j=0
 			while (( j < ${#vol[*]} )); do
-				cleanup_filesystem "$TESTPOOL" \
-					"${ctr[i]}/${vol[j]}"
+				destroy_dataset $TESTPOOL/${ctr[i]}/${vol[j]}
 				((j = j + 1))
 			done
 		fi
 
 		j=0
 		while (( j < ${#fs[*]} )); do
-			cleanup_filesystem "$TESTPOOL" \
-				"${ctr[i]}/${fs[j]}"
+			destroy_dataset $TESTPOOL/${ctr[i]}/${fs[j]}
 			((j = j + 1))
 		done
 
 		[[ -n ${ctr[i]} ]] && \
-			cleanup_filesystem "$TESTPOOL" "${ctr[i]}"
+			destroy_dataset $TESTPOOL/${ctr[i]}
 
 		((i = i - 1))
 	done

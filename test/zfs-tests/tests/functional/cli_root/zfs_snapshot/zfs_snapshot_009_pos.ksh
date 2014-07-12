@@ -29,9 +29,9 @@
 function cleanup
 {
 	for ds in $datasets; do
-		datasetexists $ds && log_must $ZFS destroy -r $ds
+		destroy_dataset -r $ds
 	done
-	$ZFS destroy -r $TESTPOOL/TESTFS4
+	destroy_dataset -r $TESTPOOL/TESTFS4
 }
 datasets="$TESTPOOL/$TESTFS1 $TESTPOOL/$TESTFS2
     $TESTPOOL/$TESTFS3"
@@ -60,8 +60,7 @@ i=0
 while (( i < ${#valid_args[*]} )); do
 	log_must $ZFS snapshot ${valid_args[i]}
 	for token in ${valid_args[i]}; do
-		log_must snapexists $token && \
-		    log_must $ZFS destroy $token
+		destroy_dataset $token
 	done
 	((i = i + 1))
 done

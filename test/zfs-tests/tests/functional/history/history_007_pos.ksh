@@ -46,8 +46,7 @@ verify_runnable "global"
 
 function cleanup
 {
-	poolexists $migratedpoolname &&  \
-		log_must $ZPOOL destroy -f $migratedpoolname
+	destroy_pool -f $migratedpoolname
 
 	[[ -d $import_dir ]] && $RM -rf $import_dir
 }
@@ -76,8 +75,7 @@ for arch in "i386" "sparc"; do
 	log_must $UNCOMPRESS $import_dir/${arch}.migratedpool.DAT.Z
 
 	# destroy the pool with same name, so that import operation succeeds.
-	poolexists $migratedpoolname && \
-	    log_must $ZPOOL destroy -f $migratedpoolname
+	destroy_pool -f $migratedpoolname
 
 	log_must $ZPOOL import -d $import_dir $migratedpoolname
 	TZ=$TIMEZONE $ZPOOL history $migratedpoolname | $GREP -v "^$" \
@@ -105,7 +103,7 @@ for arch in "i386" "sparc"; do
 	log_must $DIFF $tmpfile $orig_cmds_f1
 
 	# cleanup for next loop testing
-	log_must $ZPOOL destroy -f $migratedpoolname
+	destroy_pool -f $migratedpoolname
 	log_must $RM -f `$LS $import_dir`
 done
 

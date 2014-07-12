@@ -56,9 +56,7 @@ function cleanup
 		done
 	fi
 
-	if poolexists $TESTPOOL1; then
-		destroy_pool $TESTPOOL1
-	fi
+	destroy_pool -f $TESTPOOL1
 
 	[[ -e $TESTDIR ]] && log_must $RM -rf $TESTDIR/*
 }

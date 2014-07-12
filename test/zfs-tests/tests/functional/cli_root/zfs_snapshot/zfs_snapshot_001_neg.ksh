@@ -89,7 +89,7 @@ function cleanup_all
 
 	while (( i < ${#args[*]} )); do
 		for snap in ${args[i]}; do
-			snapexists $snap && log_must $ZFS destroy -f $snap
+			destroy_dataset -f $snap
 		done
 		(( i = i + 1 ))
 	done

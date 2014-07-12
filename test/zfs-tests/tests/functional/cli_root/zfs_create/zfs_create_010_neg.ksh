@@ -78,7 +78,7 @@ function cleanup
 		# new fs created during the test, cleanup it
 		#
 		if [[ $found == "false" ]]; then
-			log_must $ZFS destroy -f $dset
+			destroy_dataset -f $dset
 		fi
 	done
 }

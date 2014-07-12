@@ -52,15 +52,11 @@ function cleanup_user_group
 #
 function restore_root_datasets
 {
-	if datasetexists $ROOT_TESTFS ; then
-		log_must $ZFS destroy -Rf $ROOT_TESTFS
-	fi
+	destroy_dataset -Rf $ROOT_TESTFS
 	log_must $ZFS create $ROOT_TESTFS
 
 	if is_global_zone ; then
-		if datasetexists $ROOT_TESTVOL ; then
-			log_must $ZFS destroy -Rf $ROOT_TESTVOL
-		fi
+		destroy_dataset -Rf $ROOT_TESTVOL
 		log_must $ZFS create -V $VOLSIZE $ROOT_TESTVOL
 	fi
 
@@ -423,7 +419,7 @@ function verify_fs_receive
 		log_must $ZFS snapshot $dtstsnap
 
 		log_must eval "$ZFS send $dtstsnap > $bak_root"
-		log_must $ZFS destroy -rf $dtst
+		destroy_dataset -rf $dtst
 
 		user_run $user eval "$ZFS receive $dtst < $bak_root"
 		if datasetexists $dtstsnap ; then
@@ -453,10 +449,10 @@ function verify_fs_receive
 
 		# check the data integrity
 		log_must eval "$ZFS send $dtstsnap > $bak_user"
-		log_must $ZFS destroy -rf $dtst
+		destroy_dataset -rf $dtst
 		log_must eval "$ZFS receive $dtst < $bak_root"
 		log_must eval "$ZFS send $dtstsnap > $bak_root"
-		log_must $ZFS destroy -rf $dtst
+		destroy_dataset -rf $dtst
 		if [[ $(checksum $bak_user) != $(checksum $bak_root) ]]; then
 			return 1
 		fi
@@ -575,7 +571,7 @@ function verify_fs_create
 		return 1
 	fi
 
-	log_must $ZFS destroy $newfs
+	destroy_dataset $newfs
 
 	if is_global_zone ; then
 		# mount permission is required for sparse volume
@@ -590,7 +586,7 @@ function verify_fs_create
 		if ! datasetexists $newvol ; then
 			return 1
 		fi
-		log_must $ZFS destroy $newvol
+		destroy_dataset $newvol
 
 		# mount and reserveration permission are
 		# required for normal volume
@@ -630,7 +626,7 @@ function verify_fs_create
 		if ! datasetexists $newvol ; then
 			return 1
 		fi
-		log_must $ZFS destroy $newvol
+		destroy_dataset $newvol
 	fi
 
 	return 0
@@ -688,7 +684,7 @@ function verify_fs_snapshot
 	if ! datasetexists $snap ; then
 		return 1
 	fi
-	log_must $ZFS destroy $snap
+	destroy_dataset $snap
 
 	if [[ "no" == $(get_prop mounted $fs) ]]; then
 		log_must $ZFS mount $fs
@@ -698,14 +694,14 @@ function verify_fs_snapshot
 	if ! datasetexists $snap ; then
 		return 1
 	fi
-	log_must $ZFS destroy $snap
+	destroy_dataset $snap
 
 	typeset snapdir=${mntpt}/.zfs/snapshot/snap.$stamp
 	user_run $user $MKDIR $snapdir
 	if ! datasetexists $snap ; then
 		return 1
 	fi
-	log_must $ZFS destroy $snap
+	destroy_dataset $snap
 
 	return 0
 }
@@ -784,7 +780,7 @@ function verify_fs_clone
 		return 1
 	fi
 
-	log_must $ZFS destroy -R $snap
+	destroy_dataset -R $snap
 
 	return 0
 }

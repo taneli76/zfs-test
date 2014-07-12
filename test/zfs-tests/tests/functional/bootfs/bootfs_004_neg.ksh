@@ -44,9 +44,7 @@ set -A pools "pool//$$" "pool%d123" "mirror" "c0t0d0s0" "pool*23*" "*po!l" \
 	"%s££%^"
 
 function cleanup {
-	if poolexists $POOL; then
-		log_must $ZPOOL destroy $POOL
-	fi
+	destroy_pool $POOL
 	$RM $TESTDIR/bootfs_004.$$.dat
 }
 

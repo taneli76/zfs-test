@@ -49,9 +49,7 @@
 function cleanup
 {
 	for ds in $TESTPOOL/fs $TESTPOOL/fs-rename $TESTPOOL/fs-clone; do
-		if datasetexists $ds; then
-			log_must $ZFS destroy -rRf $ds
-		fi
+		destroy_dataset -rRf $ds
 	done
 }
 

@@ -41,10 +41,8 @@
 #
 
 function cleanup {
-
-	log_must $ZFS destroy $TESTPOOL/$TESTFS@snap
+	destroy_dataset $TESTPOOL/$TESTFS@snap
 	log_must $RM $TESTDIR/myfile.$$
-
 }
 
 log_assert "read xattr on a snapshot"

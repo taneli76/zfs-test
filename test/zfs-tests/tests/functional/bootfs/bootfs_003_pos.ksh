@@ -43,9 +43,7 @@ verify_runnable "global"
 set -A pools "pool.$$" "pool123" "mypool"
 
 function cleanup {
-	if poolexists $POOL ; then
-		log_must $ZPOOL destroy $POOL
-	fi
+	destroy_pool $POOL
 	$RM $TESTDIR/bootfs_003.$$.dat
 }
 
@@ -75,7 +73,7 @@ do
 	then
 		log_fail "Expected $RES == $POOL/$TESTFS"
 	fi
-	log_must $ZPOOL destroy $POOL
+	destroy_pool $POOL
 	i=$(( $i + 1 ))
 done
 

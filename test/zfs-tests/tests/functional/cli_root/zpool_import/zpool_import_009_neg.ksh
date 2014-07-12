@@ -79,9 +79,8 @@ function cleanup
 		((i = i + 1))
 	done
 
-	cleanup_filesystem $TESTPOOL1 $TESTFS
-
-        destroy_pool $TESTPOOL1
+	destroy_dataset $TESTPOOL1/$TESTFS
+        destroy_pool -f $TESTPOOL1
 }
 
 log_onexit cleanup

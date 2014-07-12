@@ -57,8 +57,8 @@ function cleanup
         $RM -rf $TESTDIR || \
             log_unresolved Could not remove $TESTDIR
 
-	log_must $ZFS destroy $TESTPOOL/$TESTFS
-	destroy_pool $TESTPOOL
+	destroy_dataset $TESTPOOL/$TESTFS
+	destroy_pool -f $TESTPOOL
 }
 #
 # Currently, if a ZFS disk gets formatted things go horribly wrong, hence the

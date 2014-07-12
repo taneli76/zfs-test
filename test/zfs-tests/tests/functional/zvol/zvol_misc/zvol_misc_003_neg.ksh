@@ -51,10 +51,7 @@ function cleanup
 	if [[ $dumpdev != $savedumpdev ]] ; then
 		safe_dumpadm $savedumpdev
 	fi
-
-	if poolexists $TESTPOOL1 ; then
-		destroy_pool $TESTPOOL1
-	fi
+	destroy_pool -f $TESTPOOL1
 }
 
 log_assert "Verify zpool creation and newfs on dump zvol is denied."

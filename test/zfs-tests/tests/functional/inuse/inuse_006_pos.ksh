@@ -50,7 +50,7 @@ function cleanup
 		log_must $DUMPADM -u -d $PREVDUMPDEV
 	fi
 
-	poolexists $TESTPOOL1 && destroy_pool $TESTPOOL1
+	destroy_pool -f $TESTPOOL1
 
 	#
 	# Tidy up the disks we used.
@@ -130,7 +130,7 @@ while (( i < ${#vdevs[*]} )); do
 
 	create_pool $TESTPOOL1 ${vdevs[i]} $vslices spare $sslices
 	verify_assertion "$disktargets"
-	destroy_pool $TESTPOOL1
+	destroy_pool -f $TESTPOOL1
 
 	if [[ ( $FS_DISK0 == $FS_DISK2 ) && -n ${vdevs[i]} ]]; then
 		(( i = i + 1 ))
@@ -144,7 +144,7 @@ while (( i < ${#vdevs[*]} )); do
 
 	create_pool $TESTPOOL1 ${vdevs[i]} $vdisks spare $sdisks
 	verify_assertion "$disktargets"
-	destroy_pool $TESTPOOL1
+	destroy_pool -f $TESTPOOL1
 
 	if [[ -n "$LINUX" ]]; then
 		for num in {0..2}; do

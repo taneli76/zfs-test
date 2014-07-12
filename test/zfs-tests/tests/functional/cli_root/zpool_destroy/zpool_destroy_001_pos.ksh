@@ -47,13 +47,12 @@ verify_runnable "global"
 
 function cleanup
 {
-	poolexists $TESTPOOL2 && destroy_pool $TESTPOOL2
-	datasetexists $TESTPOOL1/$TESTVOL && \
-		log_must $ZFS destroy -f $TESTPOOL1/$TESTVOL
+	destroy_pool -f $TESTPOOL2
+	destroy_dataset -f $TESTPOOL1/$TESTVOL
 
 	typeset pool
 	for pool in $TESTPOOL1 $TESTPOOL; do
-		poolexists $pool && destroy_pool $pool
+		destroy_pool -f $pool
 	done
 
 	zero_partitions $DISK
@@ -90,7 +89,7 @@ create_pool "$TESTPOOL2" "$ZVOL_DEVDIR/$TESTPOOL1/$TESTVOL"
 typeset -i i=0
 while (( i < ${#datasets[*]} )); do
 	log_must poolexists "${datasets[i]}"
-	log_must $ZPOOL destroy "${datasets[i]}"
+	destroy_pool ${datasets[i]}
 	log_mustnot poolexists "${datasets[i]}"
 	((i = i + 1))
 done

@@ -52,7 +52,7 @@ function cleanup
 {
         for pool in $TESTPOOL $TESTPOOL1
         do
-                destroy_pool $pool
+                destroy_pool -f $pool
         done
 
 	if [[ -n $saved_dump_dev ]]; then
@@ -119,12 +119,12 @@ while (( i < ${#arg[*]} )); do
 done
 
 # now destroy the pool to be polite
-log_must $ZPOOL destroy -f $TESTPOOL
+destroy_pool -f $TESTPOOL
 
 # create/destroy a pool as a simple way to set the partitioning
 # back to something normal so we can use this $disk as a dump device
 log_must $ZPOOL create -f $TESTPOOL3 $disk
-log_must $ZPOOL destroy -f $TESTPOOL3
+destroy_pool -f $TESTPOOL3
 
 log_must $DUMPADM -d $DEV_DSKDIR/$specified_dump_dev
 log_mustnot $ZPOOL create -f $TESTPOOL1 "$specified_dump_dev"

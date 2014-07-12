@@ -56,9 +56,8 @@ verify_runnable "global"
 
 function cleanup
 {
-	poolexists $TESTPOOL1 && destroy_pool $TESTPOOL1
-
-	poolexists $TESTPOOL2 && destroy_pool $TESTPOOL2
+	destroy_pool -f $TESTPOOL1
+	destroy_pool -f $TESTPOOL2
 
 	log_note "Kill off ufsdump process if still running"
 	$KILL -0 $PIDUFSDUMP > /dev/null 2>&1 && \

@@ -49,10 +49,7 @@ function cleanup
 	typeset FS
 	for FS in $TESTPOOL/$RESERVATION $TESTPOOL/$RESERVATION2
 	do
-		if datasetexists $FS ; then
-			log_must $ZFS unmount $FS
-			log_must $ZFS destroy $FS
-		fi
+		destroy_dataset $FS
 	done
 }
 

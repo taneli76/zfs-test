@@ -45,10 +45,7 @@ verify_runnable "global"
 
 function cleanup
 {
-	if poolexists $TESTPOOL1; then
-		log_must $ZPOOL destroy $TESTPOOL1
-	fi
-
+	destroy_pool -f $TESTPOOL1
 	if [[ -f $pool_vdev ]]; then
 		$RM -f $pool_vdev
 	fi
@@ -63,9 +60,7 @@ typeset pool_vdev=/var/tmp/pool_dev.$$
 
 log_must $MKFILE 500m $pool_vdev
 
-if poolexists $TESTPOOL1; then
-	$ZPOOL destroy $TESTPOOL1
-fi
+destroy_pool $TESTPOOL1
 
 log_must $ZPOOL create -O userquota@$QUSER1=$UQUOTA_SIZE \
 	-O groupquota@$QGROUP=$GQUOTA_SIZE $TESTPOOL1 $pool_vdev

@@ -48,7 +48,7 @@ function create_pool_test
 	for vdevs in "${diskarray[@]}";do
 		create_pool $pool $keywd $vdevs
 		log_must poolexists $pool
-		destroy_pool $pool
+		destroy_pool -f $pool
 	done
 }
 
@@ -113,7 +113,7 @@ function clean_blockfile
 				fi
 				log_must $UMOUNT -f $dir
 				create_pool ${TESTPOOL}.tmp $dev
-				destroy_pool ${TESTPOOL}.tmp
+				destroy_pool -f ${TESTPOOL}.tmp
 			fi
 			log_must $RM -rf $dir
 		fi

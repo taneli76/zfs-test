@@ -49,8 +49,7 @@ function cleanup
 	mounted $TESTDIR2 && \
 		log_must $ZFS umount -f $TESTDIR2
 
-	datasetexists $TESTPOOL/$TESTFS2 && \
-		log_must $ZFS destroy $TESTPOOL/$TESTFS2
+	destroy_dataset $TESTPOOL/$TESTFS2
 
 	[[ -d $TESTDIR2 ]] && \
 		log_must $RM -rf $TESTDIR2

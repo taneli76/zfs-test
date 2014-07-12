@@ -47,12 +47,8 @@ verify_runnable "global"
 
 function cleanup
 {
-	if datasetexists bpool ; then
-		log_must $ZPOOL destroy -f bpool
-	fi
-	if datasetexists spool ; then
-		log_must $ZPOOL destroy -f spool
-	fi
+	destroy_pool -f bpool
+	destroy_pool -f spool
 }
 
 log_assert "Verify zfs receive can handle out of space correctly."
@@ -82,7 +78,7 @@ log_must ismounted spool
 #
 mntpnt2=$(get_prop mountpoint bpool)
 log_must $MV $mntpnt/file $mntpnt2
-log_must $ZFS destroy -rf bpool/fs
+destroy_dataset -rf bpool/fs
 
 log_must $ZFS snapshot bpool@snap
 log_must eval "$ZFS send -R bpool@snap > $BACKDIR/bpool-R"

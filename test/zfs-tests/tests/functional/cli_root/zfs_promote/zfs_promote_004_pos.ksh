@@ -53,8 +53,7 @@ function cleanup
 	typeset ds
 	typeset data
 	for ds in ${snap[*]}; do
-		snapexists $ds && \
-			log_must $ZFS destroy -rR $ds
+		destroy_dataset -rR $ds
 	done
 	for data in ${file[*]}; do
 		[[ -e $data ]] && $RM -f $data

@@ -56,8 +56,7 @@ log_assert "Destroying a regular volume with reservation allows more data to" \
 
 function cleanup
 {
-	datasetexists $TESTPOOL/$TESTVOL && \
-	    log_must $ZFS destroy $TESTPOOL/$TESTVOL
+	destroy_dataset $TESTPOOL/$TESTVOL
 
 	[[ -e $TESTDIR/$TESTFILE1 ]] && log_must $RM -rf $TESTDIR/$TESTFILE1
 	[[ -e $TESTDIR/$TESTFILE2 ]] && log_must $RM -rf $TESTDIR/$TESTFILE2
@@ -90,7 +89,7 @@ if (($ret != $ENOSPC)); then
 	log_fail "Did not get ENOSPC as expected (got $ret)."
 fi
 
-log_must $ZFS destroy -f $TESTPOOL/$TESTVOL
+destroy_dataset -f $TESTPOOL/$TESTVOL
 
 log_must $FILE_WRITE -o create -f $TESTDIR/$TESTFILE2 -b $PAGESIZE \
     -c 1000 -d 0

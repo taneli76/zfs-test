@@ -46,8 +46,7 @@ verify_runnable "global"
 
 function cleanup
 {
-	datasetexists $vol && \
-		log_must $ZFS destroy -f $vol
+	destroy_dataset -f $vol
 }
 
 log_assert "Verify creating volume with specified blocksize works."
@@ -64,7 +63,7 @@ while (( i < ${#options[*]} )); do
 
 	[[ -n "$LINUX" ]] && sleep 1
 
-	log_must $ZFS destroy -f $vol
+	destroy_dataset -f $vol
 	((i = i + 1))
 done
 

@@ -46,10 +46,9 @@ function cleanup
 	typeset ds
 
 	while (( i < ${#orig_snap[*]} )); do
-		snapexists ${rst_snap[$i]} && \
-			log_must $ZFS destroy -f ${rst_snap[$i]}
-		snapexists ${orig_snap[$i]} && \
-			log_must $ZFS destroy -f ${orig_snap[$i]}
+		destroy_dataset -f ${rst_snap[$i]}
+		destroy_dataset -f ${orig_snap[$i]}
+
 		[[ -e ${bkup[$i]} ]] && \
 			log_must $RM -rf ${bkup[$i]}
 
@@ -57,8 +56,7 @@ function cleanup
 	done
 
 	for ds in $rst_vol $rst_root; do
-		datasetexists $ds && \
-			log_must $ZFS destroy -Rf $ds
+		destroy_dataset -Rf $ds
 	done
 }
 

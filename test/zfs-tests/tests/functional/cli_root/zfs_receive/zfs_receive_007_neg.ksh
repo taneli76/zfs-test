@@ -43,7 +43,7 @@ verify_runnable "both"
 function cleanup
 {
 	for snap in $snap2 $snap1; do
-		datasetexists $snap && log_must $ZFS destroy -rf $snap
+		destroy_dataset -rf $snap
 	done
 	for file in $ibackup $mntpnt/file1 $mntpnt/file2; do
 		[[ -f $file ]] && log_must $RM -f $file
@@ -68,8 +68,8 @@ log_must $ZFS snapshot $snap2
 
 log_must eval "$ZFS send -i $snap1 $snap2 > $ibackup"
 
-log_must $ZFS destroy $snap1
-log_must $ZFS destroy $snap2
+destroy_dataset $snap1
+destroy_dataset $snap2
 log_mustnot eval "$ZFS receive -F $fs < $ibackup"
 
 log_must $MKFILE -s 20m $mntpnt/file1

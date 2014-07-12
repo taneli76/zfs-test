@@ -47,9 +47,7 @@ function cleanup
 		log_must $UMOUNT $mntp
 	fi
 
-	if datasetexists $vol; then
-		log_must $ZFS destroy $vol
-	fi
+	destroy_dataset $vol
 
 	if [[ -d $mntp ]]; then
                 $RM -rf $mntp

@@ -47,9 +47,7 @@ function cleanup
 	typeset ds
 
 	for ds in $TESTPOOL $TESTPOOL/$TESTFS $TESTPOOL/$TESTVOL; do
-		if snapexists ${ds}@$TESTSNAP; then
-			log_must $ZFS destroy ${ds}@$TESTSNAP
-		fi
+		destroy_dataset ${ds}@$TESTSNAP
 	done
 }
 

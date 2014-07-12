@@ -45,9 +45,7 @@ function cleanup
 	if [[ -d $corepath ]]; then
 		$RM -rf $corepath
 	fi
-	if poolexists $pool; then
-		log_must $ZPOOL destroy -f $pool
-	fi
+	destroy_pool -f $pool
 	if [[ -n "$LINUX" && -n "$def_cor_pat" ]]; then
 		echo "$def_cor_pat" > /proc/sys/kernel/core_pattern
 		echo "$def_cor_suid" > /proc/sys/fs/suid_dumpable

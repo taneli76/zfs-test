@@ -55,9 +55,9 @@ for dstype in FS VOL; do
     ds=$(eval echo \$${dstype})
     snap=$(eval echo \$${dstype}SNAP)
     clone=$(eval echo \$${dstype}CLONE)
-    log_must $ZFS destroy -d $snap
+    destroy_dataset -d $snap
     log_must datasetexists $snap
-    log_must $ZFS destroy -R $ds
+    destroy_dataset -R $ds
     log_mustnot datasetexists $snap
     log_mustnot datasetexists $clone
 done

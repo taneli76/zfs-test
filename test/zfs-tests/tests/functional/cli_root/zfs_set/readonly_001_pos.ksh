@@ -43,8 +43,7 @@ verify_runnable "both"
 function cleanup
 {
 	for dataset in $TESTPOOL/$TESTFS $TESTPOOL/$TESTVOL ; do
-		snapexists ${dataset}@$TESTSNAP && \
-			log_must $ZFS destroy -R ${dataset}@$TESTSNAP
+		destroy_dataset -R ${dataset}@$TESTSNAP
 	done
 }
 
@@ -124,7 +123,9 @@ log_assert "Setting a valid readonly property on a dataset succeeds."
 
 typeset all_datasets
 
+export __ZFS_POOL_RESTRICT="$TESTPOOL"
 log_must $ZFS mount -a
+unset __ZFS_POOL_RESTRICT
 
 log_must $ZFS snapshot $TESTPOOL/$TESTFS@$TESTSNAP
 log_must $ZFS clone $TESTPOOL/$TESTFS@$TESTSNAP $TESTPOOL/$TESTCLONE

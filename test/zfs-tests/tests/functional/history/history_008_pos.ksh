@@ -47,9 +47,7 @@ verify_runnable "global"
 
 function cleanup
 {
-	if datasetexists $root_testfs; then
-		log_must $ZFS destroy -rf $root_testfs
-	fi
+	destroy_dataset -rf $root_testfs
 	log_must $ZFS create $root_testfs
 }
 

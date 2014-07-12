@@ -49,9 +49,7 @@ verify_runnable "global"
 
 function cleanup
 {
-	if poolexists $TESTPOOL; then
-		destroy_pool $TESTPOOL
-	fi
+	destroy_pool -f $TESTPOOL
 
 	#recover swap devices
 	FSTAB=/tmp/fstab_$$
@@ -108,6 +106,6 @@ for sdisk in $swap_disks; do
 done
 
 log_must $ZPOOL create $TESTPOOL $pool_dev
-log_must $ZPOOL destroy $TESTPOOL
+destroy_pool $TESTPOOL
 
 log_pass "'zpool create' passed as expected with applicable scenario."

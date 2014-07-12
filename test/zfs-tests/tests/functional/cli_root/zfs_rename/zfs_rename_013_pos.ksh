@@ -46,21 +46,10 @@ verify_runnable "both"
 
 function cleanup
 {
-	if datasetexists $TESTPOOL/$TESTCTR@snap-new ; then
-		log_must $ZFS destroy -f $TESTPOOL/$TESTCTR@snap-new
-	fi
-
-	if datasetexists $TESTPOOL/$TESTCTR@snap ; then
-		log_must $ZFS destroy -f $TESTPOOL/$TESTCTR@snap
-	fi
-
-	if datasetexists $TESTPOOL@snap-new ; then
-		log_must $ZFS destroy -f $TESTPOOL@snap-new
-	fi
-
-	if datasetexists $TESTPOOL@snap ; then
-		log_must $ZFS destroy -f $TESTPOOL@snap
-	fi
+	destroy_dataset -f $TESTPOOL/$TESTCTR@snap-new
+	destroy_dataset -f $TESTPOOL/$TESTCTR@snap
+	destroy_dataset -f $TESTPOOL@snap-new
+	destroy_dataset -f $TESTPOOL@snap
 }
 
 log_assert "zfs rename -r can rename snapshot when child datasets" \
@@ -77,8 +66,8 @@ log_must $ZFS rename -r $TESTPOOL@snap $TESTPOOL@snap-new
 log_must datasetexists $TESTPOOL/$TESTCTR@snap-new
 log_must datasetexists $TESTPOOL@snap-new
 
-log_must $ZFS destroy -f $TESTPOOL/$TESTCTR@snap-new
-log_must $ZFS destroy -f $TESTPOOL@snap-new
+destroy_dataset -f $TESTPOOL/$TESTCTR@snap-new
+destroy_dataset -f $TESTPOOL@snap-new
 
 log_pass "Verify zfs rename -r passed when child datasets" \
 	"don't have a snapshot of the given name."

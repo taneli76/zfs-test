@@ -48,9 +48,7 @@ verify_runnable "both"
 
 function cleanup
 {
-	if snapexists $SNAPFS ; then
-		log_must $ZFS destroy -Rf $SNAPFS
-	fi
+	destroy_dataset -Rf $SNAPFS
 }
 
 log_onexit cleanup
@@ -72,7 +70,7 @@ while (( $i < ${#RW_FS_PROP[*]} )); do
 		log_fail "zfs clone $TESTPOOL/$TESTCLONE fail."
 	propertycheck $TESTPOOL/$TESTCLONE ${RW_FS_PROP[i]} || \
 		log_fail "${RW_FS_PROP[i]} is failed to set."
-	log_must $ZFS destroy -f $TESTPOOL/$TESTCLONE
+	destroy_dataset -f $TESTPOOL/$TESTCLONE
 	(( i = i + 1 ))
 done
 

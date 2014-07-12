@@ -49,10 +49,7 @@ verify_runnable "both"
 
 function cleanup
 {
-	snapexists $SNAPCTR
-	if [[ $? -eq 0 ]]; then
-		log_must $ZFS destroy $SNAPCTR
-	fi
+	destroy_dataset $SNAPCTR
 
 	if [[ -e $SNAPDIR1 ]]; then
 		log_must $RM -rf $SNAPDIR1 > /dev/null 2>&1

@@ -43,9 +43,7 @@ verify_runnable "both"
 
 function cleanup
 {
-	if datasetexists $rootfs ; then
-		log_must $ZFS destroy -Rf $rootfs
-	fi
+	destroy_dataset -Rf $rootfs
 	log_must $ZFS create $rootfs
 }
 

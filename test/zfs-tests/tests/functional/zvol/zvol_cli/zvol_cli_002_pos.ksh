@@ -44,8 +44,7 @@ verify_runnable "global"
 
 function cleanup
 {
-	datasetexists $TESTPOOL/$LONGVOLNAME && \
-		$ZFS destroy $TESTPOOL/$LONGVOLNAME
+	destroy_dataset $TESTPOOL/$LONGVOLNAME
 }
 
 log_onexit cleanup

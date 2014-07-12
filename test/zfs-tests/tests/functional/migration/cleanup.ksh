@@ -39,7 +39,7 @@ ismounted $NONZFS_TESTDIR $NEWFS_DEFAULT_FS
 
 ismounted $TESTPOOL/$TESTFS
 [[ $? == 0 ]] && log_must $ZFS umount -f $TESTDIR
-destroy_pool $TESTPOOL
+destroy_pool -f $TESTPOOL
 
 # recreate and destroy a zpool over the disks to restore the partitions to
 # normal

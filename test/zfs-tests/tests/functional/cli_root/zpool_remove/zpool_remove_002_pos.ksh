@@ -45,9 +45,7 @@
 
 function cleanup
 {
-	if poolexists $TESTPOOL; then
-		destroy_pool $TESTPOOL
-	fi
+	destroy_pool -f $TESTPOOL
 }
 
 log_onexit cleanup
@@ -68,6 +66,6 @@ log_must $ZPOOL remove $TESTPOOL $spare_devs2
 log_note "check hotspare device which is created by zpool add"
 log_must $ZPOOL add $TESTPOOL spare $spare_devs2
 log_must $ZPOOL remove $TESTPOOL $spare_devs2
-log_must $ZPOOL destroy $TESTPOOL
+destroy_pool $TESTPOOL
 
 log_pass "zpool remove can only remove inactive hotspare device from pool"

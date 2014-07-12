@@ -63,7 +63,7 @@ function verify_bootfs { # $POOL
 		log_fail \
 		    "set/get failed on $POOL - expected $VAL == $POOL/$TESTFS"
 	fi
-	log_must $ZPOOL destroy $POOL
+	destroy_pool $POOL
 }
 
 function verify_no_bootfs { # $POOL
@@ -80,14 +80,11 @@ function verify_no_bootfs { # $POOL
 		log_must $ZPOOL status -v $POOL
 		log_fail "set/get unexpectedly failed $VAL != $POOL/$TESTFS"
 	fi
-	log_must $ZPOOL destroy $POOL
+	destroy_pool $POOL
 }
 
 function cleanup {
-	if poolexists $TESTPOOL
-	then
-		log_must $ZPOOL destroy $TESTPOOL
-	fi
+	destroy_pool $TESTPOOL
 	log_must $RM $VDEV1 $VDEV2 $VDEV3 $VDEV4
 }
 

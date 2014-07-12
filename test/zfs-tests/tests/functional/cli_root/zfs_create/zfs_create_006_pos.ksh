@@ -49,8 +49,7 @@ verify_runnable "global"
 
 function cleanup
 {
-	datasetexists $TESTPOOL/$TESTVOL1 && \
-		log_must $ZFS destroy -f $TESTPOOL/$TESTVOL1
+	destroy_dataset -f $TESTPOOL/$TESTVOL1
 }
 
 log_onexit cleanup
@@ -68,7 +67,7 @@ while (( $i < ${#RW_VOL_PROP[*]} )); do
 	propertycheck $TESTPOOL/$TESTVOL1 ${RW_VOL_PROP[i]} || \
 		log_fail "${RW_VOL_PROP[i]} is failed to set."
 	[[ -n "$LINUX" ]] && sleep 1
-	log_must $ZFS destroy -f $TESTPOOL/$TESTVOL1
+	destroy_dataset -f $TESTPOOL/$TESTVOL1
 
 	[[ -n "$LINUX" ]] && sleep 1
 
@@ -79,7 +78,7 @@ while (( $i < ${#RW_VOL_PROP[*]} )); do
 	propertycheck $TESTPOOL/$TESTVOL1 ${RW_VOL_PROP[i]} || \
 		log_fail "${RW_VOL_PROP[i]} is failed to set."
 	[[ -n "$LINUX" ]] && sleep 1
-	log_must $ZFS destroy -f $TESTPOOL/$TESTVOL1
+	destroy_dataset -f $TESTPOOL/$TESTVOL1
 
 	(( i = i + 1 ))
 done

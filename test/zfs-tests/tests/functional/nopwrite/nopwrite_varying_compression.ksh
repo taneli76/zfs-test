@@ -40,7 +40,7 @@ log_onexit cleanup
 
 function cleanup
 {
-	datasetexists $origin && log_must $ZFS destroy -R $origin
+	destroy_dataset -R $origin
 	log_must $ZFS create -o mountpoint=$TESTDIR $origin
 }
 
@@ -58,7 +58,7 @@ for i in $(get_rand_compress 4); do
 	$DD if=/$TESTDIR/file of=/$TESTDIR/clone/file bs=1024k count=$MEGS \
 	    conv=notrunc >/dev/null 2>&1 || log_fail "dd failed."
 	log_must verify_nopwrite $origin $origin@a $origin/clone
-	$ZFS destroy -R $origin@a || log_fail "zfs destroy failed"
+	destroy_dataset -R $origin@a
 done
 
 log_pass "nopwrite works with sha256 and any compression algorithm"

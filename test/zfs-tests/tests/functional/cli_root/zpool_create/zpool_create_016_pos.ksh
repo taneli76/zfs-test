@@ -63,7 +63,7 @@ function cleanup
 			$ECHO "$sdisk	-	-	swap	-	no	-" >> $FSTAB
 		fi
 	done
-	if [ -e $FSTAB ]
+	if [ -e $FSTAB -a -z "$LINUX" ]
 	then
 		log_must $SWAPADD $FSTAB
 	fi

@@ -112,7 +112,7 @@ function safe_dumpadm
 		set_dumpsize $volume
 		log_must $DUMPADM -d $device
 	else
-		log_must $SWAPADD
+		[[ -z "$LINUX" ]] && log_must $SWAPADD
 		if ! is_swap_inuse $device ; then
 			if [[ -n "$LINUX" ]]; then
 				log_must mkswap $device

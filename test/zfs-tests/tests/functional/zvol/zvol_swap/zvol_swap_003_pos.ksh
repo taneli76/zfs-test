@@ -54,7 +54,7 @@ function cleanup
 	    log_must $MV $PREV_VFSTAB_FILE $VFSTAB_FILE
 	[[ -f $PREV_VFSTAB_FILE ]] && $RM -f $PREV_VFSTAB_FILE
 
-	log_must $SWAPADD $VFSTAB_FILE
+	[[ -z "$LINUX" ]] && log_must $SWAPADD $VFSTAB_FILE
 
         if is_swap_inuse $voldev ; then
 		if [[ -n "$LINUX" ]]; then
@@ -84,7 +84,7 @@ $ECHO "$voldev\t-\t-\tswap\t-\tno\t-"  >> $NEW_VFSTAB_FILE
 # Copy off the original vfstab, and run swapadd on the newly constructed one.
 log_must $CP $VFSTAB_FILE $PREV_VFSTAB_FILE
 log_must $CP $NEW_VFSTAB_FILE $VFSTAB_FILE
-log_must $SWAPADD $VFSTAB_FILE
+[[ -z "$LINUX" ]] && log_must $SWAPADD $VFSTAB_FILE
 
 log_must $FILE_WRITE -o create -f /tmp/$TESTFILE \
     -b $BLOCKSZ -c $NUM_WRITES -d $DATA

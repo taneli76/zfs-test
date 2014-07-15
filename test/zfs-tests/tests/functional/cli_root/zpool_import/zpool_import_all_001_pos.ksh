@@ -92,6 +92,8 @@ function cleanup_all
 			continue
 		fi
 
+		# This never happens, because somewhere/somehow TESTPOOL-0 is
+		# destroyed/exported/something so 'poolexists' can't find it..
 		if (( id == 0 )); then
 			log_must $ZPOOL export ${TESTPOOL}-$id
 
@@ -112,6 +114,12 @@ function cleanup_all
 
 	[[ -d $ALTER_ROOT ]] && \
 		$RM -rf $ALTER_ROOT
+
+	# Recreate TESTPOOL.
+	[[ -n "$LINUX" ]] && ZFS_DISK1=${ZFS_DISK1}p1
+	log_must $ZPOOL create $TESTPOOL "${ZFS_DISK1}"
+	log_must $ZFS create $TESTPOOL/$TESTFS
+	log_must $ZFS set mountpoint=$TESTDIR $TESTPOOL/$TESTFS
 }
 
 function checksum_all #alter_root
@@ -152,6 +160,12 @@ log_onexit cleanup_all
 
 checksum1=$($SUM $MYTESTFILE | $AWK '{print $1}')
 
+# NOTE: TESTPOOL is reimported as TESTPOOL-0, then
+#       exported.
+#       Is never reimported as TESTPOOL, which makes
+#       test (??) fail (because it tries to unmount
+#       one of it's filesystems).
+
 log_must $ZPOOL export $TESTPOOL
 log_must $ZPOOL import $TESTPOOL ${TESTPOOL}-0
 log_must $CP $MYTESTFILE $TESTDIR/$TESTFILE0
@@ -179,13 +193,10 @@ while (( number <= $GROUP_NUM )); do
 		continue
 	fi
 
-	if [[ -n "$LINUX" ]]; then
-		part=p
-	else
-		part=s
-	fi
+	typeset slice_part=s
+	[[ -n "$LINUX" ]] && slice_part=p
 
-	setup_single_disk "${ZFS_DISK1}${part}${number}" \
+	setup_single_disk "${ZFS_DISK1}${slice_part}${number}" \
 		"${TESTPOOL}-$number" \
 		"$TESTFS" \
 		"$TESTDIR.$number"

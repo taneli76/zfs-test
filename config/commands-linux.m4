@@ -22,5 +22,8 @@ AC_PATH_TOOL(UNPACK, jar, "")
 AC_PATH_TOOL(UNSHARE, exportfs, "")
 AC_PATH_TOOL(GETENT, getent, "")
 AC_PATH_TOOL(KPARTX, kpartx, "")
+AC_PATH_TOOL(GETFACL, getfacl, "")
+AC_PATH_TOOL(SETFACL, setfacl, "")
+AC_PATH_TOOL(CHACL, chacl, "")
 
 AC_CHECK_FILE([/etc/mtab], [MNTTAB=/etc/mtab], [])

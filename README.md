@@ -2,7 +2,15 @@ This is (supposed to be) the ZFS Test Suite, with support for all platforms
 that ZFS from Sun Solaris have been ported to.
 
 
-To run the test suite, just issue the command
+To setup the test suite, run
+
+   ./autogen.sh
+
+This will create the configure file. Run this to setup the makefiles etc.
+
+   ./configure
+
+Then, to run the test suite, just issue the command:
 
    make test
 
